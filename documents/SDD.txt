@@ -1,0 +1,473 @@
+PortfolioX Software Design Document
+
+1. Introduction
+
+1.1 Purpose
+
+This SDD describes the technical design and architecture of PortfolioX, a web-based system for managing user portfolios. It details the system’s components, technologies, and implementation guidelines to support development and code generation.
+
+1.2 Scope
+
+PortfolioX enables users to create, manage, and share portfolios with features like authentication, portfolio/item management, analytics, and sharing. The system is built as a web application with a client-server architecture, using modern frameworks and a relational database.
+
+2. System Architecture
+
+2.1 Overview
+
+PortfolioX uses a client-server architecture with:
+
+
+
+
+
+Frontend: React.js for a responsive, single-page application (SPA).
+
+
+
+Backend: Node.js with Express.js for RESTful APIs.
+
+
+
+Database: MySQL for storing user, portfolio, and analytics data.
+
+
+
+File Storage: AWS S3 for storing uploaded files (e.g., images, PDFs).
+
+
+
+Deployment: Hosted on AWS EC2 with Nginx as a reverse proxy.
+
+2.2 Data Flow
+
+
+
+
+
+User interacts with the frontend (React.js) via a browser.
+
+
+
+Frontend sends HTTP requests (GET, POST, etc.) to backend APIs.
+
+
+
+Backend processes requests, interacts with MySQL for data storage/retrieval, and AWS S3 for file handling.
+
+
+
+Backend returns JSON responses to the frontend.
+
+
+
+Frontend renders updated views based on responses.
+
+3. System Modules
+
+3.1 User Authentication Module
+
+Description: Manages user registration, login, logout, and profile updates.
+Technical Design:
+
+
+
+
+
+Frontend: React components for login/register forms, profile page.
+
+
+
+Backend: Express.js routes for /register, /login, /logout, /profile.
+
+
+
+API Endpoints:
+
+
+
+
+
+POST /api/auth/register: Creates a user (email, username, password).
+
+
+
+POST /api/auth/login: Authenticates user, returns JWT token.
+
+
+
+POST /api/auth/reset-password: Sends reset link to email.
+
+
+
+PUT /api/auth/profile: Updates user profile (protected by JWT).
+
+
+
+POST /api/auth/logout: Invalidates session.
+
+
+
+Security: Passwords hashed with bcrypt; JWT for session management.
+
+
+
+Database:
+
+
+
+
+
+Table: users (user_id: INT, email: VARCHAR, username: VARCHAR, hashed_password: VARCHAR, name: VARCHAR, bio: TEXT, profile_picture_url: VARCHAR).
+
+
+
+Libraries: jsonwebtoken, bcrypt, nodemailer for email.
+Code Generation Guidance:
+
+
+
+Generate React components for forms (e.g., LoginForm.js, RegisterForm.js).
+
+
+
+Generate Express routes with middleware for JWT validation.
+
+
+
+Include MySQL queries for CRUD operations on users table.
+
+3.2 Portfolio Management Module
+
+Description: Handles creation, editing, deletion, and listing of user portfolios.
+Technical Design:
+
+
+
+
+
+Frontend: React components for portfolio list, create/edit forms.
+
+
+
+Backend: Express.js routes for /portfolios.
+
+
+
+API Endpoints:
+
+
+
+
+
+POST /api/portfolios: Creates a portfolio (title, description, category).
+
+
+
+PUT /api/portfolios/:id: Updates a portfolio.
+
+
+
+DELETE /api/portfolios/:id: Deletes a portfolio.
+
+
+
+GET /api/portfolios: Lists user’s portfolios.
+
+
+
+Database:
+
+
+
+
+
+Table: portfolios (portfolio_id: INT, user_id: INT, title: VARCHAR, description: TEXT, category: VARCHAR, created_at: DATETIME).
+
+
+
+Authentication: JWT required for all endpoints.
+
+
+
+Libraries: express-validator for input validation.
+Code Generation Guidance:
+
+
+
+Generate React component for portfolio list (e.g., PortfolioList.js).
+
+
+
+Generate Express routes with validation and MySQL queries.
+
+
+
+Ensure JWT middleware checks user ownership of portfolios.
+
+3.3 Portfolio Item Management Module
+
+Description: Manages adding, editing, deleting, and viewing items within portfolios.
+Technical Design:
+
+
+
+
+
+Frontend: React components for item list, upload/edit forms.
+
+
+
+Backend: Express.js routes for /portfolios/:id/items.
+
+
+
+API Endpoints:
+
+
+
+
+
+POST /api/portfolios/:id/items: Adds an item (title, description, file).
+
+
+
+PUT /api/portfolios/:id/items/:itemId: Updates an item.
+
+
+
+DELETE /api/portfolios/:id/items/:itemId: Deletes an item.
+
+
+
+GET /api/portfolios/:id/items: Lists items in a portfolio.
+
+
+
+File Handling: Multer for file uploads; AWS S3 for storage.
+
+
+
+Database:
+
+
+
+
+
+Table: items (item_id: INT, portfolio_id: INT, title: VARCHAR, description: TEXT, file_url: VARCHAR, created_at: DATETIME).
+
+
+
+Libraries: multer, aws-sdk.
+Code Generation Guidance:
+
+
+
+Generate React component for file upload (e.g., ItemUpload.js).
+
+
+
+Generate Express routes with Multer middleware for file uploads.
+
+
+
+Include AWS S3 upload logic and MySQL queries for items.
+
+3.4 Analytics Module
+
+Description: Tracks and displays Rosy’s analytics data (e.g., views, likes).
+Technical Design:
+
+
+
+
+
+Frontend: React components for analytics dashboard, charts.
+
+
+
+Backend: Express.js routes for /analytics.
+
+
+
+API Endpoints:
+
+
+
+
+
+GET /api/analytics/portfolios/:id: Returns view/like counts.
+
+
+
+GET /api/analytics/portfolios/:id/items/:itemId: Returns item-specific analytics.
+
+
+
+POST /api/analytics/track: Logs a view/like event.
+
+
+
+Database:
+
+
+
+
+
+Table: analytics (event_id: INT, portfolio_id: INT, item_id: INT, event_type: ENUM(‘view’, ‘like’), timestamp: DATETIME).
+
+
+
+Libraries: chart.js for frontend charts.
+Code Generation Guidance:
+
+
+
+Generate React component for analytics dashboard (e.g., AnalyticsDashboard.js).
+
+
+
+Generate Express routes for tracking and retrieving analytics.
+
+
+
+Include MySQL queries for inserting and aggregating analytics data.
+
+3.5 Sharing Module
+
+Description: Enables portfolio sharing via public links or email invites.
+Technical Design:
+
+
+
+
+
+Frontend: React components for sharing settings, invite form.
+
+
+
+Backend: Express.js routes for /share.
+
+
+
+API Endpoints:
+
+
+
+
+
+POST /api/share/portfolios/:id: Generates public link or sends invite.
+
+
+
+PUT /api/share/portfolios/:id/visibility: Updates visibility (public/private).
+
+
+
+GET /api/share/portfolios/:id/views: Returns view count for shared links.
+
+
+
+Database:
+
+
+
+
+
+Table: shares (share_id: INT, portfolio_id: INT, share_type: ENUM(‘public’, ‘invite’), share_url: VARCHAR, invited_email: VARCHAR, created_at: DATETIME).
+
+
+
+Libraries: nodemailer for email invites.
+Code Generation Guidance:
+
+
+
+Generate React component for sharing settings (e.g., ShareSettings.js).
+
+
+
+Generate Express routes for link generation and email sending.
+
+
+
+Include MySQL queries for managing shares.
+
+4. Non-Functional Design
+
+
+
+
+
+Performance: APIs respond within 500ms for 95% of requests under 1,000 concurrent users.
+
+
+
+Security: HTTPS, JWT authentication, input sanitization to prevent SQL injection/XSS.
+
+
+
+Scalability: Horizontal scaling via AWS Auto Scaling; database sharding if needed.
+
+
+
+Maintainability: Modular code with clear separation of concerns (MVC pattern).
+
+5. Technology Stack
+
+
+
+
+
+Frontend: React.js, Axios, Chart.js.
+
+
+
+Backend: Node.js, Express.js, Multer, AWS SDK.
+
+
+
+Database: MySQL.
+
+
+
+Storage: AWS S3.
+
+
+
+Security: bcrypt, jsonwebtoken.
+
+
+
+Email: Nodemailer.
+
+
+
+Deployment: AWS EC2, Nginx, Docker.
+
+6. Assumptions and Constraints
+
+
+
+
+
+Assumptions: Users have modern browsers (Chrome, Firefox, Safari); AWS credentials are configured.
+
+
+
+Constraints: File uploads limited to 10 MB; supported formats: JPEG, PNG, PDF.
+
+7. Future Enhancements
+
+
+
+
+
+Add WebSocket support for real-time analytics updates.
+
+
+
+Implement caching with Redis for faster API responses.
+
+
+
+Support additional file types (e.g., MP4).

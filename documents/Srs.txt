@@ -1,0 +1,307 @@
+PortfolioX Software Requirements Specification
+
+1. Introduction
+
+1.1 Purpose
+
+This SRS outlines the requirements for PortfolioX, a web-based system for managing user portfolios (e.g., projects, investments, or creative works). It specifies functional and non-functional requirements to guide development and ensure the system meets user needs.
+
+1.2 Scope
+
+PortfolioX allows users to create, manage, and showcase portfolios. Key features include user authentication, portfolio creation, item management, analytics, and sharing capabilities. The system targets individuals, professionals, or teams needing organized portfolio management.
+
+2. System Modules
+
+2.1 User Authentication Module
+
+Description: Handles user registration, login, logout, and profile management.
+Functional Requirements:
+
+
+
+
+
+REG-01: Users can register with an email, username, and password.
+
+
+
+REG-02: Users can log in using email/username and password.
+
+
+
+REG-03: Users can reset their password via email.
+
+
+
+REG-04: Users can update their profile (e.g., name, bio, profile picture).
+
+
+
+REG-05: Session management ensures secure logout and timeout.
+Inputs:
+
+
+
+Registration: Email, username, password.
+
+
+
+Login: Email/username, password.
+
+
+
+Profile Update: Name, bio, image file.
+Outputs:
+
+
+
+Success/failure messages for registration, login, and updates.
+
+
+
+User session token for authenticated actions.
+Database:
+
+
+
+Users table: user_id, email, username, hashed_password, name, bio, profile_picture_url.
+
+2.2 Portfolio Management Module
+
+Description: Enables users to create, edit, and delete portfolios.
+Functional Requirements:
+
+
+
+
+
+PORT-01: Users can create a new portfolio with a title, description, and category.
+
+
+
+PORT-02: Users can edit portfolio details (title, description, category).
+
+
+
+PORT-03: Users can delete a portfolio.
+
+
+
+PORT-04: Users can view a list of their portfolios.
+Inputs:
+
+
+
+Create/Edit: Title, description, category (e.g., art, projects, investments).
+
+
+
+Delete: Portfolio ID.
+
+
+
+View: User ID.
+Outputs:
+
+
+
+Success/failure messages for create, edit, delete actions.
+
+
+
+List of portfolios with titles, descriptions, and categories.
+Database:
+
+
+
+Portfolios table: portfolio_id, user_id, title, description, category, created_at.
+
+2.3 Portfolio Item Management Module
+
+Description: Allows users to add, edit, and remove items (e.g., images, documents, or data entries) within a portfolio.
+Functional Requirements:
+
+
+
+
+
+ITEM-01: Users can add an item to a portfolio (e.g., upload image, document, or text).
+
+
+
+ITEM-02: Users can edit item details (e.g., title, description, file).
+
+
+
+ITEM-03: Users can delete an item.
+
+
+
+ITEM-04: Users can view all items in a portfolio.
+Inputs:
+
+
+
+Add/Edit: Portfolio ID, item title, description, file (image, PDF, etc.).
+
+
+
+Delete: Item ID.
+
+
+
+View: Portfolio ID.
+Outputs:
+
+
+
+Success/failure messages for add, edit, delete actions.
+
+
+
+List of items with titles, descriptions, and file previews.
+Database:
+
+
+
+Items table: item_id, portfolio_id, title, description, file_url, created_at.
+
+2.4 Analytics Module
+
+Description: Provides insights into portfolio performance (e.g., views, likes, or engagement).
+Functional Requirements:
+
+
+
+
+
+ANL-01: Users can view total views for a portfolio.
+
+
+
+ANL-02: Users can see a breakdown of views by portfolio item.
+
+
+
+ANL-03: System tracks likes or comments on portfolios (if applicable).
+
+
+
+ANL-04: Users can view a graphical summary (e.g., bar chart of views over time).
+Inputs:
+
+
+
+Portfolio ID or Item ID for analytics queries.
+Outputs:
+
+
+
+Numeric data: Total views, likes, comments.
+
+
+
+Visual data: Charts or graphs of engagement metrics.
+Database:
+
+
+
+Analytics table: event_id, portfolio_id, item_id, event_type (view/like/comment), timestamp.
+
+2.5 Sharing Module
+
+Description: Enables users to share portfolios publicly or with specific users.
+Functional Requirements:
+
+
+
+
+
+SHR-01: Users can generate a public link to a portfolio.
+
+
+
+SHR-02: Users can set portfolios as public or private.
+
+
+
+SHR-03: Users can invite others to view private portfolios via email.
+
+
+
+SHR-04: System tracks views from shared links.
+Inputs:
+
+
+
+Portfolio ID, visibility setting (public/private), email addresses for invites.
+
+
+
+Share action: Generate link or send invite.
+Outputs:
+
+
+
+Public URL for sharing.
+
+
+
+Success/failure messages for invite actions.
+
+
+
+View count for shared links.
+Database:
+
+
+
+Shares table: share_id, portfolio_id, share_type (public/invite), share_url, invited_email, created_at.
+
+3. Non-Functional Requirements
+
+
+
+
+
+Performance: System should handle 1,000 concurrent users with response times under 2 seconds.
+
+
+
+Security: Passwords are hashed; HTTPS is used for all communications.
+
+
+
+Scalability: System supports adding new modules without major refactoring.
+
+
+
+Usability: Interface is intuitive, with clear navigation and responsive design for mobile and desktop.
+
+4. Assumptions and Constraints
+
+
+
+
+
+Assumptions: Users have internet access and modern browsers (Chrome, Firefox, Safari).
+
+
+
+Constraints: File uploads are limited to 10 MB per item; system supports only image and PDF uploads initially.
+
+5. Future Enhancements
+
+
+
+
+
+Integration with social media for direct sharing.
+
+
+
+Advanced analytics with predictive insights.
+
+
+
+Support for additional file types (e.g., videos).
