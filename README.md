@@ -13,7 +13,7 @@ A web-based portfolio management system for showcasing and managing user project
 ## Tech Stack
 
 - **Backend**: Java Spring Boot with JPA/Hibernate
-- **Database**: MySQL
+- **Database**: Supabase
 - **Security**: Spring Security with JWT authentication
 - **File Storage**: AWS S3
 - **Email**: Spring Mail for notifications
@@ -23,7 +23,7 @@ A web-based portfolio management system for showcasing and managing user project
 ### Prerequisites
 
 - Java 11 or higher
-- MySQL
+- Supabase Postgre
 - Maven
 
 ### Installation
