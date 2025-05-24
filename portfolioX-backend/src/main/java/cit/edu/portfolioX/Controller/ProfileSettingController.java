@@ -1,16 +1,17 @@
-
 package cit.edu.portfolioX.Controller;
 
 import cit.edu.portfolioX.Entity.ProfileSettingEntity;
 import cit.edu.portfolioX.Service.ProfileSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/settings")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 public class ProfileSettingController {
 
     @Autowired
@@ -22,13 +23,22 @@ public class ProfileSettingController {
     }
 
     @GetMapping("/{id}")
-    public Optional<ProfileSettingEntity> getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<List<ProfileSettingEntity>> getById(@PathVariable Long id) {
+        List<ProfileSettingEntity> settings = service.findByUserId(id);
+        return ResponseEntity.ok(settings != null ? settings : new ArrayList<>());
     }
 
     @PostMapping
-    public ProfileSettingEntity create(@RequestBody ProfileSettingEntity setting) {
-        return service.save(setting);
+    public ResponseEntity<?> create(@RequestBody List<ProfileSettingEntity> settings) {
+        try {
+            List<ProfileSettingEntity> savedSettings = new ArrayList<>();
+            for (ProfileSettingEntity setting : settings) {
+                savedSettings.add(service.save(setting));
+            }
+            return ResponseEntity.ok(savedSettings);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating settings: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

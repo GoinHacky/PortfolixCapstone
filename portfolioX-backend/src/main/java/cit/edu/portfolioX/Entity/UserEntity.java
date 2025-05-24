@@ -1,5 +1,6 @@
 package cit.edu.portfolioX.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +17,12 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
 
+    @Column(unique = true)
     private String username;
+
+    @Column(unique = true)
     private String userEmail;
+
     private String password;
     
     @Enumerated(EnumType.STRING)
@@ -26,14 +31,18 @@ public class UserEntity {
     private String fname;
     private String lname;
     private String bio;
-    private String profilePic;
+    
+    @Column(columnDefinition = "LONGTEXT")
+    private String profilePic; // Base64 encoded image or URL to stored image
+    
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserStatus status = UserStatus.PENDING;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PortfolioEntity> portfolios;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

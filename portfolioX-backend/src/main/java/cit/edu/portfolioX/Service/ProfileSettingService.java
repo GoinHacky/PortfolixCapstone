@@ -1,4 +1,3 @@
-
 package cit.edu.portfolioX.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,10 @@ public class ProfileSettingService {
 
     public Optional<ProfileSettingEntity> getById(Long id) {
         return settingRepository.findById(id);
+    }
+
+    public List<ProfileSettingEntity> findByUserId(Long userId) {
+        return settingRepository.findByUserUserID(userId);
     }
 
     public ProfileSettingEntity save(ProfileSettingEntity setting) {

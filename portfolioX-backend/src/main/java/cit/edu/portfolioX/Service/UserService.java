@@ -35,4 +35,8 @@ public class UserService {
     public List<UserEntity> searchStudents(String query) {
         return userRepository.findByRoleAndSearch(cit.edu.portfolioX.Entity.Role.STUDENT, query.toLowerCase());
     }
+
+    public UserEntity findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

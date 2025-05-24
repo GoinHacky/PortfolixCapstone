@@ -2,7 +2,6 @@ package cit.edu.portfolioX.Security;
 
 import cit.edu.portfolioX.DTO.LoginRequestDTO;
 import cit.edu.portfolioX.DTO.SignupRequestDTO;
-import cit.edu.portfolioX.DTO.JwtResponseDTO;
 import cit.edu.portfolioX.Entity.UserEntity;
 import cit.edu.portfolioX.Entity.UserEntity.UserStatus;
 import cit.edu.portfolioX.Repository.UserRepository;
@@ -12,12 +11,22 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 @Tag(name = "Authentication", description = "Authentication management APIs")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -31,19 +40,22 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Value("${file.upload-dir:uploads}")
+    private String uploadDir;
+
     @Operation(summary = "Register a new user", description = "Creates a new user account with the provided details")
     @PostMapping("/signup")
     public ResponseEntity<?> register(@Valid @RequestBody SignupRequestDTO req) {
         if (userRepository.findByUsername(req.getUsername()) != null) {
-            return ResponseEntity.badRequest().body("Username is already taken!");
+            return ResponseEntity.badRequest().body(Map.of("error", "Username is already taken!"));
         }
 
         if (userRepository.findByUserEmail(req.getEmail()) != null) {
-            return ResponseEntity.badRequest().body("Email is already registered!");
+            return ResponseEntity.badRequest().body(Map.of("error", "Email is already registered!"));
         }
 
         if (req.getRole() == cit.edu.portfolioX.Entity.Role.ADMIN) {
-            return ResponseEntity.badRequest().body("Cannot create admin account via signup.");
+            return ResponseEntity.badRequest().body(Map.of("error", "Cannot create admin account via signup."));
         }
 
         UserEntity user = new UserEntity();
@@ -54,7 +66,6 @@ public class AuthController {
         user.setPassword(encoder.encode(req.getPassword()));
         user.setRole(req.getRole());
 
-        // Students are auto-approved, faculty require admin approval
         if (req.getRole() == cit.edu.portfolioX.Entity.Role.STUDENT) {
             user.setStatus(UserStatus.APPROVED);
         } else if (req.getRole() == cit.edu.portfolioX.Entity.Role.FACULTY) {
@@ -63,9 +74,9 @@ public class AuthController {
 
         userRepository.save(user);
         if (req.getRole() == cit.edu.portfolioX.Entity.Role.FACULTY) {
-            return ResponseEntity.ok("Faculty account created. Awaiting admin approval.");
+            return ResponseEntity.ok(Map.of("message", "Faculty account created. Awaiting admin approval."));
         }
-        return ResponseEntity.ok("User registered successfully.");
+        return ResponseEntity.ok(Map.of("message", "User registered successfully."));
     }
 
     @Operation(summary = "Login user", description = "Authenticates user and returns JWT token")
@@ -76,40 +87,204 @@ public class AuthController {
         UserEntity user = userRepository.findByUsername(login.getUsername());
         if (user == null) {
             logger.warn("Login failed: User not found - {}", login.getUsername());
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
 
         if (!encoder.matches(login.getPassword(), user.getPassword())) {
             logger.warn("Login failed: Invalid password for user - {}", login.getUsername());
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
 
         if (user.getStatus() != UserStatus.APPROVED) {
-            return ResponseEntity.status(403).body("Account not approved.");
+            return ResponseEntity.status(403).body(Map.of("error", "Account not approved."));
         }
 
         String token = jwtUtil.generateToken(user.getUsername());
         logger.info("Login successful for user: {}", login.getUsername());
-        return ResponseEntity.ok(new JwtResponseDTO(token, user.getUserID(), user.getUsername(), user.getRole()));
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "userId", user.getUserID(),
+            "username", user.getUsername(),
+            "role", user.getRole().toString()
+        ));
     }
 
-    // Admin-only: Approve or reject faculty accounts
     @PatchMapping("/approve/{userId}")
     public ResponseEntity<?> approveFaculty(@PathVariable Long userId, @RequestParam boolean approve, @RequestHeader("Authorization") String authHeader) {
-        // Only admin can approve
         String token = authHeader != null && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
         String username = jwtUtil.extractUsername(token);
         UserEntity admin = userRepository.findByUsername(username);
         if (admin == null || admin.getRole() != cit.edu.portfolioX.Entity.Role.ADMIN) {
-            return ResponseEntity.status(403).body("Only admin can approve/reject faculty.");
+            return ResponseEntity.status(403).body(Map.of("error", "Only admin can approve/reject faculty."));
         }
 
         UserEntity user = userRepository.findById(userId).orElse(null);
         if (user == null || user.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
-            return ResponseEntity.badRequest().body("User not found or not a faculty.");
+            return ResponseEntity.badRequest().body(Map.of("error", "User not found or not a faculty."));
         }
+
         user.setStatus(approve ? UserStatus.APPROVED : UserStatus.REJECTED);
         userRepository.save(user);
-        return ResponseEntity.ok("Faculty " + (approve ? "approved" : "rejected") + " successfully.");
+        return ResponseEntity.ok(Map.of("message", "Faculty " + (approve ? "approved" : "rejected") + " successfully."));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserData(@PathVariable Long userId, @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid authorization header"));
+            }
+
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity requestingUser = userRepository.findByUsername(username);
+            
+            if (requestingUser == null || !requestingUser.getUserID().equals(userId)) {
+                return ResponseEntity.status(403).body(Map.of("error", "Unauthorized access"));
+            }
+
+            UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            return ResponseEntity.ok(Map.of(
+                "userId", user.getUserID(),
+                "username", user.getUsername(),
+                "fname", user.getFname(),
+                "lname", user.getLname(),
+                "userEmail", user.getUserEmail(),
+                "role", user.getRole().toString(),
+                "profilePic", user.getProfilePic() != null ? user.getProfilePic() : ""
+            ));
+        } catch (Exception e) {
+            logger.error("Error fetching user data: {}", e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", "Error fetching user data"));
+        }
+    }
+
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String fname,
+            @RequestParam(required = false) String lname,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String currentPassword,
+            @RequestParam(required = false) String newPassword,
+            @RequestParam(required = false) MultipartFile profilePic,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid authorization header"));
+            }
+
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity requestingUser = userRepository.findByUsername(username);
+            
+            if (requestingUser == null || !requestingUser.getUserID().equals(userId)) {
+                return ResponseEntity.status(403).body(Map.of("error", "Unauthorized access"));
+            }
+
+            UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (fname != null) user.setFname(fname);
+            if (lname != null) user.setLname(lname);
+            if (email != null) {
+                UserEntity existingUser = userRepository.findByUserEmail(email);
+                if (existingUser != null && !existingUser.getUserID().equals(userId)) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Email is already registered"));
+                }
+                user.setUserEmail(email);
+            }
+
+            // Handle password change with verification
+            if (newPassword != null) {
+                if (currentPassword == null) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Current password is required"));
+                }
+                
+                // Verify current password
+                if (!encoder.matches(currentPassword, user.getPassword())) {
+                    return ResponseEntity.status(401).body(Map.of("error", "Current password is incorrect"));
+                }
+                
+                // Update to new password
+                user.setPassword(encoder.encode(newPassword));
+            }
+            
+            if (profilePic != null && !profilePic.isEmpty()) {
+                try {
+                    // Validate file type
+                    String contentType = profilePic.getContentType();
+                    if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                        logger.error("Invalid file type: {}", contentType);
+                        return ResponseEntity.badRequest().body(Map.of("error", "Only JPEG and PNG files are allowed"));
+                    }
+
+                    // Check file size (max 1MB)
+                    if (profilePic.getSize() > 1024 * 1024) {
+                        return ResponseEntity.badRequest().body(Map.of("error", "Image file too large. Maximum size is 1MB"));
+                    }
+
+                    // Save file
+                    String fileName = UUID.randomUUID() + "_" + profilePic.getOriginalFilename();
+                    Path filePath = Paths.get(uploadDir, fileName);
+                    Files.createDirectories(filePath.getParent());
+                    Files.write(filePath, profilePic.getBytes());
+
+                    // Store URL path instead of file system path
+                    user.setProfilePic("/uploads/" + fileName);
+                    logger.info("Profile picture saved successfully at: {}. Size: {} bytes", filePath, profilePic.getSize());
+                } catch (Exception e) {
+                    logger.error("Error saving profile picture: {}", e.getMessage());
+                    return ResponseEntity.status(500).body(Map.of("error", "Error saving profile picture"));
+                }
+            }
+
+            user.setLastUpdated(LocalDateTime.now());
+            userRepository.save(user);
+
+            return ResponseEntity.ok(Map.of(
+                "message", "User updated successfully",
+                "userId", user.getUserID(),
+                "username", user.getUsername(),
+                "fname", user.getFname(),
+                "lname", user.getLname(),
+                "userEmail", user.getUserEmail(),
+                "role", user.getRole().toString(),
+                "profilePic", user.getProfilePic() != null ? user.getProfilePic() : ""
+            ));
+        } catch (Exception e) {
+            logger.error("Error updating user: {}", e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", "Error updating user: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity<?> deleteUser(
+            @PathVariable Long userId,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid authorization header"));
+            }
+
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity requestingUser = userRepository.findByUsername(username);
+            
+            if (requestingUser == null || !requestingUser.getUserID().equals(userId)) {
+                return ResponseEntity.status(403).body(Map.of("error", "Unauthorized access"));
+            }
+
+            UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+            userRepository.delete(user);
+            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+        } catch (Exception e) {
+            logger.error("Error deleting user: {}", e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", "Error deleting user"));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package cit.edu.portfolioX.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,12 +9,13 @@ public class SkillEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long skillID;
 
-    private String skillName;
-    private String proficiency;
-
     @ManyToOne
     @JoinColumn(name = "portfolioID")
+    @JsonBackReference
     private PortfolioEntity portfolio;
+
+    private String skillName;
+    private String proficiency;
 
     public Long getSkillID() {
         return skillID;
@@ -21,6 +23,14 @@ public class SkillEntity {
 
     public void setSkillID(Long skillID) {
         this.skillID = skillID;
+    }
+
+    public PortfolioEntity getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(PortfolioEntity portfolio) {
+        this.portfolio = portfolio;
     }
 
     public String getSkillName() {
@@ -37,14 +47,6 @@ public class SkillEntity {
 
     public void setProficiency(String proficiency) {
         this.proficiency = proficiency;
-    }
-
-    public PortfolioEntity getPortfolio() {
-        return portfolio;
-    }
-
-    public void setPortfolio(PortfolioEntity portfolio) {
-        this.portfolio = portfolio;
     }
 
     // Getters and setters...

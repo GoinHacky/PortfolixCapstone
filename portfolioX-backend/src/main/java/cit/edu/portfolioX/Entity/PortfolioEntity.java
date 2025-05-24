@@ -1,5 +1,7 @@
 package cit.edu.portfolioX.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 import java.time.LocalDate;
@@ -13,6 +15,7 @@ public class PortfolioEntity {
 
     @ManyToOne
     @JoinColumn(name = "userID")
+    @JsonBackReference
     private UserEntity user;
 
     private String portfolioTitle;
@@ -30,15 +33,19 @@ public class PortfolioEntity {
     private String certFile;
 
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private LinkEntity link;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SkillEntity> skills;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<CertificationEntity> certifications;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ProjectEntity> projects;
 
     @Column(unique = true)
