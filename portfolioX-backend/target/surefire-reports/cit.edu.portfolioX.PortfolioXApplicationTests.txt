@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: cit.edu.portfolioX.PortfolioXApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.198 s -- in cit.edu.portfolioX.PortfolioXApplicationTests
