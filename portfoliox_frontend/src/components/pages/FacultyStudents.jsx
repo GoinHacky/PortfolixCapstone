@@ -1,0 +1,353 @@
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+export default function FacultyStudents() {
+  const [students, setStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentPortfolios, setStudentPortfolios] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
+  const [expandedFolders, setExpandedFolders] = useState({
+    projects: true,
+    microcredentials: true
+  });
+
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/auth/login');
+      return;
+    }
+    fetchStudents();
+  }, [token, navigate]);
+
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/users/students', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          localStorage.clear();
+          navigate('/auth/login');
+          return;
+        }
+        throw new Error('Failed to fetch students');
+      }
+
+      const data = await response.json();
+      console.log('Fetched students:', data);
+      setStudents(data);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Failed to fetch students');
+    }
+  };
+
+  const fetchStudentPortfolios = async (studentId) => {
+    try {
+      console.log('Fetching portfolios for student:', studentId);
+      const response = await fetch(`http://localhost:8080/api/portfolios/student/${studentId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          localStorage.clear();
+          navigate('/auth/login');
+          return;
+        }
+        throw new Error('Failed to fetch portfolios');
+      }
+
+      const data = await response.json();
+      console.log('Fetched portfolios:', data);
+      setStudentPortfolios(data);
+      // Update selected student
+      const student = students.find(s => s.userID === studentId);
+      console.log('Setting selected student:', student);
+      setSelectedStudent(student);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Failed to fetch portfolios');
+    }
+  };
+
+  const handleStudentClick = (studentId) => {
+    console.log('Student clicked:', studentId);
+    fetchStudentPortfolios(studentId);
+  };
+
+  const toggleFolder = (folder) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folder]: !prev[folder]
+    }));
+  };
+
+  const viewPortfolio = async (portfolioId) => {
+    // Implementation for viewing portfolio
+    console.log('Viewing portfolio:', portfolioId);
+  };
+
+  // Filter students based on search term
+  const filteredStudents = students.filter(student =>
+    `${student.fname} ${student.lname}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.userEmail.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Group portfolios by category
+  const groupedPortfolios = studentPortfolios.reduce((acc, portfolio) => {
+    console.log('Processing portfolio:', portfolio);
+    const category = (portfolio.category || '').toLowerCase();
+    console.log('Portfolio category:', category);
+
+    if (!acc.projects) acc.projects = [];
+    if (!acc.microcredentials) acc.microcredentials = [];
+
+    if (category === 'project') {
+      acc.projects.push(portfolio);
+    } else if (category === 'microcredentials') {
+      acc.microcredentials.push(portfolio);
+    }
+
+    return acc;
+  }, { projects: [], microcredentials: [] });
+
+  console.log('Grouped portfolios:', groupedPortfolios);
+
+  return (
+    <div className="container mx-auto p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Students Panel */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="p-4 border-b border-gray-200">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search students..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {filteredStudents.map((student) => (
+              <button
+                key={student.userID}
+                onClick={() => handleStudentClick(student.userID)}
+                className={`w-full p-4 text-left hover:bg-gray-50 flex items-center gap-4 ${
+                  selectedStudent?.userID === student.userID ? 'bg-gray-50' : ''
+                }`}
+              >
+                <div className="w-10 h-10 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold">
+                  {student.fname[0]}{student.lname[0]}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-800">
+                    {student.fname} {student.lname}
+                  </h3>
+                  <p className="text-sm text-gray-600">{student.userEmail}</p>
+                </div>
+              </button>
+            ))}
+            {filteredStudents.length === 0 && (
+              <div className="p-4 text-center text-gray-500">
+                No students found
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Portfolios Panel */}
+        <div className="lg:col-span-2">
+          {selectedStudent ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">
+                      {selectedStudent.fname} {selectedStudent.lname}'s Portfolios
+                    </h2>
+                    <p className="text-gray-600 mt-1">{selectedStudent.userEmail}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedStudent(null)}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  {/* Projects Folder */}
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => toggleFolder('projects')}
+                      className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <Folder className="w-6 h-6 text-[#D4AF37]" />
+                      <div className="flex-1 flex items-center">
+                        <span className="font-medium text-gray-800">Projects</span>
+                        <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-sm rounded-full">
+                          {groupedPortfolios.projects?.length || 0}
+                        </span>
+                      </div>
+                      {expandedFolders.projects ? (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+
+                    {expandedFolders.projects && (
+                      <div className="p-4 bg-gray-50 border-t border-gray-200">
+                        {groupedPortfolios.projects.length === 0 ? (
+                          <div className="text-center py-4 text-gray-500">
+                            No projects found
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {groupedPortfolios.projects.map((portfolio) => (
+                              <div
+                                key={portfolio.portfolioID}
+                                className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                              >
+                                {/* Project card content */}
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-gray-100 rounded-lg">
+                                      <FileText className="w-5 h-5 text-[#800000]" />
+                                    </div>
+                                    <div>
+                                      <h3 className="font-medium text-gray-800">{portfolio.portfolioTitle}</h3>
+                                      <p className="text-sm text-gray-500 mt-1">Project</p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => viewPortfolio(portfolio.portfolioID)}
+                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="View Portfolio"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                                  {portfolio.portfolioDescription}
+                                </p>
+                                {portfolio.githubLink && (
+                                  <a
+                                    href={portfolio.githubLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+                                  >
+                                    View on GitHub
+                                  </a>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Microcredentials Folder */}
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <button
+                      onClick={() => toggleFolder('microcredentials')}
+                      className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <Folder className="w-6 h-6 text-[#D4AF37]" />
+                      <div className="flex-1 flex items-center">
+                        <span className="font-medium text-gray-800">Microcredentials</span>
+                        <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-sm rounded-full">
+                          {groupedPortfolios.microcredentials?.length || 0}
+                        </span>
+                      </div>
+                      {expandedFolders.microcredentials ? (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+
+                    {expandedFolders.microcredentials && (
+                      <div className="p-4 bg-gray-50 border-t border-gray-200">
+                        {groupedPortfolios.microcredentials.length === 0 ? (
+                          <div className="text-center py-4 text-gray-500">
+                            No microcredentials found
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {groupedPortfolios.microcredentials.map((portfolio) => (
+                              <div
+                                key={portfolio.portfolioID}
+                                className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                              >
+                                {/* Microcredential card content */}
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-gray-100 rounded-lg">
+                                      <FileText className="w-5 h-5 text-[#800000]" />
+                                    </div>
+                                    <div>
+                                      <h3 className="font-medium text-gray-800">{portfolio.portfolioTitle}</h3>
+                                      <p className="text-sm text-gray-500 mt-1">Microcredential</p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => viewPortfolio(portfolio.portfolioID)}
+                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="View Portfolio"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                <div className="mt-2 space-y-1">
+                                  <p className="text-sm text-gray-600 line-clamp-2">
+                                    {portfolio.portfolioDescription}
+                                  </p>
+                                  {portfolio.certTitle && (
+                                    <p className="text-sm font-medium text-gray-700">
+                                      Certificate: {portfolio.certTitle}
+                                    </p>
+                                  )}
+                                  {portfolio.issueDate && (
+                                    <p className="text-sm text-gray-600">
+                                      Issued: {new Date(portfolio.issueDate).toLocaleDateString()}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-500">
+              Select a student to view their portfolios
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
