@@ -1,4 +1,3 @@
-
 package cit.edu.portfolioX.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +26,13 @@ public class PortfolioService {
 
     public void delete(Long id) {
         portfolioRepository.deleteById(id);
+    }
+
+    public List<PortfolioEntity> findByUserId(Long userId) {
+        return portfolioRepository.findByUser_UserID(userId);
+    }
+
+    public Optional<PortfolioEntity> findByPublicToken(String publicToken) {
+        return portfolioRepository.findByPublicToken(publicToken);
     }
 }

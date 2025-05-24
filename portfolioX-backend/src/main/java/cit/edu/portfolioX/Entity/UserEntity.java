@@ -6,6 +6,12 @@ import java.util.List;
 
 @Entity
 public class UserEntity {
+    public static enum UserStatus {
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
@@ -24,8 +30,11 @@ public class UserEntity {
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PortfolioEntity portfolio;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PortfolioEntity> portfolios;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProfileSettingEntity> profileSettings;
@@ -33,6 +42,12 @@ public class UserEntity {
     public UserEntity() {
         this.createdAt = LocalDateTime.now();
         this.lastUpdated = LocalDateTime.now();
+        // Default to APPROVED for students, PENDING for others
+        if (this.role == Role.STUDENT) {
+            this.status = UserStatus.APPROVED;
+        } else {
+            this.status = UserStatus.PENDING;
+        }
     }
 
     public Long getUserID() {
@@ -73,6 +88,10 @@ public class UserEntity {
 
     public void setRole(Role role) {
         this.role = role;
+        // Update status if role is set after construction
+        if (role == Role.STUDENT) {
+            this.status = UserStatus.APPROVED;
+        }
     }
 
     public String getFname() {
@@ -123,12 +142,20 @@ public class UserEntity {
         this.lastUpdated = lastUpdated;
     }
 
-    public PortfolioEntity getPortfolio() {
-        return portfolio;
+    public UserStatus getStatus() {
+        return status;
     }
 
-    public void setPortfolio(PortfolioEntity portfolio) {
-        this.portfolio = portfolio;
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public List<PortfolioEntity> getPortfolios() {
+        return portfolios;
+    }
+
+    public void setPortfolios(List<PortfolioEntity> portfolios) {
+        this.portfolios = portfolios;
     }
 
     public List<ProfileSettingEntity> getProfileSettings() {

@@ -4,6 +4,7 @@ import cit.edu.portfolioX.DTO.LoginRequestDTO;
 import cit.edu.portfolioX.DTO.SignupRequestDTO;
 import cit.edu.portfolioX.DTO.JwtResponseDTO;
 import cit.edu.portfolioX.Entity.UserEntity;
+import cit.edu.portfolioX.Entity.UserEntity.UserStatus;
 import cit.edu.portfolioX.Repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,8 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     @Operation(summary = "Register a new user", description = "Creates a new user account with the provided details")
     @PostMapping("/signup")
@@ -40,6 +42,10 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email is already registered!");
         }
 
+        if (req.getRole() == cit.edu.portfolioX.Entity.Role.ADMIN) {
+            return ResponseEntity.badRequest().body("Cannot create admin account via signup.");
+        }
+
         UserEntity user = new UserEntity();
         user.setFname(req.getFname());
         user.setLname(req.getLname());
@@ -47,7 +53,18 @@ public class AuthController {
         user.setUsername(req.getUsername());
         user.setPassword(encoder.encode(req.getPassword()));
         user.setRole(req.getRole());
+
+        // Students are auto-approved, faculty require admin approval
+        if (req.getRole() == cit.edu.portfolioX.Entity.Role.STUDENT) {
+            user.setStatus(UserStatus.APPROVED);
+        } else if (req.getRole() == cit.edu.portfolioX.Entity.Role.FACULTY) {
+            user.setStatus(UserStatus.PENDING);
+        }
+
         userRepository.save(user);
+        if (req.getRole() == cit.edu.portfolioX.Entity.Role.FACULTY) {
+            return ResponseEntity.ok("Faculty account created. Awaiting admin approval.");
+        }
         return ResponseEntity.ok("User registered successfully.");
     }
 
@@ -67,8 +84,32 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
+        if (user.getStatus() != UserStatus.APPROVED) {
+            return ResponseEntity.status(403).body("Account not approved.");
+        }
+
         String token = jwtUtil.generateToken(user.getUsername());
         logger.info("Login successful for user: {}", login.getUsername());
         return ResponseEntity.ok(new JwtResponseDTO(token, user.getUserID(), user.getUsername(), user.getRole()));
+    }
+
+    // Admin-only: Approve or reject faculty accounts
+    @PatchMapping("/approve/{userId}")
+    public ResponseEntity<?> approveFaculty(@PathVariable Long userId, @RequestParam boolean approve, @RequestHeader("Authorization") String authHeader) {
+        // Only admin can approve
+        String token = authHeader != null && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
+        String username = jwtUtil.extractUsername(token);
+        UserEntity admin = userRepository.findByUsername(username);
+        if (admin == null || admin.getRole() != cit.edu.portfolioX.Entity.Role.ADMIN) {
+            return ResponseEntity.status(403).body("Only admin can approve/reject faculty.");
+        }
+
+        UserEntity user = userRepository.findById(userId).orElse(null);
+        if (user == null || user.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
+            return ResponseEntity.badRequest().body("User not found or not a faculty.");
+        }
+        user.setStatus(approve ? UserStatus.APPROVED : UserStatus.REJECTED);
+        userRepository.save(user);
+        return ResponseEntity.ok("Faculty " + (approve ? "approved" : "rejected") + " successfully.");
     }
 }

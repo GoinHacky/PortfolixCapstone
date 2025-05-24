@@ -1,23 +1,33 @@
-
 package cit.edu.portfolioX.Entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 public class PortfolioEntity {
     @Id
-    private Long userID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long portfolioID;
 
-    @OneToOne
-    @MapsId
+    @ManyToOne
     @JoinColumn(name = "userID")
     private UserEntity user;
 
     private String portfolioTitle;
     private String portfolioDescription;
-    private String githubLink;
     private String courseCode;
+
+    private String category; // "project" or "microcredentials"
+
+    // Only for projects
+    private String githubLink;
+
+    // Only for microcredentials
+    private String certTitle;
+    private LocalDate issueDate;
+    private String certFile;
 
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private LinkEntity link;
@@ -31,15 +41,19 @@ public class PortfolioEntity {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectEntity> projects;
 
+    @Column(unique = true)
+    private String publicToken;
+
     public PortfolioEntity(){
+        this.publicToken = UUID.randomUUID().toString();
     }// Getters and setters...
 
-    public Long getUserID() {
-        return userID;
+    public Long getPortfolioID() {
+        return portfolioID;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
+    public void setPortfolioID(Long portfolioID) {
+        this.portfolioID = portfolioID;
     }
 
     public UserEntity getUser() {
@@ -66,6 +80,22 @@ public class PortfolioEntity {
         this.portfolioDescription = portfolioDescription;
     }
 
+    public String getCourseCode() {
+        return courseCode;
+    }
+
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getGithubLink() {
         return githubLink;
     }
@@ -74,12 +104,28 @@ public class PortfolioEntity {
         this.githubLink = githubLink;
     }
 
-    public String getCourseCode() {
-        return courseCode;
+    public String getCertTitle() {
+        return certTitle;
     }
 
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
+    public void setCertTitle(String certTitle) {
+        this.certTitle = certTitle;
+    }
+
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(LocalDate issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public String getCertFile() {
+        return certFile;
+    }
+
+    public void setCertFile(String certFile) {
+        this.certFile = certFile;
     }
 
     public LinkEntity getLink() {
@@ -112,5 +158,13 @@ public class PortfolioEntity {
 
     public void setProjects(List<ProjectEntity> projects) {
         this.projects = projects;
+    }
+
+    public String getPublicToken() {
+        return publicToken;
+    }
+
+    public void setPublicToken(String publicToken) {
+        this.publicToken = publicToken;
     }
 }

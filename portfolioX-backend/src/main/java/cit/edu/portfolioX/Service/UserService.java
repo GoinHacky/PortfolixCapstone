@@ -1,4 +1,3 @@
-
 package cit.edu.portfolioX.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +26,13 @@ public class UserService {
 
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public List<UserEntity> getAllStudents() {
+        return userRepository.findByRole(cit.edu.portfolioX.Entity.Role.STUDENT);
+    }
+
+    public List<UserEntity> searchStudents(String query) {
+        return userRepository.findByRoleAndSearch(cit.edu.portfolioX.Entity.Role.STUDENT, query.toLowerCase());
     }
 }
