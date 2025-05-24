@@ -12,12 +12,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.BorderRadius;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayOutputStream;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -280,5 +294,183 @@ public class PortfolioController {
         PortfolioEntity portfolio = service.getById(id)
             .orElseThrow(() -> new RuntimeException("Portfolio not found"));
         return serverUrl + "/api/portfolios/public/" + portfolio.getPublicToken();
+    }
+
+    @GetMapping("/generate-resume/{userId}")
+    public ResponseEntity<?> generateResume(@PathVariable Long userId, @RequestHeader("Authorization") String authHeader) {
+        try {
+            logger.info("Attempting to generate resume for user ID: {}", userId);
+            
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                logger.error("Invalid authorization header");
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            logger.info("Token validated for user: {}", username);
+
+            UserEntity user = userService.findByUsername(username);
+            if (user == null) {
+                logger.error("User not found: {}", username);
+                return ResponseEntity.status(404).body("User not found");
+            }
+
+            if (!user.getUserID().equals(userId)) {
+                logger.error("Unauthorized access attempt. Token user: {}, Requested user ID: {}", username, userId);
+                return ResponseEntity.status(403).body("Unauthorized access");
+            }
+
+            List<PortfolioEntity> portfolios = service.findByUserId(userId);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdf = new PdfDocument(writer);
+            pdf.setDefaultPageSize(PageSize.A4);
+            Document document = new Document(pdf);
+            document.setMargins(36, 36, 36, 36); // 0.5 inch margins
+
+            // Color scheme
+            DeviceRgb maroonColor = new DeviceRgb(128, 0, 0);
+            DeviceRgb goldColor = new DeviceRgb(212, 175, 55);
+            DeviceRgb grayColor = new DeviceRgb(128, 128, 128);
+
+            // Header Section
+            Div header = new Div()
+                .setBackgroundColor(maroonColor)
+                .setPadding(20)
+                .setMarginBottom(20);
+
+            header.add(new Paragraph(user.getFname() + " " + user.getLname())
+                .setFontSize(28)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontColor(goldColor)
+                .setBold());
+
+            header.add(new Paragraph(user.getUserEmail())
+                .setFontSize(14)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontColor(new DeviceRgb(255, 255, 255)));
+
+            document.add(header);
+
+            // Projects Section
+            Paragraph projectsHeader = new Paragraph("Professional Projects")
+                .setFontSize(20)
+                .setFontColor(maroonColor)
+                .setBold()
+                .setMarginBottom(10);
+            document.add(projectsHeader);
+
+            Div separator = new Div()
+                .setHeight(1)
+                .setBackgroundColor(new DeviceRgb(200, 200, 200))
+                .setMarginBottom(10);
+            document.add(separator);
+
+            portfolios.stream()
+                .filter(p -> "project".equalsIgnoreCase(p.getCategory()))
+                .forEach(project -> {
+                    // Project Title with Gold Bullet
+                    Div projectDiv = new Div()
+                        .setMarginBottom(15);
+
+                    projectDiv.add(new Paragraph("• " + project.getPortfolioTitle())
+                        .setFontSize(16)
+                        .setFontColor(goldColor)
+                        .setBold());
+
+                    // Project Description
+                    projectDiv.add(new Paragraph(project.getPortfolioDescription())
+                        .setFontSize(12)
+                        .setMarginLeft(15)
+                        .setMarginTop(5));
+
+                    // GitHub Link
+                    if (project.getGithubLink() != null) {
+                        projectDiv.add(new Paragraph("GitHub Repository: " + project.getGithubLink())
+                            .setFontSize(10)
+                            .setFontColor(new DeviceRgb(51, 102, 187))
+                            .setMarginLeft(15)
+                            .setMarginTop(5));
+                    }
+
+                    document.add(projectDiv);
+                });
+
+            // Microcredentials Section
+            document.add(new Paragraph("\n"));
+            Paragraph credentialsHeader = new Paragraph("Certifications & Microcredentials")
+                .setFontSize(20)
+                .setFontColor(maroonColor)
+                .setBold()
+                .setMarginBottom(10);
+            document.add(credentialsHeader);
+
+            Div separator2 = new Div()
+                .setHeight(1)
+                .setBackgroundColor(new DeviceRgb(200, 200, 200))
+                .setMarginBottom(10);
+            document.add(separator2);
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+
+            portfolios.stream()
+                .filter(p -> "microcredentials".equalsIgnoreCase(p.getCategory()))
+                .forEach(cert -> {
+                    Div certDiv = new Div()
+                        .setMarginBottom(15);
+
+                    // Certificate Title
+                    certDiv.add(new Paragraph("• " + cert.getCertTitle())
+                        .setFontSize(16)
+                        .setFontColor(goldColor)
+                        .setBold());
+
+                    // Certificate Description
+                    certDiv.add(new Paragraph(cert.getPortfolioDescription())
+                        .setFontSize(12)
+                        .setMarginLeft(15)
+                        .setMarginTop(5));
+
+                    // Issue Date
+                    if (cert.getIssueDate() != null) {
+                        certDiv.add(new Paragraph("Issued: " + cert.getIssueDate().format(dateFormatter))
+                            .setFontSize(10)
+                            .setFontColor(grayColor)
+                            .setMarginLeft(15)
+                            .setMarginTop(5));
+                    }
+
+                    document.add(certDiv);
+                });
+
+            // Footer
+            document.add(new Paragraph("\n"));
+            Div footerSeparator = new Div()
+                .setHeight(1)
+                .setBackgroundColor(new DeviceRgb(200, 200, 200));
+            document.add(footerSeparator);
+            document.add(new Paragraph("Generated via PortfolioX")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(8)
+                .setFontColor(grayColor)
+                .setMarginTop(10));
+
+            document.close();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                user.getFname().toLowerCase() + "_" + user.getLname().toLowerCase() + "_portfolio.pdf");
+
+            logger.info("Successfully generated resume PDF for user ID: {}", userId);
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(baos.toByteArray());
+
+        } catch (Exception e) {
+            logger.error("Error generating resume: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("Error generating resume: " + e.getMessage());
+        }
     }
 }
