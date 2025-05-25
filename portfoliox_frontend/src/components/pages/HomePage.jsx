@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
 import SideBar from "./Sidebar";
 import { 
   Bell, 
@@ -28,6 +28,7 @@ import MyPortfolio from './MyPortfolio';
 import SharePortfolio from './SharePortfolio';
 import Profile from './Profile';
 import { ChevronRight } from "lucide-react";
+import { useTheme } from '../../contexts/ThemeContext';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -37,7 +38,14 @@ const maroonText = "text-[#800000]";
 const goldText = "text-[#D4AF37]";
 
 export default function HomePage() {
-  const [activeItem, setActiveItem] = useState('Dashboard');
+  const location = useLocation();
+  const getActiveItemFromPath = (pathname) => {
+    if (pathname.startsWith("/dashboard/portfolio")) return "My Portfolio";
+    if (pathname.startsWith("/dashboard/share")) return "Share Portfolio";
+    if (pathname.startsWith("/dashboard/profile")) return "Profile";
+    return "Dashboard";
+  };
+  const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
   const [userData, setUserData] = useState({
     firstName: '',
     role: '',
@@ -50,6 +58,7 @@ export default function HomePage() {
     recentlyUpdated: []
   });
   const [loading, setLoading] = useState(true);
+  const { darkMode } = useTheme();
 
   useEffect(() => {
     // Check if user is authenticated and is a student
@@ -71,6 +80,10 @@ export default function HomePage() {
 
     fetchPortfolioData();
   }, [navigate]);
+
+  useEffect(() => {
+    setActiveItem(getActiveItemFromPath(location.pathname));
+  }, [location.pathname]);
 
   const fetchPortfolioData = async () => {
     try {
@@ -144,7 +157,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50 overflow-hidden">
+    <div className={`flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden`}>
       {/* Sidebar */}
       <SideBar 
         activeItem={activeItem} 
@@ -223,6 +236,7 @@ function DashboardContent() {
   const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
   const firstName = username?.split(' ')[0] || 'User';
+  const { darkMode } = useTheme();
 
   useEffect(() => {
     fetchDashboardData();
@@ -286,28 +300,28 @@ function DashboardContent() {
       label: 'Projects', 
       value: dashboardData.projects.length,
       change: `${dashboardData.projects.length > 0 ? '+1' : '0'} this month`, 
-      color: 'text-blue-600' 
+      color: 'text-blue-600 dark:text-blue-400' 
     },
     { 
       icon: Award, 
       label: 'Microcredentials', 
       value: dashboardData.microcredentials.length,
       change: `${dashboardData.microcredentials.length > 0 ? '+1' : '0'} this week`, 
-      color: 'text-green-600' 
+      color: 'text-green-600 dark:text-green-400' 
     },
     { 
       icon: TrendingUp, 
       label: 'Total Items', 
       value: dashboardData.totalPortfolios,
       change: 'All portfolios', 
-      color: goldText 
+      color: `${goldText} dark:text-[#D4AF37]` 
     },
     { 
       icon: Eye, 
       label: 'Profile Views', 
       value: dashboardData.profileViews,
       change: 'Last 30 days', 
-      color: 'text-purple-600' 
+      color: 'text-purple-600 dark:text-purple-400' 
     }
   ];
 
@@ -315,15 +329,15 @@ function DashboardContent() {
     return (
       <div className="p-8 space-y-8">
         <div className="animate-pulse">
-          <div className="h-32 bg-gray-200 rounded-2xl mb-8"></div>
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
+              <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="h-64 bg-gray-200 rounded-xl"></div>
-            <div className="h-64 bg-gray-200 rounded-xl"></div>
+            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -333,7 +347,7 @@ function DashboardContent() {
   return (
     <div className="p-8 space-y-8">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-[#800000] to-[#600000] rounded-2xl p-8 text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#800000] to-[#600000] dark:from-[#800000]/90 dark:to-[#600000]/90 rounded-2xl p-8 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-l from-[#D4AF37]/20 to-transparent rounded-full blur-3xl"></div>
         <div className="relative z-10">
           <h2 className="text-3xl font-bold mb-2">Welcome back, {firstName}! 👋</h2>
@@ -362,17 +376,17 @@ function DashboardContent() {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-gray-50 ${stat.color}`}>
+                <div className={`p-3 rounded-xl bg-gray-50 dark:bg-gray-700 ${stat.color}`}>
                   <Icon className="w-6 h-6" />
                 </div>
-                <Activity className="w-4 h-4 text-gray-400" />
+                <Activity className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</h3>
-                <p className="text-gray-600 text-sm mb-2">{stat.label}</p>
-                <p className="text-green-600 text-xs font-medium">{stat.change}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{stat.label}</p>
+                <p className="text-green-600 dark:text-green-400 text-xs font-medium">{stat.change}</p>
               </div>
             </div>
           );
@@ -382,23 +396,23 @@ function DashboardContent() {
       {/* Recent Activity & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Activity */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Recent Activity</h3>
-            <Activity className="w-5 h-5 text-gray-400" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+            <Activity className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
           <div className="space-y-4">
             {dashboardData.recentlyUpdated.length > 0 ? (
               dashboardData.recentlyUpdated.map((item) => (
-                <div key={item.portfolioID} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group">
-                  <div className="w-2 h-2 bg-[#D4AF37] rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
+                <div key={item.portfolioID} className="flex items-start space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors group">
+                <div className="w-2 h-2 bg-[#D4AF37] rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {item.portfolioTitle}
                     </p>
-                    <p className="text-xs text-gray-500 line-clamp-1">{item.portfolioDescription}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{item.portfolioDescription}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
                       </span>
                       {item.category?.toLowerCase() === 'project' && item.githubLink && (
@@ -406,7 +420,7 @@ function DashboardContent() {
                           href={item.githubLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#800000] hover:underline flex items-center gap-1"
+                          className="text-xs text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1"
                         >
                           <Github className="w-3 h-3" />
                           View Project
@@ -417,7 +431,7 @@ function DashboardContent() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 No recent activity to show
               </div>
             )}
@@ -425,37 +439,37 @@ function DashboardContent() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Quick Actions</h3>
-            <Target className="w-5 h-5 text-gray-400" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Quick Actions</h3>
+            <Target className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
           <div className="space-y-3">
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-xl transition-all group"
+              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 rounded-xl transition-all group"
             >
-              <Plus className="w-5 h-5 text-blue-600" />
-              <span className="font-medium text-blue-700">Add New Project</span>
-              <ArrowRight className="w-4 h-4 text-blue-600 ml-auto group-hover:translate-x-1 transition-transform" />
+              <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <span className="font-medium text-blue-700 dark:text-blue-300">Add New Project</span>
+              <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 ml-auto group-hover:translate-x-1 transition-transform" />
             </button>
             
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 rounded-xl transition-all group"
+              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:from-green-100 hover:to-green-200 dark:hover:from-green-900/30 dark:hover:to-green-800/30 rounded-xl transition-all group"
             >
-              <Award className="w-5 h-5 text-green-600" />
-              <span className="font-medium text-green-700">Add Microcredential</span>
-              <ArrowRight className="w-4 h-4 text-green-600 ml-auto group-hover:translate-x-1 transition-transform" />
+              <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <span className="font-medium text-green-700 dark:text-green-300">Add Microcredential</span>
+              <ArrowRight className="w-4 h-4 text-green-600 dark:text-green-400 ml-auto group-hover:translate-x-1 transition-transform" />
             </button>
             
             <button 
               onClick={() => navigate('/dashboard/share')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 rounded-xl transition-all group"
+              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:from-purple-100 hover:to-purple-200 dark:hover:from-purple-900/30 dark:hover:to-purple-800/30 rounded-xl transition-all group"
             >
-              <Share2 className="w-5 h-5 text-purple-600" />
-              <span className="font-medium text-purple-700">Share Portfolio</span>
-              <ArrowRight className="w-4 h-4 text-purple-600 ml-auto group-hover:translate-x-1 transition-transform" />
+              <Share2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <span className="font-medium text-purple-700 dark:text-purple-300">Share Portfolio</span>
+              <ArrowRight className="w-4 h-4 text-purple-600 dark:text-purple-400 ml-auto group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>

@@ -353,18 +353,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Profile Settings</h1>
-            <p className="text-gray-600">Manage your account settings and preferences</p>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Profile Settings</h1>
+            <p className="text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
           </div>
           <button
             onClick={() => setIsEditing(!isEditing)}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
               isEditing 
-                ? 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                 : 'bg-[#800000] text-white hover:bg-[#600000]'
             } transition-colors`}
           >
@@ -384,28 +384,30 @@ export default function Profile() {
 
         {notification && (
           <div className={`mb-4 p-4 rounded-lg ${
-            notification.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+            notification.type === 'error' 
+              ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
+              : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
           }`}>
             {notification.message}
           </div>
         )}
 
         <form onSubmit={handleAccountUpdate} className="space-y-6">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Profile Picture</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Profile Picture</h2>
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-4 border-white dark:border-gray-600 shadow-lg">
                   {previewUrl ? (
                     <img 
                       src={previewUrl} 
                       alt="Profile" 
                       className="w-full h-full object-cover"
-                      onError={() => setPreviewUrl(null)} // Fallback if image fails to load
+                      onError={() => setPreviewUrl(null)}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <User className="w-16 h-16 text-gray-400" />
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                      <User className="w-16 h-16 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                 </div>
@@ -427,9 +429,9 @@ export default function Profile() {
               </div>
               {isEditing && (
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-gray-700 mb-1">Upload new picture</h3>
-                  <p className="text-xs text-gray-500 mb-2">JPG or PNG (max. 1MB)</p>
-                  <label className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload new picture</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">JPG or PNG (max. 1MB)</p>
+                  <label className="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer transition-colors">
                     <Upload size={16} className="mr-2" />
                     Choose File
                     <input
@@ -444,79 +446,79 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Basic Information</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Display Name</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                   <input
                     type="text"
                     name="displayName"
                     value={formData.displayName}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="pl-10 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent disabled:bg-gray-100"
+                    className="pl-10 w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-700"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="pl-10 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent disabled:bg-gray-100"
+                    className="pl-10 w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-700"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Security</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Security</h2>
             {!showPasswordChange ? (
               <button
                 type="button"
                 onClick={() => setShowPasswordChange(true)}
-                className="px-4 py-2 text-[#800000] border border-[#800000] rounded-lg hover:bg-[#800000] hover:text-white transition-colors"
+                className="px-4 py-2 text-[#800000] dark:text-[#D4AF37] border border-[#800000] dark:border-[#D4AF37] rounded-lg hover:bg-[#800000] dark:hover:bg-[#D4AF37] hover:text-white transition-colors"
               >
                 Change Password
               </button>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
                   <input
                     type="password"
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">New Password</label>
                   <input
                     type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm New Password</label>
                   <input
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
@@ -531,7 +533,7 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowPasswordChange(false)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     Cancel
                   </button>
@@ -540,9 +542,9 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-red-50 rounded-xl shadow-md p-6 border border-red-100">
-            <h2 className="text-lg font-semibold text-red-800 mb-4">Danger Zone</h2>
-            <p className="text-red-600 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+          <div className="bg-red-50 dark:bg-red-900/10 rounded-xl shadow-md p-6 border border-red-100 dark:border-red-800">
+            <h2 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-4">Danger Zone</h2>
+            <p className="text-red-600 dark:text-red-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
             {!showDeleteConfirm ? (
               <button
                 type="button"
@@ -553,12 +555,12 @@ export default function Profile() {
                 Delete Account
               </button>
             ) : (
-              <div className="bg-red-100 p-4 rounded-lg">
+              <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg">
                 <div className="flex items-start gap-3 mb-4">
-                  <AlertTriangle className="text-red-600 w-6 h-6 flex-shrink-0 mt-1" />
+                  <AlertTriangle className="text-red-600 dark:text-red-400 w-6 h-6 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-red-800 font-medium">Are you absolutely sure?</h3>
-                    <p className="text-red-600 text-sm mt-1">
+                    <h3 className="text-red-800 dark:text-red-400 font-medium">Are you absolutely sure?</h3>
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       This action cannot be undone. This will permanently delete your account and remove your data from our servers.
                     </p>
                   </div>
@@ -574,7 +576,7 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     Cancel
                   </button>
