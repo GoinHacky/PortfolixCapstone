@@ -33,6 +33,9 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.disable())
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -40,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/portfolios/public/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/portfolios/**").permitAll()
+                .requestMatchers("/public/view/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/portfolios").hasAnyRole("USER", "STUDENT", "FACULTY", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/portfolios/**").hasAnyRole("USER", "STUDENT", "FACULTY", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/portfolios/**").hasAnyRole("USER", "STUDENT", "FACULTY", "ADMIN")

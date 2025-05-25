@@ -106,6 +106,19 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- Spring Web for REST client -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Google Cloud Vertex AI for Gemini -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-vertexai</artifactId>
+			<version>0.3.0</version>
+		</dependency>
+
 		<!-- iText PDF Dependencies -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
@@ -167,6 +180,15 @@
 			<artifactId>hyph</artifactId>
 			<version>7.2.5</version>
 		</dependency>
+
+		<!-- Google AI SDK -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-aiplatform</artifactId>
+			<version>3.35.0</version>
+		</dependency>
+
+		<!-- Google AI Gemini Integration -->
 
 	</dependencies>
 

@@ -2,6 +2,7 @@ package cit.edu.portfolioX.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class LinkEntity {
@@ -11,6 +12,7 @@ public class LinkEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "portfolioID")
+    @JsonBackReference
     private PortfolioEntity portfolio;
 
     private String link;

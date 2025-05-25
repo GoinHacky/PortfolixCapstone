@@ -19,6 +19,7 @@ public class PortfolioEntity {
     private UserEntity user;
 
     private String portfolioTitle;
+    @Column(columnDefinition = "LONGTEXT")
     private String portfolioDescription;
     private String courseCode;
 
@@ -32,7 +33,7 @@ public class PortfolioEntity {
     private LocalDate issueDate;
     private String certFile;
 
-    @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private LinkEntity link;
 
@@ -53,6 +54,7 @@ public class PortfolioEntity {
 
     public PortfolioEntity(){
         this.publicToken = UUID.randomUUID().toString();
+        this.skills = new java.util.ArrayList<>();
     }// Getters and setters...
 
     public Long getPortfolioID() {

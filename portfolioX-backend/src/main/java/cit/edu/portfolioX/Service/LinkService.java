@@ -1,4 +1,3 @@
-
 package cit.edu.portfolioX.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +26,9 @@ public class LinkService {
 
     public void delete(Long id) {
         linkRepository.deleteById(id);
+    }
+
+    public Optional<LinkEntity> getByPortfolioId(Long portfolioId) {
+        return linkRepository.findByPortfolioID(portfolioId);
     }
 }
