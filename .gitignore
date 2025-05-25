@@ -1,0 +1,38 @@
+# Maven build artifacts
+target/
+pom.xml.tag
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Compiled class files
+*.class
+
+# Packaged application files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Log files
+*.log
+logs/
+
+# IDE files (common for IntelliJ, Eclipse, VS Code)
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+out/ # For IntelliJ's default output directory
+
+# Operating System files
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# JVM Crash Logs
+hs_err_pid*
