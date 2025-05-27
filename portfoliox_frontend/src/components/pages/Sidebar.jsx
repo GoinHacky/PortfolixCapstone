@@ -133,10 +133,11 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                   <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full"></span>
-                  <h1 className="text-xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                  {/* <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full"></span> */}
+                  <h1 className="text-xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                     PortfolioX
                   </h1>
+                  <span className="text-xs font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
               </div>
             )}
@@ -225,12 +226,8 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                   
                   {!isCollapsed && (
                     <div className="ml-4 flex-1 text-left">
-                      <div className={`font-semibold text-sm ${isActive ? 'text-[#800000]' : ''}`}>
-                        {item.label}
-                      </div>
-                      <div className={`text-xs opacity-70 ${isActive ? 'text-[#800000]/70' : 'text-white/60'}`}>
-                        {item.description}
-                      </div>
+                      <div className={`font-semibold text-sm ${isActive ? 'text-[#800000]' : ''}`}>{item.label}</div>
+                      <div className={`text-xs opacity-70 ${isActive ? 'text-[#800000]/70' : 'text-white/60'}`}>{item.description}</div>
                     </div>
                   )}
                   

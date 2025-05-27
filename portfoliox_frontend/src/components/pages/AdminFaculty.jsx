@@ -119,9 +119,9 @@ export default function AdminFaculty() {
     }
   };
 
-  const handleDeleteAccount = async (faculty) => {
+  const handleDeleteAccount = async (facultyToDelete) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/faculty/${faculty.userID}`, {
+      const response = await fetch(`http://localhost:8080/api/users/faculty/${facultyToDelete.userID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -133,7 +133,7 @@ export default function AdminFaculty() {
       }
 
       setShowDeleteConfirm(false);
-      setFaculty(faculty.filter(f => f.userID !== faculty.userID));
+      setFaculty(prev => prev.filter(f => f.userID !== facultyToDelete.userID));
       alert('Faculty account has been deleted successfully');
     } catch (error) {
       console.error('Error:', error);
@@ -193,6 +193,7 @@ export default function AdminFaculty() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Manage Faculty</h1>
         <p className="text-gray-600 dark:text-gray-400">View and manage faculty accounts</p>
+        <div className="mt-2 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Total Faculty: {faculty.length}</div>
       </div>
 
       {/* Search Bar */}
@@ -217,12 +218,26 @@ export default function AdminFaculty() {
             className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
           >
             <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h3 className="font-medium text-gray-800 dark:text-white">
-                  {f.fname} {f.lname}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{f.userEmail}</p>
-                <div className="mt-1">{getStatusBadge(f.status)}</div>
+              <div className="flex items-center gap-4">
+                {f.profilePic ? (
+                  <img
+                    src={f.profilePic.startsWith('http') ? f.profilePic : `http://localhost:8080${f.profilePic}`}
+                    alt={f.fname + ' ' + f.lname}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#800000] bg-white"
+                    onError={e => { e.target.onerror = null; e.target.src = ''; }}
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold text-lg">
+                    {f.fname?.[0]}{f.lname?.[0]}
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-medium text-gray-800 dark:text-white">
+                    {f.fname} {f.lname}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{f.userEmail}</p>
+                  <div className="mt-1">{getStatusBadge(f.status)}</div>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 {f.status === 'PENDING' ? (

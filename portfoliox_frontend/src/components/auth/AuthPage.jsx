@@ -77,7 +77,25 @@ export default function AuthPage({ mode = "login" }) {
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("username", data.username);
           localStorage.setItem("role", data.role);
-          
+
+          // Fetch user profile and set profilePic in localStorage
+          try {
+            const userRes = await fetch(`${API_BASE}/user/${data.userId}`, {
+              headers: { 'Authorization': `Bearer ${data.token}` },
+            });
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              if (userData.profilePic) {
+                const profilePicPath = userData.profilePic.startsWith('/uploads/')
+                  ? userData.profilePic
+                  : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, '')}`;
+                const fullProfilePicUrl = `http://localhost:8080${profilePicPath}`;
+                localStorage.setItem('profilePic', fullProfilePicUrl);
+                window.dispatchEvent(new Event('storage'));
+              }
+            }
+          } catch (e) { /* ignore profile pic errors */ }
+
           // Redirect based on role
           if (data.role === 'ADMIN') {
             navigate('/admin/dashboard');
@@ -157,10 +175,10 @@ export default function AuthPage({ mode = "login" }) {
                 <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
               </div>
               <div className="flex flex-col items-start">
-                <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full"></span>
-                <h1 className="text-2xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                   PortfolioX
                 </h1>
+                <span className="text-sm font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">

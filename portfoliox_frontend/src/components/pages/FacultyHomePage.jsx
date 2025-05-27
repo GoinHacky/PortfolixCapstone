@@ -35,6 +35,12 @@ export default function FacultyHomePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dashboardStats, setDashboardStats] = useState({
+    totalStudents: 0,
+    totalProjects: 0,
+    totalMicrocredentials: 0,
+    recentActivity: [],
+  });
   const { darkMode } = useTheme();
 
   const navigate = useNavigate();
@@ -47,6 +53,7 @@ export default function FacultyHomePage() {
       return;
     }
     fetchUserData();
+    fetchDashboardData();
   }, [token, navigate]);
 
   const fetchUserData = async () => {
@@ -66,6 +73,41 @@ export default function FacultyHomePage() {
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to load user data');
+    }
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const studentsRes = await fetch('http://localhost:8080/api/users/students', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!studentsRes.ok) throw new Error('Failed to fetch students');
+      const students = await studentsRes.json();
+      let allPortfolios = [];
+      for (const student of students) {
+        try {
+          const portRes = await fetch(`http://localhost:8080/api/portfolios/student/${student.userID}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (portRes.ok) {
+            const portfolios = await portRes.json();
+            allPortfolios = allPortfolios.concat(portfolios.map(p => ({ ...p, student })));
+          }
+        } catch (e) { /* skip student on error */ }
+      }
+      const totalProjects = allPortfolios.filter(p => p.category?.toLowerCase() === 'project').length;
+      const totalMicrocredentials = allPortfolios.filter(p => p.category?.toLowerCase() === 'microcredentials').length;
+      const recentActivity = [...allPortfolios].sort((a, b) => new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt)).slice(0, 5);
+      setDashboardStats({
+        totalStudents: students.length,
+        totalProjects,
+        totalMicrocredentials,
+        recentActivity,
+      });
+      setError(null);
+    } catch (err) {
+      setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -74,13 +116,13 @@ export default function FacultyHomePage() {
   const renderContent = () => {
     switch (activeItem) {
       case 'Dashboard':
-        return <DashboardContent loading={loading} error={error} data={userData} />;
+        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} />;
       case 'Students':
         return <FacultyStudents />;
       case 'Profile':
         return <Profile />;
       default:
-        return <DashboardContent loading={loading} error={error} data={userData} />;
+        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} />;
     }
   };
 
@@ -126,7 +168,7 @@ export default function FacultyHomePage() {
   );
 }
 
-function DashboardContent({ loading, error, data }) {
+function DashboardContent({ loading, error, data, stats }) {
   const { darkMode } = useTheme();
 
   if (loading) {
@@ -145,32 +187,32 @@ function DashboardContent({ loading, error, data }) {
     );
   }
 
-  const stats = [
+  const statCards = [
     {
       title: "Total Students",
-      value: "25",
-      trend: "+5%",
+      value: stats?.totalStudents ?? 0,
+      trend: '',
       icon: Users,
       color: "text-blue-600 dark:text-blue-400"
     },
     {
       title: "Active Projects",
-      value: "12",
-      trend: "+12%",
+      value: stats?.totalProjects ?? 0,
+      trend: '',
       icon: FolderGit2,
       color: "text-green-600 dark:text-green-400"
     },
     {
       title: "Microcredentials",
-      value: "8",
-      trend: "+8%",
+      value: stats?.totalMicrocredentials ?? 0,
+      trend: '',
       icon: Award,
       color: `${goldText} dark:text-[#D4AF37]`
     },
     {
       title: "Recent Activity",
-      value: "15",
-      trend: "+25%",
+      value: stats?.recentActivity?.length ?? 0,
+      trend: '',
       icon: Activity,
       color: "text-purple-600 dark:text-purple-400"
     }
@@ -191,7 +233,7 @@ function DashboardContent({ loading, error, data }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
+        {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
@@ -204,14 +246,35 @@ function DashboardContent({ loading, error, data }) {
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{stat.title}</p>
-                <p className="text-green-600 dark:text-green-400 text-xs font-medium">{stat.trend}</p>
+                {stat.trend && <p className="text-green-600 dark:text-green-400 text-xs font-medium">{stat.trend}</p>}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Additional content sections can go here */}
+      {/* Recent Activity List */}
+      <div className="mt-8">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+        {stats?.recentActivity && stats.recentActivity.length > 0 ? (
+          <ul className="space-y-3">
+            {stats.recentActivity.map((item, idx) => (
+              <li key={item.portfolioID || idx} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-5 h-5 text-[#800000]" />
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{item.student?.fname} {item.student?.lname} &bull; {item.category}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500">{new Date(item.lastUpdated || item.createdAt).toLocaleString()}</div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-gray-500 dark:text-gray-400">No recent activity.</div>
+        )}
+      </div>
     </div>
   );
 }

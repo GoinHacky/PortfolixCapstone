@@ -22,7 +22,14 @@ import {
   Clock,
   FileText,
   Github,
-  Eye
+  Eye,
+  ExternalLink,
+  Sparkles,
+  Code,
+  Trophy,
+  MapPin,
+  ArrowUpRight,
+  TrendingDown
 } from "lucide-react";
 import MyPortfolio from './MyPortfolio';
 import SharePortfolio from './SharePortfolio';
@@ -142,22 +149,35 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
-            ))}
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <div className="animate-pulse p-6 space-y-4">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              ))}
+            </div>
           </div>
-          <div className="h-64 bg-gray-200 rounded-xl"></div>
+        </div>
+        <div className="flex-1 p-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+              ))}
+            </div>
+            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden`}>
+    <div className={`flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden`}>
       {/* Sidebar */}
       <SideBar 
         activeItem={activeItem} 
@@ -166,48 +186,52 @@ export default function HomePage() {
       
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navigation Bar */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 px-8 py-4">
+        {/* Enhanced Top Navigation Bar */}
+        <header className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              <h1 className={`text-2xl font-black ${maroonText}`}>
-                {activeItem}
-              </h1>
-              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-8 bg-gradient-to-b from-[#800000] to-[#D4AF37] rounded-full"></div>
+                <h1 className={`text-2xl font-black ${maroonText} dark:text-white`}>
+                  {activeItem}
+                </h1>
+              </div>
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                 <span>Home</span>
                 <ArrowRight className="w-4 h-4" />
-                <span className={goldText}>{activeItem}</span>
+                <span className={`${goldText} font-medium`}>{activeItem}</span>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Search Bar */}
+              {/* Enhanced Search Bar */}
               <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search projects, achievements..."
-                  className="pl-10 pr-4 py-2 w-64 bg-gray-100 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all"
+                  className="pl-10 pr-4 py-2.5 w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
                 />
               </div>
               
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-600 hover:text-[#800000] hover:bg-gray-100 rounded-xl transition-colors">
+              {/* Enhanced Notifications */}
+              <button className="relative p-2.5 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200">
                 <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
               </button>
               
-              {/* Add New Button */}
-              <button className={`${goldBg} text-white px-4 py-2 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg transition-all`}>
+              {/* Enhanced Add New Button */}
+              <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Add New</span>
+                <Sparkles className="w-4 h-4 opacity-70" />
               </button>
             </div>
           </div>
         </header>
         
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-transparent via-gray-50/30 to-transparent dark:from-transparent dark:via-gray-800/30 dark:to-transparent">
           <Routes>
             <Route index element={<DashboardContent />} />
             <Route path="portfolio" element={<MyPortfolio />} />
@@ -220,7 +244,7 @@ export default function HomePage() {
   );
 }
 
-// Dashboard Content Component
+// Enhanced Dashboard Content Component
 function DashboardContent() {
   const [dashboardData, setDashboardData] = useState({
     projects: [],
@@ -296,32 +320,40 @@ function DashboardContent() {
 
   const stats = [
     { 
-      icon: FolderKanban, 
+      icon: Code, 
       label: 'Projects', 
       value: dashboardData.projects.length,
       change: `${dashboardData.projects.length > 0 ? '+1' : '0'} this month`, 
-      color: 'text-blue-600 dark:text-blue-400' 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
     { 
-      icon: Award, 
+      icon: Trophy, 
       label: 'Microcredentials', 
       value: dashboardData.microcredentials.length,
       change: `${dashboardData.microcredentials.length > 0 ? '+1' : '0'} this week`, 
-      color: 'text-green-600 dark:text-green-400' 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
     { 
-      icon: TrendingUp, 
+      icon: FolderKanban, 
       label: 'Total Items', 
       value: dashboardData.totalPortfolios,
       change: 'All portfolios', 
-      color: `${goldText} dark:text-[#D4AF37]` 
+      color: `${goldText} dark:text-[#D4AF37]`,
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
     { 
       icon: Eye, 
       label: 'Profile Views', 
       value: dashboardData.profileViews,
       change: 'Last 30 days', 
-      color: 'text-purple-600 dark:text-purple-400' 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     }
   ];
 
@@ -329,15 +361,15 @@ function DashboardContent() {
     return (
       <div className="p-8 space-y-8">
         <div className="animate-pulse">
-          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-8"></div>
+          <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-2xl mb-8"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+            <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+            <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -345,132 +377,377 @@ function DashboardContent() {
   }
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-[#800000] to-[#600000] dark:from-[#800000]/90 dark:to-[#600000]/90 rounded-2xl p-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-l from-[#D4AF37]/20 to-transparent rounded-full blur-3xl"></div>
+    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+      {/* Enhanced Welcome Section */}
+      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-3xl p-8 text-white overflow-hidden shadow-2xl">
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-r from-white/5 to-transparent rounded-full blur-2xl"></div>
+        <div className="absolute top-4 right-4">
+          <Sparkles className="w-6 h-6 text-[#D4AF37] animate-pulse" />
+        </div>
+        
         <div className="relative z-10">
-          <h2 className="text-3xl font-bold mb-2">Welcome back, {firstName}! 👋</h2>
-          <p className="text-white/80 text-lg mb-6">
-            You have {dashboardData.totalPortfolios} portfolio items: {dashboardData.projects.length} projects and {dashboardData.microcredentials.length} microcredentials.
-          </p>
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                Welcome back, {firstName}! 
+                <span className="inline-block ml-2 animate-bounce">👋</span>
+              </h2>
+              <p className="text-white/90 text-lg leading-relaxed mb-2">
+                You have <span className="font-semibold text-[#D4AF37]">{dashboardData.totalPortfolios} portfolio items</span>: 
+                <span className="font-medium"> {dashboardData.projects.length} projects</span> and 
+                <span className="font-medium"> {dashboardData.microcredentials.length} microcredentials</span>.
+              </p>
+              <p className="text-white/70 text-sm">
+                Keep building your digital presence and showcase your achievements
+              </p>
+            </div>
+          </div>
+          
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className={`${goldBgSolid} text-[#800000] px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all`}
+              className={`${goldBgSolid} text-[#800000] px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-2`}
             >
-              View Portfolio
+              <FolderKanban className="w-5 h-5" />
+              <span>View Portfolio</span>
+              <ArrowUpRight className="w-4 h-4" />
             </button>
             <button 
               onClick={() => navigate('/dashboard/share')}
-              className="border border-white/30 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/10 transition-all"
+              className="border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105 flex items-center space-x-2 backdrop-blur-sm"
             >
-              Share Portfolio
+              <Share2 className="w-5 h-5" />
+              <span>Share Portfolio</span>
+              <ExternalLink className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
+            <div key={index} className={`${stat.bgColor} rounded-2xl p-6 shadow-lg border border-white/20 dark:border-gray-700/50 hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm`}>
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-gray-50 dark:bg-gray-700 ${stat.color}`}>
+                <div className={`p-4 rounded-2xl bg-white/80 dark:bg-gray-800/80 ${stat.color} shadow-lg`}>
                   <Icon className="w-6 h-6" />
                 </div>
-                <Activity className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <div className="flex items-center space-x-1">
+                  {stat.trend === 'up' ? (
+                    <TrendingUp className="w-4 h-4 text-[#800000]" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 text-[#800000]" />
+                  )}
+                </div>
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{stat.label}</p>
-                <p className="text-green-600 dark:text-green-400 text-xs font-medium">{stat.change}</p>
+                <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-1 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  {stat.value}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">{stat.label}</p>
+                <p className="text-[#800000] dark:text-[#D4AF37] text-xs font-medium flex items-center space-x-1">
+                  <span>{stat.change}</span>
+                </p>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Recent Activity & Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-            <Activity className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+      {/* Enhanced Recent Activity & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Enhanced Recent Activity */}
+        <div className="lg:col-span-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Recent Activity</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Your latest portfolio updates</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <Activity className="w-6 h-6 text-[#D4AF37]" />
+            </div>
           </div>
+          
           <div className="space-y-4">
             {dashboardData.recentlyUpdated.length > 0 ? (
-              dashboardData.recentlyUpdated.map((item) => (
-                <div key={item.portfolioID} className="flex items-start space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors group">
-                <div className="w-2 h-2 bg-[#D4AF37] rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {item.portfolioTitle}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{item.portfolioDescription}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
-                      </span>
-                      {item.category?.toLowerCase() === 'project' && item.githubLink && (
-                        <a
-                          href={item.githubLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1"
-                        >
-                          <Github className="w-3 h-3" />
-                          View Project
-                        </a>
+              dashboardData.recentlyUpdated.map((item, index) => (
+                <div key={item.portfolioID} className="group relative bg-gradient-to-r from-[#800000]/5 to-[#D4AF37]/5 dark:from-[#800000]/10 dark:to-[#D4AF37]/10 p-5 rounded-2xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border border-[#800000]/10 dark:border-[#D4AF37]/10">
+                  <div className="flex items-start space-x-4">
+                    <div className="relative">
+                      <div className="w-3 h-3 bg-gradient-to-r from-[#800000] to-[#D4AF37] rounded-full"></div>
+                      {index < dashboardData.recentlyUpdated.length - 1 && (
+                        <div className="absolute top-3 left-1.5 w-0.5 h-16 bg-gradient-to-b from-[#800000]/30 to-transparent dark:from-[#D4AF37]/30"></div>
                       )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors">
+                            {item.portfolioTitle}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                            {item.portfolioDescription}
+                          </p>
+                          
+                          <div className="flex items-center gap-4 text-xs">
+                            <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                              <Clock className="w-3 h-3" />
+                              {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
+                            </span>
+                            
+                            {item.category?.toLowerCase() === 'project' && item.githubLink && (
+                              <a
+                                href={item.githubLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-[#800000] dark:text-[#D4AF37] hover:underline font-medium transition-colors"
+                              >
+                                <Github className="w-3 h-3" />
+                                View Project
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2 ml-4">
+                          {item.category?.toLowerCase() === 'project' ? (
+                            <div className="p-2 bg-[#800000]/10 dark:bg-[#D4AF37]/10 rounded-xl">
+                              <Code className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
+                            </div>
+                          ) : (
+                            <div className="p-2 bg-[#D4AF37]/10 dark:bg-[#800000]/10 rounded-xl">
+                              <Trophy className="w-4 h-4 text-[#D4AF37] dark:text-[#800000]" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No recent activity to show
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <Activity className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
+                </div>
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No recent activity to show</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Start by adding your first project!</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Quick Actions</h3>
-            <Target className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+        {/* Enhanced Quick Actions */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quick Actions</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Get started quickly</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <Zap className="w-6 h-6 text-[#D4AF37]" />
+            </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 rounded-xl transition-all group"
+              className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
-              <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-blue-700 dark:text-blue-300">Add New Project</span>
-              <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 ml-auto group-hover:translate-x-1 transition-transform" />
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#800000] text-white rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Add New Project</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Showcase your work</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
             </button>
-            
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:from-green-100 hover:to-green-200 dark:hover:from-green-900/30 dark:hover:to-green-800/30 rounded-xl transition-all group"
+              className="w-full group relative bg-gradient-to-r from-[#D4AF37]/10 via-[#800000]/10 to-[#D4AF37]/10 dark:from-[#D4AF37]/20 dark:via-[#800000]/20 dark:to-[#D4AF37]/20 hover:from-[#D4AF37]/20 hover:via-[#800000]/20 hover:to-[#D4AF37]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#D4AF37]/20 dark:border-[#800000]/20"
             >
-              <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
-              <span className="font-medium text-green-700 dark:text-green-300">Add Microcredential</span>
-              <ArrowRight className="w-4 h-4 text-green-600 dark:text-green-400 ml-auto group-hover:translate-x-1 transition-transform" />
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#D4AF37] text-[#800000] rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <Award className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#D4AF37] dark:text-[#800000] mb-1">Add Microcredential</h4>
+                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Highlight your achievements</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
             </button>
-            
             <button 
               onClick={() => navigate('/dashboard/share')}
-              className="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:from-purple-100 hover:to-purple-200 dark:hover:from-purple-900/30 dark:hover:to-purple-800/30 rounded-xl transition-all group"
+              className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
-              <Share2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              <span className="font-medium text-purple-700 dark:text-purple-300">Share Portfolio</span>
-              <ArrowRight className="w-4 h-4 text-purple-600 dark:text-purple-400 ml-auto group-hover:translate-x-1 transition-transform" />
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#800000] text-white rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <Share2 className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Share Portfolio</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Show your work to the world</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
             </button>
+            {/* Skills Overview */}
+            {dashboardData.skills.length > 0 && (
+              <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700/50 dark:to-gray-800/50 rounded-2xl border border-gray-200/50 dark:border-gray-600/30">
+                <h4 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                  <Star className="w-5 h-5 text-[#D4AF37]" />
+                  <span>Your Skills</span>
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {dashboardData.skills.slice(0, 6).map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1.5 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] rounded-xl text-xs font-medium border border-[#800000]/20 dark:border-[#D4AF37]/20"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                  {dashboardData.skills.length > 6 && (
+                    <span className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl text-xs font-medium">
+                      +{dashboardData.skills.length - 6} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Progress Tracking Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Portfolio Growth Chart Placeholder */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Portfolio Growth</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Track your progress over time</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <TrendingUp className="w-6 h-6 text-[#D4AF37]" />
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-[#800000] text-white rounded-xl">
+                  <Code className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#800000] dark:text-[#D4AF37]">Projects</p>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Technical showcase</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.projects.length}</p>
+                <p className="text-[#800000] dark:text-[#D4AF37] text-xs">Total</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-[#D4AF37] text-[#800000] rounded-xl">
+                  <Trophy className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#D4AF37] dark:text-[#800000]">Credentials</p>
+                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Certifications earned</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-[#D4AF37] dark:text-[#800000]">{dashboardData.microcredentials.length}</p>
+                <p className="text-[#D4AF37] dark:text-[#800000] text-xs">Total</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-[#800000] text-white rounded-xl">
+                  <Eye className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#800000] dark:text-[#D4AF37]">Profile Views</p>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Recent visibility</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.profileViews}</p>
+                <p className="text-[#800000] dark:text-[#D4AF37] text-xs">This month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Goals & Recommendations */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Goals & Tips</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Suggestions to improve your portfolio</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <Target className="w-6 h-6 text-[#D4AF37]" />
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            {dashboardData.projects.length === 0 && (
+              <div className="p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl border-l-4 border-[#800000]">
+                <div className="flex items-start space-x-3">
+                  <Plus className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Add Your First Project</h4>
+                    <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Start building your portfolio by adding a project that showcases your skills.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {dashboardData.microcredentials.length === 0 && (
+              <div className="p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl border-l-4 border-[#D4AF37]">
+                <div className="flex items-start space-x-3">
+                  <Award className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-[#D4AF37] dark:text-[#800000] mb-1">Add Microcredentials</h4>
+                    <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Include certificates and achievements to validate your expertise.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl border-l-4 border-[#800000]">
+              <div className="flex items-start space-x-3">
+                <Share2 className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Share Your Work</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Make your portfolio visible to potential employers and collaborators.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl border-l-4 border-[#D4AF37]">
+              <div className="flex items-start space-x-3">
+                <Sparkles className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-[#D4AF37] dark:text-[#800000] mb-1">Keep It Updated</h4>
+                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Regularly update your portfolio with new projects and achievements.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -478,7 +755,7 @@ function DashboardContent() {
   );
 }
 
-// Placeholder components for other menu items
+// Placeholder components for other menu items (keeping original structure)
 function PortfolioContent() {
   return (
     <div className="p-8 flex items-center justify-center h-full">

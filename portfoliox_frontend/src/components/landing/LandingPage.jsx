@@ -279,10 +279,10 @@ export default function LandingPage() {
                   <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-10 h-10 object-contain" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full" style={{ minWidth: 0, maxWidth: 'none' }}></span>
-                  <h1 className="text-2xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                  <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                     PortfolioX
                   </h1>
+                  <span className="text-sm font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
               </div>
             </div>

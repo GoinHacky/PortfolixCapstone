@@ -549,48 +549,50 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="glass-morphism bg-red-50 dark:bg-red-900/10 rounded-2xl shadow-xl p-6 border border-red-100 dark:border-red-800">
-            <h2 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-4">Danger Zone</h2>
-            <p className="text-red-600 dark:text-red-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-            {!showDeleteConfirm ? (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-              >
-                <Trash2 size={18} />
-                Delete Account
-              </button>
-            ) : (
-              <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg">
-                <div className="flex items-start gap-3 mb-4">
-                  <AlertTriangle className="text-red-600 dark:text-red-400 w-6 h-6 flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="text-red-800 dark:text-red-400 font-medium">Are you absolutely sure?</h3>
-                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
-                      This action cannot be undone. This will permanently delete your account and remove your data from our servers.
-                    </p>
+          {userRole !== 'ADMIN' && (
+            <div className="glass-morphism bg-red-50 dark:bg-red-900/10 rounded-2xl shadow-xl p-6 border border-red-100 dark:border-red-800">
+              <h2 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-4">Danger Zone</h2>
+              <p className="text-red-600 dark:text-red-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+              {!showDeleteConfirm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                >
+                  <Trash2 size={18} />
+                  Delete Account
+                </button>
+              ) : (
+                <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg">
+                  <div className="flex items-start gap-3 mb-4">
+                    <AlertTriangle className="text-red-600 dark:text-red-400 w-6 h-6 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-red-800 dark:text-red-400 font-medium">Are you absolutely sure?</h3>
+                      <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+                        This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDeleteAccount}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Yes, Delete My Account
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleDeleteAccount}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Yes, Delete My Account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {isEditing && (
             <div className="flex justify-end">

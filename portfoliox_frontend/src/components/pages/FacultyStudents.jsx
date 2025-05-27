@@ -154,9 +154,18 @@ export default function FacultyStudents() {
                   selectedStudent?.userID === student.userID ? 'bg-[#800000]/10 dark:bg-[#D4AF37]/10' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                <div className="w-10 h-10 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold">
-                  {student.fname[0]}{student.lname[0]}
-                </div>
+                {student.profilePic ? (
+                  <img
+                    src={student.profilePic.startsWith('http') ? student.profilePic : `http://localhost:8080${student.profilePic}`}
+                    alt={student.fname + ' ' + student.lname}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-[#800000] bg-white"
+                    onError={e => { e.target.onerror = null; e.target.src = ''; }}
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold">
+                    {student.fname[0]}{student.lname[0]}
+                  </div>
+                )}
                 <div>
                   <h3 className="font-medium text-gray-800 dark:text-white">
                     {student.fname} {student.lname}

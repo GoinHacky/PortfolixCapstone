@@ -12,7 +12,9 @@ import {
   ExternalLink,
   UserX,
   Key,
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  FileText
 } from 'lucide-react';
 
 const maroon = "bg-[#800000]";
@@ -33,6 +35,8 @@ export default function AdminStudents() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [tempPassword, setTempPassword] = useState(null);
+  const [viewPortfolio, setViewPortfolio] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -214,9 +218,18 @@ export default function AdminStudents() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold text-lg">
-                    {student.fname?.[0]}{student.lname?.[0]}
-                  </div>
+                  {student.profilePic ? (
+                    <img
+                      src={student.profilePic.startsWith('http') ? student.profilePic : `http://localhost:8080${student.profilePic}`}
+                      alt={student.fname + ' ' + student.lname}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-[#800000] bg-white"
+                      onError={e => { e.target.onerror = null; e.target.src = ''; }}
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold text-lg">
+                      {student.fname?.[0]}{student.lname?.[0]}
+                    </div>
+                  )}
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-white">
                       {student.fname} {student.lname}
@@ -259,10 +272,10 @@ export default function AdminStudents() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/admin/dashboard/students/${student.userID}`);
+                      handleStudentClick(student.userID);
                     }}
-                    className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900 rounded-lg transition-colors shadow-md"
-                    title="View Portfolios"
+                    className={`p-2 ${expandedStudent === student.userID ? 'bg-[#800000]/10 dark:bg-[#D4AF37]/10 text-[#800000] dark:text-[#D4AF37]' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900'} rounded-lg transition-colors shadow-md`}
+                    title={expandedStudent === student.userID ? 'Hide Portfolios' : 'Show Portfolios'}
                   >
                     <FolderOpen className="w-5 h-5" />
                   </button>
@@ -282,15 +295,13 @@ export default function AdminStudents() {
                             <h5 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h5>
                             <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{portfolio.category}</p>
                           </div>
-                          <a
-                            href={`http://localhost:8080/api/portfolios/public/${portfolio.publicToken}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md"
-                            title="View portfolio"
+                          <button
+                            onClick={() => setViewPortfolio(portfolio)}
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                            title="View Portfolio"
                           >
-                            <ExternalLink size={16} />
-                          </a>
+                            <Eye className="w-4 h-4" />
+                          </button>
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
                           {portfolio.portfolioDescription}
@@ -405,6 +416,95 @@ export default function AdminStudents() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio Details Modal */}
+      {viewPortfolio && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg w-full max-w-md shadow-lg relative max-h-[80vh] overflow-y-auto hide-scrollbar">
+            <button
+              onClick={() => setViewPortfolio(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            >
+              <X size={24} />
+            </button>
+            <h2 className="text-2xl font-bold text-[#800000] mb-2">{viewPortfolio.portfolioTitle}</h2>
+            <div className="mb-4">
+              <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Category:</span>
+              <span className="ml-2 text-sm text-gray-500 capitalize">{viewPortfolio.category}</span>
+            </div>
+            <div className="mb-4">
+              <span className="font-semibold text-[#800000] uppercase tracking-wide text-xs">Description:</span>
+              <p className="mt-1 text-gray-700 dark:text-gray-200 break-words whitespace-pre-line">{viewPortfolio.portfolioDescription}</p>
+            </div>
+            {viewPortfolio.githubLink && (
+              <div className="mb-2">
+                <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">GitHub:</span>
+                <a href={viewPortfolio.githubLink} className="ml-2 text-blue-700 hover:underline break-all text-sm" target="_blank" rel="noopener noreferrer">{viewPortfolio.githubLink}</a>
+              </div>
+            )}
+            {viewPortfolio.certTitle && (
+              <div className="mb-2">
+                <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Certificate:</span>
+                <span className="ml-2 text-gray-800 text-sm">{viewPortfolio.certTitle}</span>
+              </div>
+            )}
+            {viewPortfolio.issueDate && (
+              <div className="mb-2">
+                <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Issue Date:</span>
+                <span className="ml-2 text-gray-800 text-sm">{new Date(viewPortfolio.issueDate).toLocaleDateString()}</span>
+              </div>
+            )}
+            {viewPortfolio.certFile &&
+              (viewPortfolio.certFile.endsWith('.jpg') || viewPortfolio.certFile.endsWith('.jpeg') || viewPortfolio.certFile.endsWith('.png')) && (
+                <div className="mb-4">
+                  <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Certificate Image:</span>
+                  <div className="mt-2">
+                    <img
+                      src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                      alt="Certificate"
+                      className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                    />
+                  </div>
+                </div>
+            )}
+            {viewPortfolio.skills && viewPortfolio.skills.length > 0 && (
+              <div className="mb-2">
+                <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Skills:</span>
+                <span className="ml-2 text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+              </div>
+            )}
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setViewPortfolio(null)}
+                className="px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Certificate Preview Modal */}
+      {previewImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewImage(null)}>
+          <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-80 z-10"
+            >
+              <X size={32} />
+            </button>
+            <img
+              src={previewImage}
+              alt="Certificate Preview"
+              className="max-w-full max-h-[80vh] rounded shadow-lg border-4 border-white"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
         </div>
       )}
