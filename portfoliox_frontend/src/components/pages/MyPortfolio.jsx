@@ -471,7 +471,7 @@ export default function MyPortfolio() {
                         <FileText className="w-5 h-5 text-[#800000] mt-1" />
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">{portfolio.portfolioDescription}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
@@ -574,7 +574,7 @@ export default function MyPortfolio() {
                         <FileText className="w-5 h-5 text-[#800000] mt-1" />
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">{portfolio.portfolioDescription}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
                         </div>
                       </div>
                       <div className="space-y-2 mb-3">

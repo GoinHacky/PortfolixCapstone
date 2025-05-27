@@ -10,6 +10,13 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+const maroon = "bg-[#800000]";
+const gold = "text-[#D4AF37]";
+const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
+const goldBgSolid = "bg-[#D4AF37]";
+const maroonText = "text-[#800000]";
+const goldText = "text-[#D4AF37]";
+
 export default function AdminRequest() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +87,7 @@ export default function AdminRequest() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#800000]"></div>
       </div>
     );
@@ -88,18 +95,18 @@ export default function AdminRequest() {
 
   if (error) {
     return (
-      <div className="p-4 text-red-600 bg-red-100 rounded-lg">
+      <div className="p-4 text-red-600 bg-red-100 dark:bg-red-900/20 rounded-lg">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Faculty Requests</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Faculty Requests</h1>
         <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Pending Requests: {requests.length}
           </div>
         </div>
@@ -108,19 +115,19 @@ export default function AdminRequest() {
       {requests.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {requests.map((request) => (
-            <div key={request.userID} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div key={request.userID} className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold text-xl">
                     {request.fname?.[0]}{request.lname?.[0]}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800">
+                    <h3 className="font-semibold text-gray-800 dark:text-white">
                       {request.fname} {request.lname}
                     </h3>
-                    <div className="text-sm text-gray-500">@{request.username}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">@{request.username}</div>
                     <div className="mt-1">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
                         <Clock size={12} className="mr-1" />
                         Pending Approval
                       </span>
@@ -129,12 +136,12 @@ export default function AdminRequest() {
                 </div>
 
                 <div className="space-y-2 mb-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Mail size={14} className="text-gray-400" />
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                    <Mail size={14} className="text-gray-400 dark:text-gray-500" />
                     {request.userEmail}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar size={14} className="text-gray-400" />
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                    <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
                     Requested on {new Date(request.createdAt).toLocaleDateString()}
                   </div>
                 </div>
@@ -143,7 +150,7 @@ export default function AdminRequest() {
                   <button
                     onClick={() => handleApproval(request.userID, true)}
                     disabled={processingId === request.userID}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-md"
                   >
                     <CheckCircle size={16} />
                     Approve
@@ -151,7 +158,7 @@ export default function AdminRequest() {
                   <button
                     onClick={() => handleApproval(request.userID, false)}
                     disabled={processingId === request.userID}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-md"
                   >
                     <XCircle size={16} />
                     Reject
@@ -163,11 +170,11 @@ export default function AdminRequest() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-            <AlertTriangle size={24} className="text-gray-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+            <AlertTriangle size={24} className="text-gray-400 dark:text-gray-500" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No pending requests</h3>
-          <p className="text-gray-500">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No pending requests</h3>
+          <p className="text-gray-500 dark:text-gray-400">
             There are no faculty registration requests waiting for approval.
           </p>
         </div>

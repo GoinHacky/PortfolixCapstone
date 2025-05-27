@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../contexts/ThemeContext";
 import { 
   Home, 
   Users,
@@ -8,18 +9,24 @@ import {
   LogOut,
   Sparkles,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
+const gold = "text-[#D4AF37]";
+const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
 const goldBgSolid = "bg-[#D4AF37]";
 const maroonText = "text-[#800000]";
+const goldText = "text-[#D4AF37]";
 
 export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const storedProfilePic = localStorage.getItem('profilePic');
   const [profilePic, setProfilePic] = useState(storedProfilePic);
   const navigate = useNavigate();
+  const { darkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
     const handleStorageChange = (e) => {
@@ -81,12 +88,12 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
   };
 
   return (
-    <div className={`relative h-screen ${maroon} transition-all duration-300 ease-in-out ${
+    <div className={`relative h-screen ${maroon} dark:bg-gray-800 transition-all duration-300 ease-in-out ${
       isCollapsed ? 'w-20' : 'w-72'
     } flex flex-col shadow-2xl`}>
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#800000] via-[#600000] to-[#800000] opacity-90"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#800000] via-[#600000] to-[#800000] dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 opacity-90"></div>
       
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
@@ -215,6 +222,21 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
 
         {/* Footer Actions */}
         <div className="p-4 border-t border-white/10 space-y-2">
+          <button 
+            onClick={toggleDarkMode}
+            className="w-full flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors group"
+          >
+            {darkMode ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
+            {!isCollapsed && (
+              <span className="ml-4 font-medium text-sm">
+                {darkMode ? 'Light Mode' : 'Dark Mode'}
+              </span>
+            )}
+          </button>
           <button 
             onClick={handleSignOut}
             className="w-full flex items-center px-4 py-3 text-white/80 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-colors group"

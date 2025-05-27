@@ -16,6 +16,13 @@ import {
   Camera
 } from 'lucide-react';
 
+const maroon = "bg-[#800000]";
+const gold = "text-[#D4AF37]";
+const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
+const goldBgSolid = "bg-[#D4AF37]";
+const maroonText = "text-[#800000]";
+const goldText = "text-[#D4AF37]";
+
 export default function Profile() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState({});
@@ -353,7 +360,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 dark:bg-gray-900">
+    <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>
@@ -362,11 +369,11 @@ export default function Profile() {
           </div>
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-colors ${
               isEditing 
-                ? 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600' 
                 : 'bg-[#800000] text-white hover:bg-[#600000]'
-            } transition-colors`}
+            }`}
           >
             {isEditing ? (
               <>
@@ -383,7 +390,7 @@ export default function Profile() {
         </div>
 
         {notification && (
-          <div className={`mb-4 p-4 rounded-lg ${
+          <div className={`mb-4 p-4 rounded-lg shadow-md ${
             notification.type === 'error' 
               ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
               : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
@@ -392,8 +399,8 @@ export default function Profile() {
           </div>
         )}
 
-        <form onSubmit={handleAccountUpdate} className="space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+        <form onSubmit={handleAccountUpdate} className="space-y-8">
+          <div className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl p-6">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Profile Picture</h2>
             <div className="flex items-center space-x-6">
               <div className="relative">
@@ -446,7 +453,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+          <div className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl p-6">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -480,7 +487,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+          <div className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl p-6">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Security</h2>
             {!showPasswordChange ? (
               <button
@@ -542,7 +549,7 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-red-50 dark:bg-red-900/10 rounded-xl shadow-md p-6 border border-red-100 dark:border-red-800">
+          <div className="glass-morphism bg-red-50 dark:bg-red-900/10 rounded-2xl shadow-xl p-6 border border-red-100 dark:border-red-800">
             <h2 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-4">Danger Zone</h2>
             <p className="text-red-600 dark:text-red-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
             {!showDeleteConfirm ? (
@@ -590,7 +597,7 @@ export default function Profile() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="px-6 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-lg"
               >
                 <Save size={18} />
                 {loading ? 'Saving...' : 'Save Changes'}

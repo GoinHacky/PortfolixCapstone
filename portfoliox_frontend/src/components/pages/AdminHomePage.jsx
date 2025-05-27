@@ -206,10 +206,10 @@ function DashboardContent() {
   ];
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
-        <p className="text-gray-600">Overview of system statistics and activities</p>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Admin Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400">Overview of system statistics and activities</p>
       </div>
 
       {/* Stats Grid */}
@@ -217,25 +217,25 @@ function DashboardContent() {
         {statsCards.map((card, index) => (
           <div
             key={index}
-            className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+            className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-2xl transition-shadow"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-lg ${card.bgColor}`}>
-                <card.icon className={`w-6 h-6 ${card.textColor}`} />
+              <div className={`p-3 rounded-xl ${card.bgColor} dark:bg-[#800000]/20`}>
+                <card.icon className={`w-6 h-6 ${card.textColor} dark:text-[#D4AF37]`} />
               </div>
               {card.change && (
                 <span className={`text-sm font-medium ${
-                  card.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                  card.change.startsWith('+') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}>
                   {card.change}
                 </span>
               )}
             </div>
-            <h3 className="text-gray-600 text-sm font-medium mb-2">{card.title}</h3>
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-2">{card.title}</h3>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-gray-800">{card.value}</span>
+              <span className="text-2xl font-bold text-gray-800 dark:text-white">{card.value}</span>
               {card.details && (
-                <span className="text-sm text-gray-500">{card.details}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{card.details}</span>
               )}
             </div>
           </div>
@@ -243,33 +243,33 @@ function DashboardContent() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
+      <div className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button
             onClick={() => navigate('/admin/dashboard/requests')}
-            className="p-4 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors text-center"
+            className="p-4 rounded-xl bg-orange-50 dark:bg-[#D4AF37]/10 text-orange-600 dark:text-[#D4AF37] hover:bg-orange-100 dark:hover:bg-[#D4AF37]/20 transition-colors text-center shadow-md"
           >
             <Clock className="w-6 h-6 mx-auto mb-2" />
             <span className="text-sm font-medium">View Pending Requests</span>
           </button>
           <button
             onClick={() => navigate('/admin/dashboard/faculty')}
-            className="p-4 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-center"
+            className="p-4 rounded-xl bg-blue-50 dark:bg-[#800000]/10 text-blue-600 dark:text-[#800000] hover:bg-blue-100 dark:hover:bg-[#800000]/20 transition-colors text-center shadow-md"
           >
             <Users className="w-6 h-6 mx-auto mb-2" />
             <span className="text-sm font-medium">Manage Faculty</span>
           </button>
           <button
             onClick={() => navigate('/admin/dashboard/students')}
-            className="p-4 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors text-center"
+            className="p-4 rounded-xl bg-green-50 dark:bg-[#D4AF37]/10 text-green-600 dark:text-[#D4AF37] hover:bg-green-100 dark:hover:bg-[#D4AF37]/20 transition-colors text-center shadow-md"
           >
             <GraduationCap className="w-6 h-6 mx-auto mb-2" />
             <span className="text-sm font-medium">View Students</span>
           </button>
           <button
             onClick={() => navigate('/admin/dashboard/profile')}
-            className="p-4 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors text-center"
+            className="p-4 rounded-xl bg-purple-50 dark:bg-[#800000]/10 text-purple-600 dark:text-[#800000] hover:bg-purple-100 dark:hover:bg-[#800000]/20 transition-colors text-center shadow-md"
           >
             <User className="w-6 h-6 mx-auto mb-2" />
             <span className="text-sm font-medium">Profile Settings</span>
