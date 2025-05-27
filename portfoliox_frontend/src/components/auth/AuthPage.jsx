@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, CheckCircle, Moon, Sun } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
+import PortfolioLogo from '../../assets/images/Portfolio.svg';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -152,12 +153,15 @@ export default function AuthPage({ mode = "login" }) {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className={`w-10 h-10 ${goldBgSolid} rounded-lg flex items-center justify-center shadow-lg`}>
-                <Sparkles className={`w-6 h-6 ${maroonText}`} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
+                <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
               </div>
-              <h1 className={`text-2xl font-black tracking-tight ${maroonText} dark:text-white`}>
-                PortfolioX
-              </h1>
+              <div className="flex flex-col items-start">
+                <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full"></span>
+                <h1 className="text-2xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                  PortfolioX
+                </h1>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -168,7 +172,7 @@ export default function AuthPage({ mode = "login" }) {
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
               <button 
-                onClick={() => window.history.back()} 
+                onClick={() => navigate('/')} 
                 className="text-gray-600 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors font-medium"
               >
                 ← Back to Home

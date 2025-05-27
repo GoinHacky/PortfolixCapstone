@@ -14,6 +14,7 @@ import {
   Moon
 } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
+import PortfolioLogo from '../../assets/images/Portfolio.svg';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -117,16 +118,14 @@ export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect })
           <div className="flex items-center justify-between">
             {!isCollapsed && (
               <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 ${goldBgSolid} rounded-xl flex items-center justify-center shadow-lg`}>
-                  <Sparkles className={`w-6 h-6 ${maroonText}`} />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
+                  <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
                 </div>
-                <div>
-                  <h1 className="text-xl font-black text-white tracking-tight">
+                <div className="flex flex-col items-start">
+                  <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full"></span>
+                  <h1 className="text-xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37]" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                     PortfolioX
                   </h1>
-                  <p className="text-white/60 text-xs font-medium">
-                    Admin Console
-                  </p>
                 </div>
               </div>
             )}

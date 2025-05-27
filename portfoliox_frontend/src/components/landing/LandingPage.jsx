@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../../contexts/ThemeContext';
+import PortfolioLogo from '../../assets/images/Portfolio.svg';
 import { 
   ChevronDown, 
   Star, 
   Users, 
   Award, 
   BookOpen, 
-  Sparkles, 
   ArrowRight, 
   CheckCircle,
   Laptop,
@@ -273,13 +273,18 @@ export default function LandingPage() {
         {/* Enhanced Navigation */}
         <nav className="relative z-50 w-full py-4 glass-morphism sticky top-0 border-b border-white/20 dark:border-gray-800/50">
           <div className="container mx-auto flex items-center justify-between px-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 gradient-shift rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow">
-                <Sparkles className="w-6 h-6 text-white" />
+            <div className="flex items-center">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
+                  <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-10 h-10 object-contain" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="block mb-1 h-1 rounded-full bg-gradient-to-r from-[#800000] via-[#B8860B] to-[#D4AF37] w-full" style={{ minWidth: 0, maxWidth: 'none' }}></span>
+                  <h1 className="text-2xl font-black tracking-tight text-[#800000] drop-shadow-[2px_2px_0px_#D4AF37] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                    PortfolioX
+                  </h1>
+                </div>
               </div>
-              <h1 className="text-2xl font-black tracking-tight text-gray-900 dark:text-white text-shadow">
-                PortfolioX
-              </h1>
             </div>
             
             {/* Desktop Navigation */}
@@ -461,7 +466,9 @@ export default function LandingPage() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-20">
               <div className="inline-flex items-center px-4 py-2 glass-morphism rounded-full border border-[#D4AF37]/30 mb-6">
-                <Sparkles className="w-4 h-4 text-[#D4AF37] mr-2" />
+                <div className="w-4 h-4 mr-2 inline-block align-middle">
+                  <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-4 h-4 object-contain" />
+                </div>
                 <span className="text-sm font-medium text-[#800000] dark:text-[#D4AF37]">Core Features</span>
               </div>
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
@@ -871,9 +878,8 @@ export default function LandingPage() {
               <div className="md:col-span-2">
                 <div className="flex items-center mb-6">
                   <div className="w-12 h-12 gradient-shift rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                    <Sparkles className="w-6 h-6 text-white" />
+                    <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-10 h-10 object-contain" />
                   </div>
-                  <span className="text-2xl font-bold text-white">PortfolioX</span>
                 </div>
                 <p className="text-gray-400 leading-relaxed max-w-md mb-6">
                   Empowering students worldwide to showcase their academic excellence and unlock their potential. 
