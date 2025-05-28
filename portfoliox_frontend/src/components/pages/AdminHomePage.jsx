@@ -78,7 +78,7 @@ function DashboardContent() {
   
   // For demo purposes, we'll use in-memory storage instead of localStorage
   // In a real implementation, you would handle token management differently
-  const [token] = useState('demo-token');
+  const token = localStorage.getItem('token');
   const { darkMode } = useTheme();
 
   useEffect(() => {
@@ -90,41 +90,47 @@ function DashboardContent() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Simulate API calls with mock data for demonstration
-        // In production, replace these with actual API calls
-        const mockStudents = Array.from({length: 45}, (_, i) => ({
-          id: i + 1,
-          fname: `Student${i + 1}`,
-          lname: `LastName${i + 1}`,
-          createdAt: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
-        }));
-
-        const mockFaculty = Array.from({length: 12}, (_, i) => ({
-          id: i + 1,
-          fname: `Faculty${i + 1}`,
-          lname: `LastName${i + 1}`,
-          createdAt: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
-        }));
-
-        const mockPortfolios = Array.from({length: 85}, (_, i) => ({
-          portfolioID: i + 1,
-          portfolioTitle: `Portfolio ${i + 1}`,
-          category: Math.random() > 0.6 ? 'project' : 'microcredentials',
-          skills: [
-            { skillName: ['JavaScript', 'Python', 'React', 'Node.js', 'Machine Learning', 'Data Science', 'Web Development', 'Mobile Development'][Math.floor(Math.random() * 8)] },
-            { skillName: ['CSS', 'HTML', 'SQL', 'MongoDB', 'Docker', 'AWS', 'Git', 'Agile'][Math.floor(Math.random() * 8)] }
-          ],
-          createdAt: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-          lastUpdated: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-          user: {
-            fname: `User${i + 1}`,
-            lname: `Last${i + 1}`
+        // Fetch students
+        const studentsRes = await fetch('http://localhost:8080/api/users/students', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!studentsRes.ok) {
+          if (studentsRes.status === 401) {
+            localStorage.clear();
+            navigate('/auth/login');
+            return;
           }
-        }));
+          throw new Error('Failed to fetch students');
+        }
+        const students = await studentsRes.json();
 
-        const students = mockStudents;
-        const faculty = mockFaculty;
-        const portfolios = mockPortfolios;
+        // Fetch faculty
+        const facultyRes = await fetch('http://localhost:8080/api/users/faculty', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!facultyRes.ok) {
+          if (facultyRes.status === 401) {
+            localStorage.clear();
+            navigate('/auth/login');
+            return;
+          }
+          throw new Error('Failed to fetch faculty');
+        }
+        const faculty = await facultyRes.json();
+
+        // Fetch portfolios
+        const portfoliosRes = await fetch('http://localhost:8080/api/portfolios', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!portfoliosRes.ok) {
+          if (portfoliosRes.status === 401) {
+            localStorage.clear();
+            navigate('/auth/login');
+            return;
+          }
+          throw new Error('Failed to fetch portfolios');
+        }
+        const portfolios = await portfoliosRes.json();
 
         // Count projects and microcredentials
         const projects = portfolios.filter(p => p.category === 'project');
