@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class AIService {
@@ -28,6 +29,11 @@ public class AIService {
     public AIService() {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
+    }
+
+    @PostConstruct
+    public void logApiKey() {
+        logger.info("OpenRouter API Key loaded: {}", openRouterApiKey != null && !openRouterApiKey.isEmpty() ? "PRESENT" : "MISSING");
     }
 
     public String enhanceDescription(String title, String description, String category, String githubLink) {
