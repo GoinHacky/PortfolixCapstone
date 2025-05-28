@@ -876,73 +876,75 @@ export default function MyPortfolio() {
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-full max-w-lg shadow-lg relative">
             <button
               onClick={() => setViewPortfolio(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 z-10"
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold text-[#800000] mb-2">{viewPortfolio.portfolioTitle}</h2>
-            <div className="text-sm text-gray-500 mb-4 capitalize">{viewPortfolio.category}</div>
-            <div className="mb-4">
-              <h3 className="font-semibold text-[#800000] mb-1">Description</h3>
-              <p className="text-gray-700 dark:text-gray-200">{viewPortfolio.portfolioDescription}</p>
-            </div>
-            {viewPortfolio.githubLink && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">GitHub:</span>{' '}
-                <a href={viewPortfolio.githubLink} className="text-blue-700 hover:underline break-all text-sm" target="_blank" rel="noopener noreferrer">{viewPortfolio.githubLink}</a>
+            <div className="max-h-[70vh] overflow-y-auto pr-2 hide-scrollbar">
+              <h2 className="text-2xl font-bold text-[#800000] mb-2">{viewPortfolio.portfolioTitle}</h2>
+              <div className="text-sm text-gray-500 mb-4 capitalize">{viewPortfolio.category}</div>
+              <div className="mb-4">
+                <h3 className="font-semibold text-[#800000] mb-1">Description</h3>
+                <p className="text-gray-700 dark:text-gray-200 text-justify">{viewPortfolio.portfolioDescription}</p>
               </div>
-            )}
-            {viewPortfolio.certTitle && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">Certificate:</span>{' '}
-                <span className="text-gray-800 text-sm">{viewPortfolio.certTitle}</span>
-              </div>
-            )}
-            {viewPortfolio.issueDate && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">Issue Date:</span>{' '}
-                <span className="text-gray-800 text-sm">{viewPortfolio.issueDate}</span>
-              </div>
-            )}
-            {viewPortfolio.certFile &&
-              (viewPortfolio.certFile.endsWith('.jpg') || viewPortfolio.certFile.endsWith('.jpeg') || viewPortfolio.certFile.endsWith('.png')) && (
-                <div className="mb-4">
-                  <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
-                  <div className="mt-2">
-                    <img
-                      src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
-                      alt="Certificate"
-                      className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
-                    />
-                  </div>
+              {viewPortfolio.githubLink && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">GitHub:</span>{' '}
+                  <a href={viewPortfolio.githubLink} className="text-blue-700 hover:underline break-all text-sm" target="_blank" rel="noopener noreferrer">{viewPortfolio.githubLink}</a>
                 </div>
-            )}
-            {viewPortfolio.skills && viewPortfolio.skills.length > 0 && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">Skills:</span>{' '}
-                <span className="text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+              )}
+              {viewPortfolio.certTitle && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">Certificate:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.certTitle}</span>
+                </div>
+              )}
+              {viewPortfolio.issueDate && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">Issue Date:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.issueDate}</span>
+                </div>
+              )}
+              {viewPortfolio.certFile &&
+                (viewPortfolio.certFile.endsWith('.jpg') || viewPortfolio.certFile.endsWith('.jpeg') || viewPortfolio.certFile.endsWith('.png')) && (
+                  <div className="mb-4">
+                    <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
+                    <div className="mt-2">
+                      <img
+                        src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                        alt="Certificate"
+                        className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                      />
+                    </div>
+                  </div>
+              )}
+              {viewPortfolio.skills && viewPortfolio.skills.length > 0 && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">Skills:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+                </div>
+              )}
+              {viewPortfolio.certifications && viewPortfolio.certifications.length > 0 && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">Certifications:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.certifications.map(cert => cert.certTitle || cert).join(', ')}</span>
+                </div>
+              )}
+              {viewPortfolio.projects && viewPortfolio.projects.length > 0 && (
+                <div className="mb-2">
+                  <span className="font-semibold text-[#D4AF37]">Projects:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.projects.map(proj => proj.projectName || proj).join(', ')}</span>
+                </div>
+              )}
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => setViewPortfolio(null)}
+                  className="px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000]"
+                >
+                  Close
+                </button>
               </div>
-            )}
-            {viewPortfolio.certifications && viewPortfolio.certifications.length > 0 && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">Certifications:</span>{' '}
-                <span className="text-gray-800 text-sm">{viewPortfolio.certifications.map(cert => cert.certTitle || cert).join(', ')}</span>
-              </div>
-            )}
-            {viewPortfolio.projects && viewPortfolio.projects.length > 0 && (
-              <div className="mb-2">
-                <span className="font-semibold text-[#D4AF37]">Projects:</span>{' '}
-                <span className="text-gray-800 text-sm">{viewPortfolio.projects.map(proj => proj.projectName || proj).join(', ')}</span>
-              </div>
-            )}
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={() => setViewPortfolio(null)}
-                className="px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000]"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
