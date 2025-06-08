@@ -52,6 +52,11 @@ public class PortfolioEntity {
     @Column(unique = true)
     private String publicToken;
 
+    @Column(nullable = false)
+    private boolean validatedByFaculty = false;
+    private String validatedByName;
+    private Long validatedById;
+
     public PortfolioEntity(){
         this.publicToken = UUID.randomUUID().toString();
         this.skills = new java.util.ArrayList<>();
@@ -175,5 +180,29 @@ public class PortfolioEntity {
 
     public void setPublicToken(String publicToken) {
         this.publicToken = publicToken;
+    }
+
+    public boolean isValidatedByFaculty() {
+        return validatedByFaculty;
+    }
+
+    public void setValidatedByFaculty(boolean validatedByFaculty) {
+        this.validatedByFaculty = validatedByFaculty;
+    }
+
+    public String getValidatedByName() {
+        return validatedByName;
+    }
+
+    public void setValidatedByName(String validatedByName) {
+        this.validatedByName = validatedByName;
+    }
+
+    public Long getValidatedById() {
+        return validatedById;
+    }
+
+    public void setValidatedById(Long validatedById) {
+        this.validatedById = validatedById;
     }
 }

@@ -42,6 +42,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cit.edu.portfolioX.Service.CourseService;
 
 @RestController
 @RequestMapping("/api/portfolios")
@@ -57,6 +58,9 @@ public class PortfolioController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private CourseService courseService;
 
     @Value("${server.url:http://localhost:8080}")
     private String serverUrl;
@@ -85,6 +89,7 @@ public class PortfolioController {
             @RequestParam(value = "issueDate", required = false) String issueDate,
             @RequestParam(value = "certFile", required = false) MultipartFile certFile,
             @RequestParam(value = "skills", required = false) String skillsJson,
+            @RequestParam(value = "courseCode", required = false) String courseCode,
             @RequestHeader("Authorization") String authHeader) {
         try {
             logger.info("Received portfolio creation request for userID: {}", userID);
@@ -114,6 +119,9 @@ public class PortfolioController {
             portfolio.setPortfolioDescription(portfolioDescription);
             portfolio.setCategory(category);
             portfolio.setUser(user);
+            if (courseCode != null && !courseCode.isBlank()) {
+                portfolio.setCourseCode(courseCode);
+            }
 
             // Handle skills
             if (skillsJson != null && !skillsJson.isEmpty()) {
@@ -185,6 +193,7 @@ public class PortfolioController {
             @RequestParam(value = "issueDate", required = false) String issueDate,
             @RequestParam(value = "certFile", required = false) MultipartFile certFile,
             @RequestParam(value = "skills", required = false) String skillsJson,
+            @RequestParam(value = "courseCode", required = false) String courseCode,
             @RequestHeader("Authorization") String authHeader) {
         try {
             logger.info("Received portfolio update request for ID: {} from userID: {}", id, userID);
@@ -217,6 +226,11 @@ public class PortfolioController {
             portfolio.setPortfolioTitle(portfolioTitle);
             portfolio.setPortfolioDescription(portfolioDescription);
             portfolio.setCategory(category);
+            if (courseCode != null && !courseCode.isBlank()) {
+                portfolio.setCourseCode(courseCode);
+            } else {
+                portfolio.setCourseCode(null);
+            }
 
             // Handle skills
             if (skillsJson != null) {
@@ -614,6 +628,56 @@ public class PortfolioController {
             }
         }
         return ResponseEntity.ok("Backfilled " + count + " portfolios with missing links.");
+    }
+
+    @PatchMapping("/{id}/validate")
+    public ResponseEntity<?> validateProject(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity faculty = userService.findByUsername(username);
+            if (faculty == null || faculty.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
+                return ResponseEntity.status(403).body("Only faculty can validate projects");
+            }
+            Optional<PortfolioEntity> portfolioOpt = service.getById(id);
+            if (portfolioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Portfolio not found");
+            }
+            PortfolioEntity portfolio = portfolioOpt.get();
+            if (!"project".equalsIgnoreCase(portfolio.getCategory())) {
+                return ResponseEntity.badRequest().body("Only projects can be validated");
+            }
+            if (portfolio.isValidatedByFaculty()) {
+                return ResponseEntity.badRequest().body("Project already validated");
+            }
+            // If project has a courseCode, only the faculty who created that course can validate
+            if (portfolio.getCourseCode() != null && !portfolio.getCourseCode().isBlank()) {
+                var courseOpt = courseService.findByCourseCode(portfolio.getCourseCode());
+                if (courseOpt.isEmpty()) {
+                    return ResponseEntity.badRequest().body("Course code not found");
+                }
+                if (!courseOpt.get().getCreatedBy().equals(faculty.getUserID())) {
+                    return ResponseEntity.status(403).body("Only the faculty who created this course can validate this project");
+                }
+            }
+            portfolio.setValidatedByFaculty(true);
+            portfolio.setValidatedByName(faculty.getFname() + " " + faculty.getLname());
+            portfolio.setValidatedById(faculty.getUserID());
+            service.save(portfolio);
+            return ResponseEntity.ok(Map.of(
+                "portfolioID", portfolio.getPortfolioID(),
+                "validatedByFaculty", true,
+                "validatedByName", portfolio.getValidatedByName(),
+                "validatedById", portfolio.getValidatedById()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error validating project: " + e.getMessage());
+        }
     }
 }
 

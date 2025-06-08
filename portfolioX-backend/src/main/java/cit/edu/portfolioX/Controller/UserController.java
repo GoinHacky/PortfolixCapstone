@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import cit.edu.portfolioX.Entity.PortfolioEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -253,5 +254,35 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error deleting faculty: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/public-profile/{userId}")
+    public ResponseEntity<?> getPublicProfile(@PathVariable Long userId) {
+        Optional<UserEntity> userOpt = service.getById(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+        UserEntity user = userOpt.get();
+        // Only expose safe fields
+        Map<String, Object> publicUser = Map.of(
+            "userID", user.getUserID(),
+            "username", user.getUsername(),
+            "fname", user.getFname(),
+            "lname", user.getLname(),
+            "bio", user.getBio(),
+            "profilePic", user.getProfilePic(),
+            "role", user.getRole(),
+            "createdAt", user.getCreatedAt(),
+            "lastUpdated", user.getLastUpdated()
+        );
+        // Only include portfolios with link.isActive == true
+        List<PortfolioEntity> publicPortfolios = user.getPortfolios() == null ? List.of() :
+            user.getPortfolios().stream()
+                .filter(p -> p.getLink() != null && p.getLink().isActive())
+                .toList();
+        return ResponseEntity.ok(Map.of(
+            "user", publicUser,
+            "publicPortfolios", publicPortfolios
+        ));
     }
 }
