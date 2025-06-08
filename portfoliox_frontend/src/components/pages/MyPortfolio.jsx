@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, FileDown, Wand2, Unlock, Lock } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ConfirmDialog } from '../Notification';
@@ -14,6 +14,7 @@ export default function MyPortfolio() {
     microcredentials: true
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -23,6 +24,7 @@ export default function MyPortfolio() {
     issueDate: '',
     certFile: null,
     skills: [],
+    courseCode: '',
   });
   const [viewPortfolio, setViewPortfolio] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -31,10 +33,15 @@ export default function MyPortfolio() {
   const { showNotification } = useNotification();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
-  const [skillInput, setSkillInput] = useState('');
 
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+
+  const programmingLanguages = [
+    'C++', 'Java', 'JavaScript', 'Go', 'Python', 'PHP', 'R', 'Ruby', 'SQL', 'Swift',
+    'Assembly language', 'CSS', 'Kotlin', 'MATLAB', 'Objective-C', 'Delphi', 'Perl',
+    'Rust', 'Visual Basic', 'COBOL', 'Dart', 'Elixir', 'Erlang', 'Fortran'
+  ];
 
   useEffect(() => {
     if (!token) {
@@ -44,6 +51,7 @@ export default function MyPortfolio() {
     }
     console.log('Token found:', token);
     fetchPortfolios();
+    fetchCourses();
   }, [token, navigate]);
 
   const fetchPortfolios = async () => {
@@ -71,6 +79,20 @@ export default function MyPortfolio() {
     } catch (error) {
       console.error('Error fetching portfolios:', error);
       showNotification({ message: 'Failed to fetch portfolios', type: 'error' });
+    }
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/courses', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCourses(data);
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error);
     }
   };
 
@@ -118,6 +140,7 @@ export default function MyPortfolio() {
       issueDate: portfolio.issueDate || '',
       certFile: null,
       skills: portfolio.skills?.map(s => s.skillName) || [],
+      courseCode: portfolio.courseCode || '',
     });
     setShowForm(true);
   };
@@ -140,6 +163,9 @@ export default function MyPortfolio() {
 
       if (formData.category === 'project') {
         formDataPayload.append('githubLink', formData.githubLink);
+        if (formData.courseCode) {
+          formDataPayload.append('courseCode', formData.courseCode);
+        }
       } else if (formData.category === 'microcredentials') {
         formDataPayload.append('certTitle', formData.certTitle);
         const formattedDate = formData.issueDate ? new Date(formData.issueDate).toISOString().split('T')[0] : '';
@@ -200,6 +226,7 @@ export default function MyPortfolio() {
         issueDate: '',
         certFile: null,
         skills: [],
+        courseCode: '',
       });
       fetchPortfolios();
       showNotification({ message: `Portfolio ${editingPortfolio ? 'updated' : 'created'} successfully!`, type: 'success' });
@@ -252,6 +279,7 @@ export default function MyPortfolio() {
       issueDate: '',
       certFile: null,
       skills: [],
+      courseCode: '',
     });
     setShowForm(true);
   };
@@ -355,37 +383,6 @@ export default function MyPortfolio() {
             <Wand2 size={16} />
             Generate AI-Enhanced Resume
           </button>
-          <button
-            onClick={async () => {
-              try {
-                const response = await fetch(`http://localhost:8080/api/portfolios/generate-resume/${userId}`, {
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                  },
-                });
-                
-                if (!response.ok) {
-                  throw new Error('Failed to generate resume');
-                }
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'portfolio-resume.pdf';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-              } catch (error) {
-                console.error('Error generating resume:', error);
-                showNotification({ message: 'Failed to generate resume', type: 'error' });
-              }
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors"
-          >
-            <FileDown size={16} />
-            Generate Standard Resume
-          </button>
         </div>
       </div>
 
@@ -472,6 +469,11 @@ export default function MyPortfolio() {
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
+                          {portfolio.validatedByFaculty && (
+                            <span className="inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
+                              Validated by {portfolio.validatedByName}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
@@ -725,6 +727,25 @@ export default function MyPortfolio() {
                   </div>
                 )}
 
+                {formData.category === 'project' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Code (optional)</label>
+                    <select
+                      name="courseCode"
+                      value={formData.courseCode}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                    >
+                      <option value="">-- None --</option>
+                      {courses.map(course => (
+                        <option key={course.id} value={course.courseCode}>
+                          {course.courseCode} - {course.courseName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 {formData.category === 'microcredentials' && (
                   <>
                     <div>
@@ -820,31 +841,28 @@ export default function MyPortfolio() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Skills</label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {formData.skills.map((skill, idx) => (
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Programming Languages</label>
+                  <select
+                    multiple
+                    value={formData.skills}
+                    onChange={e => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setFormData(prev => ({ ...prev, skills: selected }));
+                    }}
+                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                  >
+                    {programmingLanguages.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.skills.map((lang, idx) => (
                       <span key={idx} className="inline-flex items-center px-3 py-1 bg-[#D4AF37] text-[#800000] rounded-full text-xs font-semibold">
-                        {skill}
+                        {lang}
                         <button type="button" className="ml-2 text-[#800000] hover:text-red-600" onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter((s, i) => i !== idx) }))}>&times;</button>
                       </span>
                     ))}
                   </div>
-                  <input
-                    type="text"
-                    value={skillInput}
-                    onChange={e => setSkillInput(e.target.value)}
-                    onKeyDown={e => {
-                      if ((e.key === 'Enter' || e.key === ',') && skillInput.trim()) {
-                        e.preventDefault();
-                        if (!formData.skills.includes(skillInput.trim())) {
-                          setFormData(prev => ({ ...prev, skills: [...prev.skills, skillInput.trim()] }));
-                        }
-                        setSkillInput('');
-                      }
-                    }}
-                    placeholder="Add a skill and press Enter"
-                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                  />
                 </div>
               </div>
 
@@ -935,6 +953,12 @@ export default function MyPortfolio() {
                 <div className="mb-2">
                   <span className="font-semibold text-[#D4AF37]">Projects:</span>{' '}
                   <span className="text-gray-800 text-sm">{viewPortfolio.projects.map(proj => proj.projectName || proj).join(', ')}</span>
+                </div>
+              )}
+              {viewPortfolio.validatedByFaculty && (
+                <div className="mb-2">
+                  <span className="font-semibold text-green-700">Validated by:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.validatedByName}</span>
                 </div>
               )}
               <div className="flex justify-end mt-6">

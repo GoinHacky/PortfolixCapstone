@@ -12,7 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Sun,
-  Moon
+  Moon,
+  BookOpen
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
@@ -68,6 +69,12 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
       icon: Users, 
       label: 'Students',
       description: 'Manage Students',
+    },
+    { 
+      id: 'Courses',
+      icon: BookOpen,
+      label: 'Courses',
+      description: 'Manage Courses',
     },
     { 
       id: 'Profile', 

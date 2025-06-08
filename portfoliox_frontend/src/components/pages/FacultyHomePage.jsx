@@ -22,6 +22,7 @@ import {
 import FacultyStudents from './FacultyStudents';
 import Profile from './Profile';
 import { useTheme } from '../../contexts/ThemeContext';
+import FacultyCourses from './FacultyCourses';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -119,6 +120,8 @@ export default function FacultyHomePage() {
         return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} />;
       case 'Students':
         return <FacultyStudents />;
+      case 'Courses':
+        return <FacultyCourses />;
       case 'Profile':
         return <Profile />;
       default:

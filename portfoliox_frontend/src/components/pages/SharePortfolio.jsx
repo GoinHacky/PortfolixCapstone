@@ -185,6 +185,47 @@ export default function SharePortfolio() {
 
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900">
+      {/* Share Profile Section */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Share Profile</h1>
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <input
+            type="text"
+            value={`http://localhost:5173/public/profile/${userId}`}
+            readOnly
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 dark:text-white"
+          />
+          <button
+            onClick={() => copyToClipboard(`http://localhost:5173/public/profile/${userId}`)}
+            className="px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors"
+          >
+            Copy Profile Link
+          </button>
+          <button
+            onClick={async () => {
+              setPreviewLoading(true);
+              setPreviewError(null);
+              setPreviewPortfolio(null);
+              try {
+                const res = await fetch(`http://localhost:8080/api/users/public-profile/${userId}`);
+                if (!res.ok) throw new Error('Profile not found');
+                const data = await res.json();
+                setPreviewPortfolio({
+                  isProfile: true,
+                  ...data
+                });
+              } catch (err) {
+                setPreviewError(err.message);
+              } finally {
+                setPreviewLoading(false);
+              }
+            }}
+            className="px-4 py-2 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] transition-colors"
+          >
+            Preview Profile
+          </button>
+        </div>
+      </div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Share Portfolio</h1>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -312,10 +353,69 @@ export default function SharePortfolio() {
       {/* Preview Container */}
       {(previewLoading || previewError || previewPortfolio) && (
         <div className="mb-6">
-          <div className="mb-2 text-gray-700 dark:text-gray-300 font-medium">Portfolio Preview:</div>
+          <div className="mb-2 text-gray-700 dark:text-gray-300 font-medium">{previewPortfolio?.isProfile ? 'Profile Preview:' : 'Portfolio Preview:'}</div>
           {previewLoading && <div className="p-8 text-center text-gray-500">Loading...</div>}
           {previewError && <div className="p-8 text-center text-red-600">{previewError}</div>}
-          {previewPortfolio && (
+          {previewPortfolio && previewPortfolio.isProfile && (
+            <div className="bg-gray-100 flex items-center justify-center font-serif rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+              <div className="w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg p-8">
+                <div className="flex items-center mb-2">
+                  <img src={previewPortfolio.user.profilePic} alt="Profile" className="w-12 h-12 rounded-full object-cover mr-3" />
+                  <div>
+                    <h1 className="text-2xl font-bold text-[#800000] tracking-tight">{previewPortfolio.user.fname} {previewPortfolio.user.lname}</h1>
+                    <div className="text-sm text-gray-500">@{previewPortfolio.user.username} &bull; {previewPortfolio.user.role}</div>
+                  </div>
+                </div>
+                {previewPortfolio.user.bio && (
+                  <div className="mb-4 text-gray-700 dark:text-gray-300">{previewPortfolio.user.bio}</div>
+                )}
+                <hr className="my-4 border-gray-300" />
+                <h2 className="text-lg font-semibold text-[#800000] mb-2">Public Projects & Portfolios</h2>
+                {previewPortfolio.publicPortfolios.length === 0 ? (
+                  <div className="text-gray-500">No public portfolios.</div>
+                ) : (
+                  previewPortfolio.publicPortfolios.map((p) => (
+                    <div key={p.portfolioID} className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <h3 className="text-lg font-bold text-[#800000] mb-1">{p.portfolioTitle}</h3>
+                      <div className="text-sm text-gray-500 mb-2 capitalize">{p.category}</div>
+                      <div className="mb-2 text-gray-700">{p.portfolioDescription}</div>
+                      {p.githubLink && (
+                        <div className="mb-1">
+                          <span className="font-semibold text-[#D4AF37]">GitHub:</span>{' '}
+                          <a href={p.githubLink} className="text-blue-700 hover:underline break-all text-sm" target="_blank" rel="noopener noreferrer">{p.githubLink}</a>
+                        </div>
+                      )}
+                      {p.certTitle && (
+                        <div className="mb-1">
+                          <span className="font-semibold text-[#D4AF37]">Certificate:</span>{' '}
+                          <span className="text-gray-800 text-sm">{p.certTitle}</span>
+                        </div>
+                      )}
+                      {p.issueDate && (
+                        <div className="mb-1">
+                          <span className="font-semibold text-[#D4AF37]">Issue Date:</span>{' '}
+                          <span className="text-gray-800 text-sm">{p.issueDate}</span>
+                        </div>
+                      )}
+                      {p.skills && p.skills.length > 0 && (
+                        <div className="mb-1">
+                          <span className="font-semibold text-[#D4AF37]">Skills:</span>{' '}
+                          <span className="text-gray-800 text-sm">{p.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+                        </div>
+                      )}
+                      {p.validatedByFaculty && (
+                        <div className="mb-1">
+                          <span className="font-semibold text-green-700">Validated by:</span>{' '}
+                          <span className="text-gray-800 text-sm">{p.validatedByName}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+          {previewPortfolio && !previewPortfolio.isProfile && (
             <div className="bg-gray-100 flex items-center justify-center font-serif rounded-xl border border-gray-200 dark:border-gray-700 p-4">
               <div className="w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg p-8">
                 <div className="flex items-center mb-2">

@@ -16,6 +16,7 @@ import {
   Eye,
   FileText
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -182,118 +183,138 @@ export default function AdminStudents() {
 
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      {/* Student Table (Full Width) */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Student Management</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-xl">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
-            <input
-              type="text"
-              placeholder="Search students by name, email, or username..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Total Students: {students.length}
-          </div>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Student List</h1>
+        <div className="mb-4 flex flex-wrap gap-2">
+          <input
+            type="text"
+            placeholder="Search students by name, email, or username..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full md:w-80 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          />
+        </div>
+        <div className="overflow-x-auto rounded-xl bg-white dark:bg-gray-900 shadow border border-gray-200 dark:border-gray-700">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-800">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Student Name</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Username</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Program/Major</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Portfolio Items</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Last Update</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+              {filteredStudents.map((student) => {
+                // Calculate portfolio stats
+                const studentPortfolios = portfolios[student.userID] || [];
+                const projects = studentPortfolios.filter(p => p.category?.toLowerCase() === 'project');
+                const microcredentials = studentPortfolios.filter(p => p.category?.toLowerCase() === 'microcredentials');
+                // Status logic (green if updated in last 7 days, yellow if 7-30, red otherwise)
+                let statusColor = 'bg-red-500';
+                let lastUpdate = '';
+                if (studentPortfolios.length > 0) {
+                  const last = studentPortfolios.reduce((a, b) => new Date(a.lastUpdated || a.createdAt) > new Date(b.lastUpdated || b.createdAt) ? a : b);
+                  lastUpdate = new Date(last.lastUpdated || last.createdAt).toLocaleDateString();
+                  const days = (Date.now() - new Date(last.lastUpdated || last.createdAt)) / (1000 * 60 * 60 * 24);
+                  if (days <= 7) statusColor = 'bg-green-500';
+                  else if (days <= 30) statusColor = 'bg-yellow-400';
+                }
+                return (
+                  <tr key={student.userID} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">{student.fname} {student.lname}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{student.username}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{student.programMajor || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{projects.length + microcredentials.length} ({projects.length}/{microcredentials.length})</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{lastUpdate || '-'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`inline-block w-4 h-4 rounded-full ${statusColor}`}></span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap flex gap-2">
+                      <button
+                        onClick={() => handleStudentClick(student.userID)}
+                        className="px-3 py-1 bg-[#800000] text-white rounded hover:bg-[#600000] text-sm font-semibold"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => { setSelectedStudent(student); setShowResetConfirm(true); }}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold"
+                      >
+                        Reset Password
+                      </button>
+                      <button
+                        onClick={() => { setSelectedStudent(student); setShowDeleteConfirm(true); }}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filteredStudents.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">No students found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {filteredStudents.map((student) => (
-          <div key={student.userID} className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div 
-              className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              onClick={() => handleStudentClick(student.userID)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  {student.profilePic ? (
-                    <img
-                      src={student.profilePic.startsWith('http') ? student.profilePic : `http://localhost:8080${student.profilePic}`}
-                      alt={student.fname + ' ' + student.lname}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-[#800000] bg-white"
-                      onError={e => { e.target.onerror = null; e.target.src = ''; }}
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-[#800000] flex items-center justify-center text-white font-semibold text-lg">
-                      {student.fname?.[0]}{student.lname?.[0]}
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-white">
-                      {student.fname} {student.lname}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <Mail size={14} />
-                        {student.userEmail}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User size={14} />
-                        @{student.username}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedStudent(student);
-                      setShowResetConfirm(true);
-                    }}
-                    className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors shadow-md"
-                    title="Reset Password"
-                  >
-                    <Key className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedStudent(student);
-                      setShowDeleteConfirm(true);
-                    }}
-                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors shadow-md"
-                    title="Delete Account"
-                  >
-                    <UserX className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleStudentClick(student.userID);
-                    }}
-                    className={`p-2 ${expandedStudent === student.userID ? 'bg-[#800000]/10 dark:bg-[#D4AF37]/10 text-[#800000] dark:text-[#D4AF37]' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900'} rounded-lg transition-colors shadow-md`}
-                    title={expandedStudent === student.userID ? 'Hide Portfolios' : 'Show Portfolios'}
-                  >
-                    <FolderOpen className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
+      {/* Selected Student's Portfolios (Full Width) */}
+      {selectedStudent && portfolios[selectedStudent.userID] && (
+        <div className="glass-morphism bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                {selectedStudent.fname} {selectedStudent.lname}'s Portfolios
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">{selectedStudent.userEmail}</p>
             </div>
-
-            {expandedStudent === student.userID && (
-              <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
-                <h4 className="font-medium text-gray-700 dark:text-white mb-3">Portfolio Items</h4>
-                {portfolios[student.userID]?.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {portfolios[student.userID].map((portfolio) => (
-                      <div key={portfolio.portfolioID} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => setSelectedStudent(null)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+            >
+              <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            </button>
+          </div>
+          <div className="p-6 space-y-6">
+            {/* Projects Folder */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+              <button
+                onClick={() => setExpandedStudent('projects')}
+                className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
+                <div className="flex-1 flex items-center">
+                  <span className="font-medium text-gray-800 dark:text-white">Projects</span>
+                  <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm rounded-full">
+                    {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'project').length}
+                  </span>
+                </div>
+              </button>
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'project').length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                    No projects found
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'project').map((portfolio) => (
+                      <div
+                        key={portfolio.portfolioID}
+                        className="bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                      >
                         <div className="flex items-start justify-between">
                           <div>
-                            <h5 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h5>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{portfolio.category}</p>
+                            <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
                           </div>
                           <button
                             onClick={() => setViewPortfolio(portfolio)}
@@ -303,34 +324,129 @@ export default function AdminStudents() {
                             <Eye className="w-4 h-4" />
                           </button>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-                          {portfolio.portfolioDescription}
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          {portfolio.githubLink && (
+                            <a
+                              href={portfolio.githubLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                              View on GitHub
+                            </a>
+                          )}
                         </p>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">No portfolio items found.</p>
                 )}
               </div>
-            )}
-          </div>
-        ))}
-
-        {filteredStudents.length === 0 && (
-          <div className="text-center py-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
-              <User size={24} className="text-gray-400 dark:text-gray-500" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No students found</h3>
-            <p className="text-gray-500 dark:text-gray-400">
-              {searchTerm 
-                ? `No students match your search "${searchTerm}"`
-                : 'There are no students registered yet.'}
-            </p>
+            {/* Microcredentials Folder */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <button
+                onClick={() => setExpandedStudent('microcredentials')}
+                className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
+                <div className="flex-1 flex items-center">
+                  <span className="font-medium text-gray-800 dark:text-white">Microcredentials</span>
+                  <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm rounded-full">
+                    {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'microcredentials').length}
+                  </span>
+                </div>
+              </button>
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'microcredentials').length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                    No microcredentials found
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {portfolios[selectedStudent.userID].filter(p => p.category?.toLowerCase() === 'microcredentials').map((portfolio) => (
+                      <div
+                        key={portfolio.portfolioID}
+                        className="bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
+                          </div>
+                          <button
+                            onClick={() => setViewPortfolio(portfolio)}
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                            title="View Portfolio"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          {portfolio.certTitle && (
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                              Certificate: {portfolio.certTitle}
+                            </p>
+                          )}
+                          {portfolio.issueDate && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Issued: {new Date(portfolio.issueDate).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Skills Summary */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mt-6 p-6">
+              <div className="mb-4 text-lg font-semibold text-[#800000] dark:text-[#D4AF37] text-center">Skills Summary</div>
+              {(() => {
+                const langCounts = {};
+                portfolios[selectedStudent.userID].forEach(p => {
+                  if (p.skills) {
+                    p.skills.forEach(skill => {
+                      const lang = typeof skill === 'string' ? skill : (skill && skill.skillName ? skill.skillName : null);
+                      if (lang) langCounts[lang] = (langCounts[lang] || 0) + 1;
+                    });
+                  }
+                });
+                const total = Object.values(langCounts).reduce((a, b) => a + b, 0);
+                const chartData = Object.entries(langCounts).map(([lang, count]) => ({
+                  lang,
+                  count,
+                  percent: total ? Math.round((count / total) * 100) : 0
+                })).sort((a, b) => b.count - a.count);
+                if (chartData.length === 0) {
+                  return <div className="text-gray-400 italic text-center">No programming languages found.</div>;
+                }
+                return (
+                  <div className="max-w-xl mx-auto">
+                    <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
+                    <ResponsiveContainer width="100%" height={50 * chartData.length}>
+                      <BarChart
+                        layout="vertical"
+                        data={chartData}
+                        margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
+                        barCategoryGap={20}
+                      >
+                        <XAxis type="number" hide domain={[0, Math.max(...chartData.map(d => d.count), 1)]} />
+                        <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18 }} width={100} />
+                        <Bar dataKey="count" fill="#FFD700" radius={20} barSize={30}>
+                          <LabelList dataKey="percent" position="insideRight" formatter={v => `${v}%`} style={{ fill: '#333', fontWeight: 'bold', fontSize: 16 }} />
+                          <LabelList dataKey="count" position="right" formatter={v => v} style={{ fill: '#800000', fontWeight: 'bold', fontSize: 28 }} />
+                        </Bar>
+                        <Tooltip formatter={(value, name, props) => [`${value} projects`, 'Count']} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                );
+              })()}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Reset Password Confirmation Modal */}
       {showResetConfirm && selectedStudent && (

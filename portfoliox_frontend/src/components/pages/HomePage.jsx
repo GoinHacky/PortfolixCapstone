@@ -299,7 +299,13 @@ function DashboardContent() {
       const allSkills = new Set();
       projects.forEach(project => {
         if (project.skills) {
-          project.skills.forEach(skill => allSkills.add(skill));
+          project.skills.forEach(skill => {
+            if (typeof skill === 'string') {
+              allSkills.add(skill);
+            } else if (skill && skill.skillName) {
+              allSkills.add(skill.skillName);
+            }
+          });
         }
       });
 
@@ -628,129 +634,7 @@ function DashboardContent() {
         </div>
       </div>
 
-      {/* Enhanced Progress Tracking Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Portfolio Growth Chart Placeholder */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Portfolio Growth</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Track your progress over time</p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
-              <TrendingUp className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-          </div>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-[#800000] text-white rounded-xl">
-                  <Code className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#800000] dark:text-[#D4AF37]">Projects</p>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Technical showcase</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.projects.length}</p>
-                <p className="text-[#800000] dark:text-[#D4AF37] text-xs">Total</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-[#D4AF37] text-[#800000] rounded-xl">
-                  <Trophy className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#D4AF37] dark:text-[#800000]">Credentials</p>
-                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Certifications earned</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-[#D4AF37] dark:text-[#800000]">{dashboardData.microcredentials.length}</p>
-                <p className="text-[#D4AF37] dark:text-[#800000] text-xs">Total</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-[#800000] text-white rounded-xl">
-                  <Eye className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="font-semibold text-[#800000] dark:text-[#D4AF37]">Profile Views</p>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Recent visibility</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.profileViews}</p>
-                <p className="text-[#800000] dark:text-[#D4AF37] text-xs">This month</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Goals & Recommendations */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Goals & Tips</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Suggestions to improve your portfolio</p>
-            </div>
-            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
-              <Target className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            {dashboardData.projects.length === 0 && (
-              <div className="p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl border-l-4 border-[#800000]">
-                <div className="flex items-start space-x-3">
-                  <Plus className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Add Your First Project</h4>
-                    <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Start building your portfolio by adding a project that showcases your skills.</p>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {dashboardData.microcredentials.length === 0 && (
-              <div className="p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl border-l-4 border-[#D4AF37]">
-                <div className="flex items-start space-x-3">
-                  <Award className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-[#D4AF37] dark:text-[#800000] mb-1">Add Microcredentials</h4>
-                    <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Include certificates and achievements to validate your expertise.</p>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div className="p-4 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl border-l-4 border-[#800000]">
-              <div className="flex items-start space-x-3">
-                <Share2 className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Share Your Work</h4>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Make your portfolio visible to potential employers and collaborators.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-4 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 dark:from-[#D4AF37]/20 dark:to-[#800000]/20 rounded-2xl border-l-4 border-[#D4AF37]">
-              <div className="flex items-start space-x-3">
-                <Sparkles className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-[#D4AF37] dark:text-[#800000] mb-1">Keep It Updated</h4>
-                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Regularly update your portfolio with new projects and achievements.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 }
