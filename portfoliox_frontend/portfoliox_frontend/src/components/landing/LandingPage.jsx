@@ -282,7 +282,7 @@ export default function LandingPage() {
                   <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                     PortfolioX
                   </h1>
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
+                  <span className="text-sm font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
               </div>
             </div>

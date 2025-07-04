@@ -443,7 +443,7 @@ export default function AuthPage({ mode = "login" }) {
             </div>
           </div>
 
-          {/* Trust Indicators
+          {/* Trust Indicators */}
           <div className="mt-8 text-center text-sm text-gray-500">
             <div className="flex flex-wrap justify-center items-center gap-6">
               <div className="flex items-center space-x-2">
@@ -459,7 +459,7 @@ export default function AuthPage({ mode = "login" }) {
                 <span>Trusted by 10K+ students</span>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

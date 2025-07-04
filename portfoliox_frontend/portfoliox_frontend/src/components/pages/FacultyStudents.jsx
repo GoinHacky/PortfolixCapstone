@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText, Shield, BarChart } from 'lucide-react';
+import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -306,8 +306,6 @@ export default function FacultyStudents() {
 
 function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, onViewPortfolio, token, setStudentPortfolios }) {
   const [activeTab, setActiveTab] = React.useState('Projects');
-  const [expandedMicro, setExpandedMicro] = React.useState({});
-  const [expandedProject, setExpandedProject] = React.useState({});
 
   // Calculate summary data
   const totalItems = portfolios.length;
@@ -317,15 +315,6 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
 
   // Activity timeline (recently updated portfolios)
   const recentActivity = [...portfolios].sort((a, b) => new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt)).slice(0, 5);
-
-  function getCredentialIcon(title) {
-    const lower = (title || '').toLowerCase();
-    if (lower.includes('security')) return <Shield className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('data')) return <BarChart className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('aws') || lower.includes('certificate') || lower.includes('certification')) return <FileText className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('react')) return <GraduationCap className="w-7 h-7 text-[#D4AF37]" />;
-    return <GraduationCap className="w-7 h-7 text-[#D4AF37]" />;
-  }
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8 p-8">
@@ -360,16 +349,12 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-0 mb-6 border-b border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded-t-xl overflow-hidden">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
         {['Micro-credentials', 'Projects', 'Activity Timeline', 'Skills Summary'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 text-lg font-semibold border-b-2 transition-all focus:outline-none
-              ${activeTab === tab
-                ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37] bg-white dark:bg-gray-900'
-                : 'border-transparent text-gray-700 dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700'}`}
-            style={{ minWidth: '180px' }}
+            className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
           >
             {tab}
           </button>
@@ -380,97 +365,69 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
       {activeTab === 'Projects' && (
         <div className="space-y-6">
           {groupedPortfolios.projects.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400">No projects found.</div>
+            <div className="text-center text-gray-500">No projects found.</div>
           ) : (
-            groupedPortfolios.projects.map((project) => {
-              const isExpanded = expandedProject[project.portfolioID];
-              const preview = project.portfolioDescription ? project.portfolioDescription.split('\n')[0].slice(0, 60) + (project.portfolioDescription.length > 60 ? '...' : '') : '';
-              return (
-                <div key={project.portfolioID} className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileText className="w-7 h-7 text-[#800000] dark:text-[#D4AF37]" />
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
-                    </div>
-                    {/* Skill tags */}
-                    <div className="flex flex-wrap gap-2">
-                      {project.skills && project.skills.map((skill, idx) => (
-                        <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">{skill.skillName || skill}</span>
-                      ))}
-                    </div>
+            groupedPortfolios.projects.map((project) => (
+              <div key={project.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <FileText className="w-6 h-6 text-[#800000]" />
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
+                    <div className="text-sm text-gray-500">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-300 mb-2">{isExpanded ? project.portfolioDescription : preview}</div>
-                  <div className="flex gap-2 flex-wrap mt-2">
-                    <button
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                      onClick={() => setExpandedProject(prev => ({ ...prev, [project.portfolioID]: !prev[project.portfolioID] }))}
-                    >
-                      {isExpanded ? 'Hide' : 'View'}
-                    </button>
-                    {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200">GitHub</a>}
-                    {/* Add more buttons as needed */}
+                  {/* Skill tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {project.skills && project.skills.map((skill, idx) => (
+                      <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold" style={{background: '#e0e7ff', color: '#3730a3'}}>{skill.skillName || skill}</span>
+                    ))}
                   </div>
                 </div>
-              );
-            })
+                <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
+                <div className="flex gap-2 flex-wrap">
+                  {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
+                  {/* Add more buttons as needed */}
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
       {activeTab === 'Micro-credentials' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {groupedPortfolios.microcredentials.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400 col-span-full">No micro-credentials found.</div>
+            <div className="text-center text-gray-500">No micro-credentials found.</div>
           ) : (
-            groupedPortfolios.microcredentials.map((cred) => {
-              const isExpanded = expandedMicro[cred.portfolioID];
-              const preview = cred.portfolioDescription ? cred.portfolioDescription.split('\n')[0].slice(0, 60) + (cred.portfolioDescription.length > 60 ? '...' : '') : '';
-              return (
-                <div key={cred.portfolioID} className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-5 flex gap-4 items-start shadow-sm">
-                  <div className="flex-shrink-0">
-                    {getCredentialIcon(cred.certTitle || cred.portfolioTitle)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-gray-900 dark:text-white text-lg mb-0.5">{cred.certTitle || cred.portfolioTitle}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Earned: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
-                    <div className="text-gray-700 dark:text-gray-300 text-sm mb-3">
-                      {isExpanded ? cred.portfolioDescription : preview}
-                    </div>
-                    <button
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                      onClick={() => setExpandedMicro(prev => ({ ...prev, [cred.portfolioID]: !prev[cred.portfolioID] }))}
-                    >
-                      {isExpanded ? 'Hide' : 'View'}
-                    </button>
+            groupedPortfolios.microcredentials.map((cred) => (
+              <div key={cred.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cred.certTitle || cred.portfolioTitle}</h2>
+                    <div className="text-sm text-gray-500">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
                   </div>
                 </div>
-              );
-            })
+                <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
+                {/* Add more info/buttons as needed */}
+              </div>
+            ))
           )}
         </div>
       )}
       {activeTab === 'Activity Timeline' && (
-        <div className="relative pl-8">
+        <div className="space-y-6">
           {recentActivity.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400">No recent activity.</div>
+            <div className="text-center text-gray-500">No recent activity.</div>
           ) : (
-            <>
-              {/* Vertical timeline line */}
-              <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200 dark:bg-gray-700 rounded-full" style={{ zIndex: 0 }}></div>
-              <div className="space-y-6">
-                {recentActivity.map((item, idx) => (
-                  <div key={item.portfolioID || idx} className="relative flex gap-4 items-start">
-                    {/* Timeline dot */}
-                    <span className={`absolute left-[-30px] top-4 w-4 h-4 rounded-full border-2 border-white dark:border-gray-900 z-10 ${idx === 0 ? 'bg-pink-500' : idx === 1 ? 'bg-blue-400' : idx === 2 ? 'bg-yellow-400' : 'bg-green-400'}`}></span>
-                    <div className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-4 flex-1 shadow-sm">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">{item.portfolioTitle}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.lastUpdated ? new Date(item.lastUpdated).toLocaleString() : item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</div>
-                      <div className="text-gray-700 dark:text-gray-300 text-sm">{item.portfolioDescription}</div>
-                    </div>
-                  </div>
-                ))}
+            recentActivity.map((item, idx) => (
+              <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#800000]" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
+                  <span className="text-xs text-gray-500">{new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
               </div>
-            </>
+            ))
           )}
         </div>
       )}
@@ -493,26 +450,26 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
               percent: total ? Math.round((count / total) * 100) : 0
             })).sort((a, b) => b.count - a.count);
             if (chartData.length === 0) {
-              return <div className="text-gray-400 dark:text-gray-500 italic">No programming languages found.</div>;
+              return <div className="text-gray-400 italic">No programming languages found.</div>;
             }
             return (
               <div className="max-w-xl mx-auto">
                 <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
                 <ResponsiveContainer width="100%" height={50 * chartData.length}>
-                  <RechartsBarChart
+                  <BarChart
                     layout="vertical"
                     data={chartData}
                     margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
                     barCategoryGap={20}
                   >
                     <XAxis type="number" hide domain={[0, Math.max(...chartData.map(d => d.count), 1)]} />
-                    <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18, fill: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151' }} width={100} />
+                    <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18 }} width={100} />
                     <Bar dataKey="count" fill="#FFD700" radius={20} barSize={30}>
                       <LabelList dataKey="percent" position="insideRight" formatter={v => `${v}%`} style={{ fill: '#333', fontWeight: 'bold', fontSize: 16 }} />
                       <LabelList dataKey="count" position="right" formatter={v => v} style={{ fill: '#800000', fontWeight: 'bold', fontSize: 28 }} />
                     </Bar>
                     <Tooltip formatter={(value, name, props) => [`${value} projects`, 'Count']} />
-                  </RechartsBarChart>
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             );

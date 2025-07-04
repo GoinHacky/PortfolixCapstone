@@ -66,7 +66,7 @@ export function ConfirmDialog({ open, title, message, onConfirm, onCancel }) {
             onClick={onConfirm}
             className="px-4 py-2 rounded-lg bg-[#800000] text-white font-semibold hover:bg-[#600000] transition-colors border-2 border-[#D4AF37]"
           >
-            Yes, Validate
+            Yes, Delete
           </button>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, CheckCircle, XCircle, Loader2, FileText } from 'lucide-react';
-import { ConfirmDialog } from '../Notification';
 
 const maroon = "#800000";
 const gold = "#D4AF37";
@@ -14,7 +13,6 @@ export default function FacultyCourses() {
   const [projectLoading, setProjectLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [confirmProjectId, setConfirmProjectId] = useState(null);
 
   const token = localStorage.getItem('token');
   const facultyId = localStorage.getItem('userId');
@@ -173,9 +171,7 @@ export default function FacultyCourses() {
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">{project.portfolioTitle}</div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">{project.portfolioDescription}</div>
-                      <div className="text-xs text-gray-500">
-                        By: {project.user?.fname && project.user?.lname ? `${project.user.fname} ${project.user.lname}` : project.user?.userID || project.userID}
-                      </div>
+                      <div className="text-xs text-gray-500">By Student ID: {project.user?.userID || project.userID}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -184,24 +180,12 @@ export default function FacultyCourses() {
                         <CheckCircle size={14} /> Validated
                       </span>
                     ) : (
-                      <>
-                        <button
-                          onClick={() => setConfirmProjectId(project.portfolioID)}
-                          className="px-4 py-2 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-1"
-                        >
-                          <CheckCircle size={16} /> Validate
-                        </button>
-                        <ConfirmDialog
-                          open={confirmProjectId === project.portfolioID}
-                          title="Validate Project"
-                          message="Do you want to validate this project?"
-                          onConfirm={() => {
-                            handleValidateProject(project.portfolioID);
-                            setConfirmProjectId(null);
-                          }}
-                          onCancel={() => setConfirmProjectId(null)}
-                        />
-                      </>
+                      <button
+                        onClick={() => handleValidateProject(project.portfolioID)}
+                        className="px-4 py-2 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-1"
+                      >
+                        <CheckCircle size={16} /> Validate
+                      </button>
                     )}
                   </div>
                 </div>
