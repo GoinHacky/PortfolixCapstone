@@ -21,6 +21,10 @@ public class ProjectEntity {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupportingDocumentEntity> supportingDocuments;
 
+    @ManyToOne
+    @JoinColumn(name = "userID")
+    private UserEntity user;
+
     public ProjectEntity() {
         
     }
@@ -71,6 +75,14 @@ public class ProjectEntity {
 
     public void setSupportingDocuments(List<SupportingDocumentEntity> supportingDocuments) {
         this.supportingDocuments = supportingDocuments;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     // Getters and setters...

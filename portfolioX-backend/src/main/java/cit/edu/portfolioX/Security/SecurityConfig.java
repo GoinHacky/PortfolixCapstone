@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 
 import java.util.Arrays;
 
@@ -24,6 +25,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+    
+    @Autowired
+    private GitHubOAuth2SuccessHandler githubOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +42,8 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
+                .requestMatchers("/login/oauth2/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/portfolios/public/**").permitAll()
@@ -51,6 +57,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/users/faculty").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/students/**").hasAnyRole("FACULTY", "ADMIN")
                 .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("http://localhost:5173/auth/login")
+                .successHandler(githubOAuth2SuccessHandler)
+                .failureUrl("http://localhost:5173/auth/login?error=oauth_error")
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

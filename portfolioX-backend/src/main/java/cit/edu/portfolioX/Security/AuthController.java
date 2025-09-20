@@ -287,4 +287,27 @@ public class AuthController {
             return ResponseEntity.status(500).body(Map.of("error", "Error deleting user"));
         }
     }
+
+    @Operation(summary = "Get GitHub OAuth2 login URL", description = "Returns the GitHub OAuth2 authorization URL")
+    @GetMapping("/github/login")
+    public ResponseEntity<?> getGitHubLoginUrl() {
+        String githubAuthUrl = "http://localhost:8080/oauth2/authorization/github";
+        return ResponseEntity.ok(Map.of("authUrl", githubAuthUrl));
+    }
+
+    @Operation(summary = "Handle GitHub OAuth2 callback", description = "Processes GitHub OAuth2 callback and returns user data")
+    @GetMapping("/github/callback")
+    public ResponseEntity<?> handleGitHubCallback(@RequestParam(required = false) String code, 
+                                                @RequestParam(required = false) String error) {
+        if (error != null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "GitHub OAuth2 error: " + error));
+        }
+        
+        if (code == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Authorization code not provided"));
+        }
+        
+        // This endpoint is mainly for documentation - the actual OAuth2 flow is handled by Spring Security
+        return ResponseEntity.ok(Map.of("message", "OAuth2 callback received. Please use the OAuth2 login URL."));
+    }
 }
