@@ -45,6 +45,19 @@ export default function AuthPage({ mode = "login" }) {
     }));
   };
 
+  const handleGitHubLogin = async () => {
+    try {
+      // Redirect to GitHub OAuth2 authorization URL
+      window.location.href = "http://localhost:8080/oauth2/authorization/github";
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to initiate GitHub login" });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setMessage({ type: "error", text: "Google OAuth not implemented yet" });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
@@ -232,7 +245,10 @@ export default function AuthPage({ mode = "login" }) {
                   <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">G</div>
                   <span>Continue with Google</span>
                 </button>
-                <button className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-300 font-semibold">
+                <button 
+                  onClick={handleGitHubLogin}
+                  className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-300 font-semibold"
+                >
                   <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-black text-xs font-bold">G</div>
                   <span>Continue with GitHub</span>
                 </button>

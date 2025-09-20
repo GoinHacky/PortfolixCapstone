@@ -4,6 +4,7 @@ import './App.css'
 import { ThemeProvider } from './contexts/ThemeContext'
 import LandingPage from './components/landing/LandingPage'
 import AuthPage from './components/auth/AuthPage'
+import GitHubCallback from './components/auth/GitHubCallback'
 import HomePage from './components/pages/HomePage'
 import FacultyHomePage from './components/pages/FacultyHomePage'
 import AdminHomePage from './components/pages/AdminHomePage'
@@ -56,6 +57,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth/login" element={<AuthPage mode="login" />} />
               <Route path="/auth/signup" element={<AuthPage mode="signup" />} />
+              <Route path="/auth/github-callback" element={<GitHubCallback />} />
               
               {/* Student Dashboard and related routes */}
               <Route path="/dashboard/*" element={
