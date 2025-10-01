@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class LinkEntity {
     @Id
+    @Column(name = "portfolio_id")
     private Long portfolioID;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "portfolioID")
+    @JoinColumn(name = "portfolio_id")
     @JsonBackReference
     private PortfolioEntity portfolio;
 

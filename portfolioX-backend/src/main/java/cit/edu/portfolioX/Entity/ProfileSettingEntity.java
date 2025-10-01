@@ -12,7 +12,7 @@ public class ProfileSettingEntity {
     private String settingValue;
 
     @ManyToOne
-    @JoinColumn(name = "userID")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity user;
 
     public ProfileSettingEntity() {

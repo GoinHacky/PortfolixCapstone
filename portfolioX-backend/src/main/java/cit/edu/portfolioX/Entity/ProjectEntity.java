@@ -15,14 +15,14 @@ public class ProjectEntity {
     private LocalDate completionDate;
 
     @ManyToOne
-    @JoinColumn(name = "portfolioID")
+    @JoinColumn(name = "portfolio_id")
     private PortfolioEntity portfolio;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupportingDocumentEntity> supportingDocuments;
 
     @ManyToOne
-    @JoinColumn(name = "userID")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity user;
 
     public ProjectEntity() {

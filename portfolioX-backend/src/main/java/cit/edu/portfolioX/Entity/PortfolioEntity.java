@@ -11,10 +11,11 @@ import java.util.UUID;
 public class PortfolioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "portfolio_id")
     private Long portfolioID;
 
     @ManyToOne
-    @JoinColumn(name = "userID")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @JsonBackReference
     private UserEntity user;
 
