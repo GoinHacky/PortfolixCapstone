@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Table(name = "user_entity")
 public class UserEntity {
     public static enum UserStatus {
         PENDING,
@@ -38,6 +39,8 @@ public class UserEntity {
     
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
+    private LocalDateTime lastLogin;
+    private boolean firstLogin = true;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.PENDING;
@@ -174,6 +177,22 @@ public class UserEntity {
 
     public void setProfileSettings(List<ProfileSettingEntity> profileSettings) {
         this.profileSettings = profileSettings;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
+    public void setFirstLogin(boolean firstLogin) {
+        this.firstLogin = firstLogin;
     }
 
     // Getters and setters...

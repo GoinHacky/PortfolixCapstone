@@ -4,13 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "skill_entity")
 public class SkillEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "skillid")
     private Long skillID;
 
     @ManyToOne
-    @JoinColumn(name = "portfolioID")
+    @JoinColumn(name = "portfolioid", referencedColumnName = "portfolioid")
     @JsonBackReference
     private PortfolioEntity portfolio;
 

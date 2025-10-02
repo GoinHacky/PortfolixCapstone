@@ -1,17 +1,31 @@
 package cit.edu.portfolioX.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
 @Entity
+@Table(name = "portfolio_entity")
 public class PortfolioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "portfolio_id")
+    @Column(name = "portfolioid")
     private Long portfolioID;
 
     @ManyToOne
@@ -77,6 +91,10 @@ public class PortfolioEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public Long getUserID() {
+        return user != null ? user.getUserID() : null;
     }
 
     public String getPortfolioTitle() {

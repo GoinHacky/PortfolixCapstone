@@ -25,7 +25,7 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
-    
+
     @Autowired
     private GitHubOAuth2SuccessHandler githubOAuth2SuccessHandler;
 

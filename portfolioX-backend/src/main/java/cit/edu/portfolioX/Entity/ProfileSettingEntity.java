@@ -3,9 +3,11 @@ package cit.edu.portfolioX.Entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "profile_setting_entity")
 public class ProfileSettingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "setting_id")
     private Long settingID;
 
     private String settingKey;

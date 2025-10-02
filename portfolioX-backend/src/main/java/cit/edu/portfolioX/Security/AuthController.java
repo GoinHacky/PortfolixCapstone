@@ -105,6 +105,8 @@ public class AuthController {
             "token", token,
             "userId", user.getUserID(),
             "username", user.getUsername(),
+            "fname", user.getFname(),
+            "lname", user.getLname(),
             "role", user.getRole().toString()
         ));
     }

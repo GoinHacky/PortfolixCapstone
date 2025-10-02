@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "project_entity")
 public class ProjectEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "projectid")
     private Long projectID;
 
     private String projectName;
@@ -15,14 +17,14 @@ public class ProjectEntity {
     private LocalDate completionDate;
 
     @ManyToOne
-    @JoinColumn(name = "portfolio_id")
+    @JoinColumn(name = "portfolioid", referencedColumnName = "portfolioid")
     private PortfolioEntity portfolio;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupportingDocumentEntity> supportingDocuments;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "userID")
     private UserEntity user;
 
     public ProjectEntity() {

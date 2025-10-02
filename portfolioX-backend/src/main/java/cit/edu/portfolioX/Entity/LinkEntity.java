@@ -5,14 +5,15 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
+@Table(name = "link_entity")
 public class LinkEntity {
     @Id
-    @Column(name = "portfolio_id")
+    @Column(name = "portfolioid")
     private Long portfolioID;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "portfolio_id")
+    @JoinColumn(name = "portfolioid", referencedColumnName = "portfolioid")
     @JsonBackReference
     private PortfolioEntity portfolio;
 

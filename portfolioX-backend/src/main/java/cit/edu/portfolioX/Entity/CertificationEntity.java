@@ -14,7 +14,7 @@ public class CertificationEntity {
     private LocalDate issueDate;
 
     @ManyToOne
-    @JoinColumn(name = "portfolio_id")
+    @JoinColumn(name = "portfolioID")
     private PortfolioEntity portfolio;
 
     public CertificationEntity() {

@@ -1,48 +1,56 @@
 package cit.edu.portfolioX.Controller;
 
-import cit.edu.portfolioX.Entity.PortfolioEntity;
-import cit.edu.portfolioX.Entity.UserEntity;
-import cit.edu.portfolioX.Entity.LinkEntity;
-import cit.edu.portfolioX.Entity.SkillEntity;
-import cit.edu.portfolioX.Service.PortfolioService;
-import cit.edu.portfolioX.Service.UserService;
-import cit.edu.portfolioX.Security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Div;
-import com.itextpdf.layout.borders.SolidBorder;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.BorderRadius;
-import com.itextpdf.kernel.colors.DeviceRgb;
-import com.itextpdf.kernel.geom.PageSize;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import java.io.ByteArrayOutputStream;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.servlet.ModelAndView;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
+
+import cit.edu.portfolioX.Entity.LinkEntity;
+import cit.edu.portfolioX.Entity.PortfolioEntity;
+import cit.edu.portfolioX.Entity.SkillEntity;
+import cit.edu.portfolioX.Entity.UserEntity;
+import cit.edu.portfolioX.Security.JwtUtil;
 import cit.edu.portfolioX.Service.CourseService;
+import cit.edu.portfolioX.Service.PortfolioService;
+import cit.edu.portfolioX.Service.UserService;
 
 @RestController
 @RequestMapping("/api/portfolios")
@@ -373,9 +381,10 @@ public class PortfolioController {
             @PathVariable Long userId,
             @RequestHeader("Authorization") String authHeader,
             @RequestParam(required = false) boolean enhanced,
-            @RequestBody(required = false) Map<String, String> enhancedContent) {
+            @RequestBody(required = false) Map<String, Object> requestBody) {
         try {
-            logger.info("Attempting to generate resume for user ID: {}", userId);
+            logger.info("Attempting to generate resume for user ID: {}, enhanced: {}", userId, enhanced);
+            logger.info("Request body: {}", requestBody);
             
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 logger.error("Invalid authorization header");
@@ -428,7 +437,17 @@ public class PortfolioController {
 
             document.add(header);
 
-            if (enhanced && enhancedContent != null && enhancedContent.containsKey("enhancedContent")) {
+            // Determine if we have valid enhanced content
+            String enhancedContentText = null;
+            if (requestBody != null && requestBody.containsKey("enhancedContent")) {
+                Object raw = requestBody.get("enhancedContent");
+                if (raw instanceof String) {
+                    enhancedContentText = ((String) raw).trim();
+                }
+            }
+            logger.info("Enhanced flag: {}, enhanced content length: {}", enhanced, enhancedContentText == null ? 0 : enhancedContentText.length());
+
+            if (enhanced && enhancedContentText != null && !enhancedContentText.isEmpty()) {
                 // Add a single section with the enhanced content
                 Paragraph enhancedHeader = new Paragraph("AI-Enhanced Resume Content")
                     .setFontSize(20)
@@ -443,7 +462,7 @@ public class PortfolioController {
                     .setMarginBottom(10);
                 document.add(separator);
 
-                document.add(new Paragraph(enhancedContent.get("enhancedContent"))
+                document.add(new Paragraph(enhancedContentText)
                     .setFontSize(12)
                     .setFontColor(grayColor)
                     .setMarginBottom(20));
@@ -677,6 +696,54 @@ public class PortfolioController {
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error validating project: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}/unvalidate")
+    public ResponseEntity<?> unvalidateProject(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity faculty = userService.findByUsername(username);
+            if (faculty == null || faculty.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
+                return ResponseEntity.status(403).body("Only faculty can unvalidate projects");
+            }
+            Optional<PortfolioEntity> portfolioOpt = service.getById(id);
+            if (portfolioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Portfolio not found");
+            }
+            PortfolioEntity portfolio = portfolioOpt.get();
+            if (!"project".equalsIgnoreCase(portfolio.getCategory())) {
+                return ResponseEntity.badRequest().body("Only projects can be unvalidated");
+            }
+            if (!portfolio.isValidatedByFaculty()) {
+                return ResponseEntity.badRequest().body("Project is not validated");
+            }
+            // If project has a courseCode, only the faculty who created that course can unvalidate
+            if (portfolio.getCourseCode() != null && !portfolio.getCourseCode().isBlank()) {
+                var courseOpt = courseService.findByCourseCode(portfolio.getCourseCode());
+                if (courseOpt.isEmpty()) {
+                    return ResponseEntity.badRequest().body("Course code not found");
+                }
+                if (!courseOpt.get().getCreatedBy().equals(faculty.getUserID())) {
+                    return ResponseEntity.status(403).body("Only the faculty who created this course can unvalidate this project");
+                }
+            }
+            portfolio.setValidatedByFaculty(false);
+            portfolio.setValidatedByName(null);
+            portfolio.setValidatedById(null);
+            service.save(portfolio);
+            return ResponseEntity.ok(Map.of(
+                "portfolioID", portfolio.getPortfolioID(),
+                "validatedByFaculty", false
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error unvalidating project: " + e.getMessage());
         }
     }
 }

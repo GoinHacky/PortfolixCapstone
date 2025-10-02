@@ -3,9 +3,11 @@ package cit.edu.portfolioX.Entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "supporting_document_entity")
 public class SupportingDocumentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "sdid")
     private Long sdID;
 
     private String name;
@@ -15,7 +17,7 @@ public class SupportingDocumentEntity {
     private byte[] fileData;
 
     @ManyToOne
-    @JoinColumn(name = "projectID")
+    @JoinColumn(name = "projectid", referencedColumnName = "projectid")
     private ProjectEntity project;
 
     public Long getSdID() {
