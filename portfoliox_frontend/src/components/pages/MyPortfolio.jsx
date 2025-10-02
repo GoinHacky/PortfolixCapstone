@@ -41,9 +41,12 @@ export default function MyPortfolio() {
 
   const programmingLanguages = [
     'C++', 'Java', 'JavaScript', 'Go', 'Python', 'PHP', 'R', 'Ruby', 'SQL', 'Swift',
-    'Assembly language', 'CSS', 'Kotlin', 'MATLAB', 'Objective-C', 'Delphi', 'Perl',
+    'Assembly language', 'CSS', 'HTML', 'Kotlin', 'MATLAB', 'Objective-C', 'Delphi', 'Perl',
     'Rust', 'Visual Basic', 'COBOL', 'Dart', 'Elixir', 'Erlang', 'Fortran'
   ];
+
+  const [githubLanguages, setGithubLanguages] = useState({});
+  const [otherLanguage, setOtherLanguage] = useState('');
 
   useEffect(() => {
     if (!token) {
@@ -334,6 +337,48 @@ export default function MyPortfolio() {
       showNotification({ message: 'Error updating public/private status', type: 'error' });
     }
   };
+
+  useEffect(() => {
+    const fetchGithubLanguages = async () => {
+      setGithubLanguages({});
+      if (
+        formData.category === 'project' &&
+        formData.githubLink &&
+        formData.githubLink.includes('github.com')
+      ) {
+        try {
+          // Extract owner/repo from URL
+          const match = formData.githubLink.match(/github\.com\/([^/]+)\/([^/]+)/);
+          if (!match) return;
+          const owner = match[1];
+          const repo = match[2].replace(/\.git$/, '');
+
+          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+          if (!res.ok) return;
+          const langs = await res.json();
+          setGithubLanguages(langs);
+
+          // Auto-select languages (add to formData.skills if not already present)
+          const detected = Object.keys(langs);
+          setFormData(prev => {
+            // Only add detected languages that are not already in skills
+            const newSkills = [
+              ...prev.skills,
+              ...detected.filter(lang => !prev.skills.includes(lang))
+            ];
+            return {
+              ...prev,
+              skills: Array.from(new Set(newSkills))
+            };
+          });
+        } catch (err) {
+          // Ignore errors
+        }
+      }
+    };
+    fetchGithubLanguages();
+    // eslint-disable-next-line
+  }, [formData.githubLink, formData.category]);
 
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -895,7 +940,32 @@ export default function MyPortfolio() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Programming Languages</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Programming Languages
+                  </label>
+
+                  {/* Show detected GitHub languages with percentages */}
+                  {Object.keys(githubLanguages).length > 0 && (
+                    <div className="mb-2">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Detected from GitHub:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(githubLanguages).map(([lang, bytes]) => {
+                          const total = Object.values(githubLanguages).reduce((a, b) => a + b, 0);
+                          const percent = ((bytes / total) * 100).toFixed(1);
+                          return (
+                            <span
+                              key={lang}
+                              className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold"
+                            >
+                              {lang} ({percent}%)
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Programming Languages selection */}
                   <div className="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                     <div className="flex flex-wrap gap-2">
                       {programmingLanguages.map(lang => (
@@ -904,9 +974,15 @@ export default function MyPortfolio() {
                           type="button"
                           onClick={() => {
                             if (formData.skills.includes(lang)) {
-                              setFormData(prev => ({ ...prev, skills: prev.skills.filter(skill => skill !== lang) }));
+                              setFormData(prev => ({
+                                ...prev,
+                                skills: prev.skills.filter(skill => skill !== lang),
+                              }));
                             } else {
-                              setFormData(prev => ({ ...prev, skills: [...prev.skills, lang] }));
+                              setFormData(prev => ({
+                                ...prev,
+                                skills: [...prev.skills, lang],
+                              }));
                             }
                           }}
                           className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
@@ -920,6 +996,68 @@ export default function MyPortfolio() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Other (specify) button and input */}
+                  <div className="mt-3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs mr-2"
+                      onClick={() => {
+                        // Show input for other language
+                        setFormData(prev => ({
+                          ...prev,
+                          showOtherInput: true
+                        }));
+                      }}
+                    >
+                      Other (specify)
+                    </button>
+                    {formData.showOtherInput && (
+                      <div className="flex gap-2 mt-2">
+                        <input
+                          type="text"
+                          placeholder="Specify other language"
+                          value={otherLanguage}
+                          onChange={e => setOtherLanguage(e.target.value)}
+                          className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                        />
+                        <button
+                          type="button"
+                          className="px-3 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs"
+                          onClick={() => {
+                            if (
+                              otherLanguage &&
+                              !formData.skills.includes(otherLanguage)
+                            ) {
+                              setFormData(prev => ({
+                                ...prev,
+                                skills: [...prev.skills, otherLanguage],
+                                showOtherInput: false
+                              }));
+                              setOtherLanguage('');
+                            }
+                          }}
+                        >
+                          Add
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded text-xs"
+                          onClick={() => {
+                            setFormData(prev => ({
+                              ...prev,
+                              showOtherInput: false
+                            }));
+                            setOtherLanguage('');
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected Skills */}
                   {formData.skills.length > 0 && (
                     <div className="mt-4">
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -927,12 +1065,20 @@ export default function MyPortfolio() {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {formData.skills.map((lang, idx) => (
-                          <span key={idx} className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm">
+                          <span
+                            key={idx}
+                            className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm"
+                          >
                             {lang}
-                            <button 
-                              type="button" 
-                              className="ml-2 text-[#800000] hover:text-red-600 font-bold text-lg leading-none" 
-                              onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter((s, i) => i !== idx) }))}
+                            <button
+                              type="button"
+                              className="ml-2 text-[#800000] hover:text-red-600 font-bold text-lg leading-none"
+                              onClick={() =>
+                                setFormData(prev => ({
+                                  ...prev,
+                                  skills: prev.skills.filter((s, i) => i !== idx),
+                                }))
+                              }
                             >
                               ×
                             </button>
@@ -942,6 +1088,7 @@ export default function MyPortfolio() {
                     </div>
                   )}
                 </div>
+
               </div>
 
               <div className="mt-6 flex justify-end gap-3">
