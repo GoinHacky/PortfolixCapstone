@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import SideBar from "./Sidebar";
 import { 
   Bell, 
@@ -32,6 +32,7 @@ import {
   TrendingDown
 } from "lucide-react";
 import MyPortfolio from './MyPortfolio';
+import MyCourse from './MyCourse';
 import SharePortfolio from './SharePortfolio';
 import Profile from './Profile';
 import { ChevronRight } from "lucide-react";
@@ -50,6 +51,7 @@ export default function HomePage() {
     if (pathname.startsWith("/dashboard/portfolio")) return "My Portfolio";
     if (pathname.startsWith("/dashboard/share")) return "Share Portfolio";
     if (pathname.startsWith("/dashboard/profile")) return "Profile";
+    if (pathname.startsWith("/dashboard/mycourse")) return "My Course";
     return "Dashboard";
   };
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
@@ -135,6 +137,23 @@ export default function HomePage() {
 
   const handleMenuItemSelect = (itemId) => {
     setActiveItem(itemId);
+  };
+
+  const renderContent = () => {
+    switch (activeItem) {
+      case 'Dashboard':
+        return <DashboardContent />;
+      case 'My Course':
+        return <MyCourse />;
+      case 'My Portfolio':
+        return <MyPortfolio />;
+      case 'Share Portfolio':
+        return <SharePortfolio />;
+      case 'Profile':
+        return <Profile />;
+      default:
+        return <DashboardContent />;
+    }
   };
 
   const formatDate = (dateString) => {
@@ -232,12 +251,7 @@ export default function HomePage() {
         
         {/* Main Content */}
         <main className="flex-1 overflow-auto bg-gradient-to-br from-transparent via-gray-50/30 to-transparent dark:from-transparent dark:via-gray-800/30 dark:to-transparent">
-          <Routes>
-            <Route index element={<DashboardContent />} />
-            <Route path="portfolio" element={<MyPortfolio />} />
-            <Route path="share" element={<SharePortfolio />} />
-            <Route path="profile" element={<Profile />} />
-          </Routes>
+          {renderContent()}
         </main>
       </div>
     </div>

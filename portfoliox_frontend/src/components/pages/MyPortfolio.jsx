@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ConfirmDialog } from '../Notification';
 
 export default function MyPortfolio() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [portfolios, setPortfolios] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -39,12 +41,9 @@ export default function MyPortfolio() {
 
   const programmingLanguages = [
     'C++', 'Java', 'JavaScript', 'Go', 'Python', 'PHP', 'R', 'Ruby', 'SQL', 'Swift',
-    'Assembly language', 'CSS', 'HTML', 'Kotlin', 'MATLAB', 'Objective-C', 'Delphi', 'Perl',
+    'Assembly language', 'CSS', 'Kotlin', 'MATLAB', 'Objective-C', 'Delphi', 'Perl',
     'Rust', 'Visual Basic', 'COBOL', 'Dart', 'Elixir', 'Erlang', 'Fortran'
   ];
-
-  const [githubLanguages, setGithubLanguages] = useState({});
-  const [otherLanguage, setOtherLanguage] = useState('');
 
   useEffect(() => {
     if (!token) {
@@ -55,6 +54,34 @@ export default function MyPortfolio() {
     console.log('Token found:', token);
     fetchPortfolios();
     fetchCourses();
+    // Open create form if navigated with preset from MyCourse
+    if (location.state?.openCreate) {
+      setEditingPortfolio(null);
+      setFormData(prev => ({
+        ...prev,
+        category: location.state?.preset?.category || 'project',
+        courseCode: location.state?.preset?.courseCode || ''
+      }));
+      setShowForm(true);
+      // clear once consumed to avoid reopening on back
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      // Fallback: read preset from localStorage if state not propagated
+      try {
+        const raw = localStorage.getItem('portfolioCreatePreset');
+        if (raw) {
+          const preset = JSON.parse(raw);
+          setEditingPortfolio(null);
+          setFormData(prev => ({
+            ...prev,
+            category: preset?.category || 'project',
+            courseCode: preset?.courseCode || ''
+          }));
+          setShowForm(true);
+          localStorage.removeItem('portfolioCreatePreset');
+        }
+      } catch {}
+    }
   }, [token, navigate]);
 
   const fetchPortfolios = async () => {
@@ -87,15 +114,18 @@ export default function MyPortfolio() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/courses', {
+      const response = await fetch(`http://localhost:8080/api/courses/student/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (response.ok) {
         const data = await response.json();
         setCourses(data);
+      } else {
+        setCourses([]);
       }
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching enrolled courses:', error);
+      setCourses([]);
     }
   };
 
@@ -305,48 +335,6 @@ export default function MyPortfolio() {
     }
   };
 
-  useEffect(() => {
-    const fetchGithubLanguages = async () => {
-      setGithubLanguages({});
-      if (
-        formData.category === 'project' &&
-        formData.githubLink &&
-        formData.githubLink.includes('github.com')
-      ) {
-        try {
-          // Extract owner/repo from URL
-          const match = formData.githubLink.match(/github\.com\/([^/]+)\/([^/]+)/);
-          if (!match) return;
-          const owner = match[1];
-          const repo = match[2].replace(/\.git$/, '');
-
-          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
-          if (!res.ok) return;
-          const langs = await res.json();
-          setGithubLanguages(langs);
-
-          // Auto-select languages (add to formData.skills if not already present)
-          const detected = Object.keys(langs);
-          setFormData(prev => {
-            // Only add detected languages that are not already in skills
-            const newSkills = [
-              ...prev.skills,
-              ...detected.filter(lang => !prev.skills.includes(lang))
-            ];
-            return {
-              ...prev,
-              skills: Array.from(new Set(newSkills))
-            };
-          });
-        } catch (err) {
-          // Ignore errors
-        }
-      }
-    };
-    fetchGithubLanguages();
-    // eslint-disable-next-line
-  }, [formData.githubLink, formData.category]);
-
   return (
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-6">
@@ -368,12 +356,17 @@ export default function MyPortfolio() {
                 
                 const portfolios = await portfoliosResponse.json();
                 
+                // Check if user has any portfolios
+                if (!portfolios || portfolios.length === 0) {
+                  throw new Error('No portfolios found. Please add some projects or microcredentials first.');
+                }
+
                 // Create a simple text version of the portfolio content
                 const content = portfolios.map(p => `
-                  ${p.portfolioTitle}
-                  ${p.portfolioDescription}
-                  ${p.category === 'project' ? `GitHub: ${p.githubLink}` : ''}
-                  ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle}, Issued: ${p.issueDate}` : ''}
+                  ${p.portfolioTitle || 'Untitled'}
+                  ${p.portfolioDescription || 'No description'}
+                  ${p.category === 'project' ? `GitHub: ${p.githubLink || 'No link provided'}` : ''}
+                  ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle || 'No title'}, Issued: ${p.issueDate || 'No date'}` : ''}
                 `).join('\n\n');
 
                 console.log('Sending content to AI:', content); // Debug log
@@ -396,6 +389,11 @@ export default function MyPortfolio() {
                 const enhancedData = await enhanceResponse.json();
                 console.log('Received enhanced content:', enhancedData); // Debug log
                 
+                // Validate enhanced content
+                if (!enhancedData || !enhancedData.enhancedContent) {
+                  throw new Error('AI enhancement failed - no enhanced content received');
+                }
+                
                 // Now generate the enhanced PDF
                 const response = await fetch(`http://localhost:8080/api/portfolios/generate-resume/${userId}?enhanced=true`, {
                   method: 'POST',
@@ -403,21 +401,32 @@ export default function MyPortfolio() {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ enhancedContent: enhancedData.enhancedContent }),
+                  body: JSON.stringify({ enhancedContent: (enhancedData.enhancedContent || '').trim() }),
                 });
                 
                 if (!response.ok) {
-                  throw new Error('Failed to generate resume');
+                  const errorText = await response.text();
+                  console.error('Resume generation failed:', errorText);
+                  throw new Error(`Failed to generate resume: ${errorText}`);
                 }
                 
                 const blob = await response.blob();
+                
+                // Check if we actually got a PDF
+                if (blob.size === 0) {
+                  throw new Error('Generated PDF is empty');
+                }
+                
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'enhanced-portfolio-resume.pdf';
                 document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
+                
+                showNotification({ message: 'AI-enhanced resume generated successfully!', type: 'success' });
               } catch (error) {
                 console.error('Error:', error);
                 showNotification({ message: 'Failed to generate enhanced resume', type: 'error' });
@@ -675,8 +684,8 @@ export default function MyPortfolio() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
               {editingPortfolio ? 'Edit Portfolio' : `Add New ${formData.category === 'project' ? 'Project' : 'Microcredential'}`}
             </h2>
@@ -886,122 +895,52 @@ export default function MyPortfolio() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Programming Languages</label>
-                  {Object.keys(githubLanguages).length > 0 && (
-                    <div className="mb-2">
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Detected from GitHub:</div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Programming Languages</label>
+                  <div className="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                    <div className="flex flex-wrap gap-2">
+                      {programmingLanguages.map(lang => (
+                        <button
+                          key={lang}
+                          type="button"
+                          onClick={() => {
+                            if (formData.skills.includes(lang)) {
+                              setFormData(prev => ({ ...prev, skills: prev.skills.filter(skill => skill !== lang) }));
+                            } else {
+                              setFormData(prev => ({ ...prev, skills: [...prev.skills, lang] }));
+                            }
+                          }}
+                          className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                            formData.skills.includes(lang)
+                              ? 'bg-[#800000] text-white shadow-md transform scale-105'
+                              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-[#D4AF37] hover:text-[#800000] hover:border-[#D4AF37] hover:shadow-md hover:scale-105'
+                          }`}
+                        >
+                          {lang}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {formData.skills.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Selected ({formData.skills.length}):
+                      </p>
                       <div className="flex flex-wrap gap-2">
-                        {Object.entries(githubLanguages).map(([lang, bytes]) => {
-                          const total = Object.values(githubLanguages).reduce((a, b) => a + b, 0);
-                          const percent = ((bytes / total) * 100).toFixed(1);
-                          return (
-                            <span
-                              key={lang}
-                              className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold"
+                        {formData.skills.map((lang, idx) => (
+                          <span key={idx} className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm">
+                            {lang}
+                            <button 
+                              type="button" 
+                              className="ml-2 text-[#800000] hover:text-red-600 font-bold text-lg leading-none" 
+                              onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter((s, i) => i !== idx) }))}
                             >
-                              {lang} ({percent}%)
-                            </span>
-                          );
-                        })}
+                              ×
+                            </button>
+                          </span>
+                        ))}
                       </div>
                     </div>
                   )}
-                  <select
-                    multiple
-                    value={formData.skills}
-                    onChange={e => {
-                      const selected = Array.from(e.target.selectedOptions, option => option.value);
-                      if (selected.includes('Other (specify)')) {
-                        setFormData(prev => ({
-                          ...prev,
-                          skills: prev.skills.filter(s => s !== 'Other (specify)')
-                        }));
-                      } else {
-                        setFormData(prev => ({
-                          ...prev,
-                          skills: selected
-                        }));
-                      }
-                    }}
-                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                  >
-                    {programmingLanguages.map(lang => (
-                      <option key={lang} value={lang}>{lang}</option>
-                    ))}
-                    {/* Add detected GitHub languages if not in the list */}
-                    {Object.keys(githubLanguages)
-                      .filter(lang => !programmingLanguages.includes(lang))
-                      .map(lang => (
-                        <option key={lang} value={lang}>{lang}</option>
-                      ))}
-                  </select>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {formData.skills.map((lang, idx) => (
-                      <span key={idx} className="inline-flex items-center px-3 py-1 bg-[#D4AF37] text-[#800000] rounded-full text-xs font-semibold">
-                        {lang}
-                        <button type="button" className="ml-2 text-[#800000] hover:text-red-600" onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter((s, i) => i !== idx) }))}>&times;</button>
-                      </span>
-                    ))}
-                  </div>
-                  {/* Show input if "Other (specify)" is selected in the select box */}
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs mr-2"
-                      onClick={() => {
-                        // Show input for other language
-                        setFormData(prev => ({
-                          ...prev,
-                          showOtherInput: true
-                        }));
-                      }}
-                    >
-                      Other (specify)
-                    </button>
-                    {formData.showOtherInput && (
-                      <div className="flex gap-2 mt-2">
-                        <input
-                          type="text"
-                          placeholder="Specify other language"
-                          value={otherLanguage}
-                          onChange={e => setOtherLanguage(e.target.value)}
-                          className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                        />
-                        <button
-                          type="button"
-                          className="px-3 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs"
-                          onClick={() => {
-                            if (
-                              otherLanguage &&
-                              !formData.skills.includes(otherLanguage)
-                            ) {
-                              setFormData(prev => ({
-                                ...prev,
-                                skills: [...prev.skills, otherLanguage],
-                                showOtherInput: false
-                              }));
-                              setOtherLanguage('');
-                            }
-                          }}
-                        >
-                          Add
-                        </button>
-                        <button
-                          type="button"
-                          className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded text-xs"
-                          onClick={() => {
-                            setFormData(prev => ({
-                              ...prev,
-                              showOtherInput: false
-                            }));
-                            setOtherLanguage('');
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -1029,7 +968,7 @@ export default function MyPortfolio() {
       )}
 
       {viewPortfolio && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-full max-w-lg shadow-lg relative">
             <button
               onClick={() => setViewPortfolio(null)}
@@ -1042,7 +981,18 @@ export default function MyPortfolio() {
               <div className="text-sm text-gray-500 mb-4 capitalize">{viewPortfolio.category}</div>
               <div className="mb-4">
                 <h3 className="font-semibold text-[#800000] mb-1">Description</h3>
-                <p className="text-gray-700 dark:text-gray-200 text-justify">{viewPortfolio.portfolioDescription}</p>
+                <div className="text-gray-700 dark:text-gray-200 text-left">
+                  {viewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
+                    <div key={index} className="mb-1">
+                      {line.trim() && (
+                        <div className="flex items-start">
+                          <span className="text-[#D4AF37] mr-2 mt-1">•</span>
+                          <span>{line.trim()}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
               {viewPortfolio.githubLink && (
                 <div className="mb-2">
@@ -1114,7 +1064,7 @@ export default function MyPortfolio() {
       )}
 
       {previewImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewImage(null)}>
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-40" onClick={() => setPreviewImage(null)}>
           <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => setPreviewImage(null)}

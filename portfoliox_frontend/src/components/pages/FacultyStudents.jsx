@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText, Shield, BarChart } from 'lucide-react';
+import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText, RefreshCw, UserMinus, AlertTriangle, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -14,6 +14,7 @@ export default function FacultyStudents() {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentPortfolios, setStudentPortfolios] = useState([]);
+  const [allStudentPortfolios, setAllStudentPortfolios] = useState({}); // Store portfolios for all students
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const [expandedFolders, setExpandedFolders] = useState({
@@ -22,6 +23,13 @@ export default function FacultyStudents() {
   });
   const [viewPortfolio, setViewPortfolio] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [studentToRemove, setStudentToRemove] = useState(null);
+  const [modalAction, setModalAction] = useState('remove'); // 'remove' or 'add'
+  const [facultyCourses, setFacultyCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [notification, setNotification] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -32,10 +40,12 @@ export default function FacultyStudents() {
       return;
     }
     fetchStudents();
+    fetchFacultyCourses();
   }, [token, navigate]);
 
   const fetchStudents = async () => {
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:8080/api/users/students', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -54,9 +64,63 @@ export default function FacultyStudents() {
       const data = await response.json();
       console.log('Fetched students:', data);
       setStudents(data);
+      
+      // Fetch portfolios for all students
+      await fetchAllStudentPortfolios(data);
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to fetch students');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFacultyCourses = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await fetch(`http://localhost:8080/api/courses/faculty/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const courses = await response.json();
+        setFacultyCourses(courses);
+      }
+    } catch (error) {
+      console.error('Error fetching faculty courses:', error);
+    }
+  };
+
+  const fetchAllStudentPortfolios = async (studentsList) => {
+    try {
+      const portfoliosMap = {};
+      
+      // Fetch portfolios for each student
+      for (const student of studentsList) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/portfolios/student/${student.userID}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const portfolios = await response.json();
+            portfoliosMap[student.userID] = portfolios;
+          } else {
+            portfoliosMap[student.userID] = [];
+          }
+        } catch (error) {
+          console.error(`Error fetching portfolios for student ${student.userID}:`, error);
+          portfoliosMap[student.userID] = [];
+        }
+      }
+      
+      setAllStudentPortfolios(portfoliosMap);
+    } catch (error) {
+      console.error('Error fetching all student portfolios:', error);
     }
   };
 
@@ -93,7 +157,14 @@ export default function FacultyStudents() {
 
   const handleStudentClick = (studentId) => {
     console.log('Student clicked:', studentId);
-    fetchStudentPortfolios(studentId);
+    // Use pre-fetched data if available, otherwise fetch
+    if (allStudentPortfolios[studentId]) {
+      setStudentPortfolios(allStudentPortfolios[studentId]);
+      const student = students.find(s => s.userID === studentId);
+      setSelectedStudent(student);
+    } else {
+      fetchStudentPortfolios(studentId);
+    }
   };
 
   const toggleFolder = (folder) => {
@@ -101,6 +172,142 @@ export default function FacultyStudents() {
       ...prev,
       [folder]: !prev[folder]
     }));
+  };
+
+  const refreshPortfolioData = async () => {
+    if (students.length > 0) {
+      await fetchAllStudentPortfolios(students);
+    }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  const handleRemoveStudent = (student) => {
+    setStudentToRemove(student);
+    setModalAction('remove');
+    setShowRemoveModal(true);
+    setSelectedCourse('');
+  };
+
+  const confirmRemoveStudent = async () => {
+    if (!selectedCourse || !studentToRemove) return;
+
+    try {
+      console.log('Removing student:', studentToRemove.userID, 'from course:', selectedCourse);
+      const response = await fetch(`http://localhost:8080/api/courses/${selectedCourse}/remove-student/${studentToRemove.userID}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Refresh the data
+        await refreshPortfolioData();
+        setShowRemoveModal(false);
+        setStudentToRemove(null);
+        setSelectedCourse('');
+        // Show success message
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from the course.`, 'success');
+      } else {
+        let errorMessage = 'Unknown error';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || 'Unknown error';
+        } catch (e) {
+          // If response is not JSON, try to get text
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || 'Unknown error';
+          } catch (textError) {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+        }
+        showNotification(`Failed to remove student: ${errorMessage}`, 'error');
+      }
+    } catch (error) {
+      console.error('Error removing student:', error);
+      showNotification('Failed to remove student. Please try again.', 'error');
+    }
+  };
+
+  const cancelRemoveStudent = () => {
+    setShowRemoveModal(false);
+    setStudentToRemove(null);
+    setSelectedCourse('');
+  };
+
+  // Check if a student is enrolled in any of the faculty's courses
+  const isStudentEnrolledInFacultyCourse = (studentId) => {
+    const studentPortfolios = allStudentPortfolios[studentId] || [];
+    const facultyCourseCodes = facultyCourses.map(course => course.courseCode);
+    
+    return studentPortfolios.some(portfolio => 
+      portfolio.courseCode && facultyCourseCodes.includes(portfolio.courseCode)
+    );
+  };
+
+  // Get the course code that a student is enrolled in (if any)
+  const getStudentEnrolledCourse = (studentId) => {
+    const studentPortfolios = allStudentPortfolios[studentId] || [];
+    const facultyCourseCodes = facultyCourses.map(course => course.courseCode);
+    
+    const enrolledPortfolio = studentPortfolios.find(portfolio => 
+      portfolio.courseCode && facultyCourseCodes.includes(portfolio.courseCode)
+    );
+    
+    return enrolledPortfolio ? enrolledPortfolio.courseCode : null;
+  };
+
+  const handleAddStudent = (student) => {
+    setStudentToRemove(student);
+    setModalAction('add');
+    setShowRemoveModal(true);
+    setSelectedCourse('');
+  };
+
+  const confirmAddStudent = async () => {
+    if (!selectedCourse || !studentToRemove) return;
+
+    try {
+      console.log('Adding student:', studentToRemove.userID, 'to course:', selectedCourse);
+      const response = await fetch(`http://localhost:8080/api/courses/${selectedCourse}/add-student/${studentToRemove.userID}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        await refreshPortfolioData();
+        setShowRemoveModal(false);
+        setStudentToRemove(null);
+        setSelectedCourse('');
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been added to the course.`, 'success');
+      } else {
+        let errorMessage = 'Unknown error';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || 'Unknown error';
+        } catch (e) {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || 'Unknown error';
+          } catch (textError) {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+        }
+        showNotification(`Failed to add student: ${errorMessage}`, 'error');
+      }
+    } catch (error) {
+      console.error('Error adding student:', error);
+      showNotification('Failed to add student. Please try again.', 'error');
+    }
   };
 
   // Filter students based on search term
@@ -142,23 +349,50 @@ export default function FacultyStudents() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full md:w-80 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
+          <button
+            onClick={refreshPortfolioData}
+            disabled={loading}
+            className="px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
         </div>
+
+        {/* Notification */}
+        {notification && (
+          <div className={`mb-4 p-4 rounded-lg shadow-md ${
+            notification.type === 'error' 
+              ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
+              : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+          }`}>
+            {notification.message}
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-xl bg-white dark:bg-gray-900 shadow border border-gray-200 dark:border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-100 dark:bg-gray-800">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Student Name</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Username</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Program/Major</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Portfolio Items</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+          {loading && (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#800000]"></div>
+              <span className="ml-2 text-gray-600 dark:text-gray-400">Loading students and portfolios...</span>
+            </div>
+          )}
+          {!loading && (
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Student Name</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Username</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Program/Major</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Portfolio Items</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               {filteredStudents.map((student) => {
-                // Calculate portfolio stats for this student
-                const portfolios = selectedStudent?.userID === student.userID ? studentPortfolios : [];
+                // Calculate portfolio stats for this student using pre-fetched data
+                const portfolios = allStudentPortfolios[student.userID] || [];
                 const projects = portfolios.filter(p => p.category?.toLowerCase() === 'project');
                 const microcredentials = portfolios.filter(p => p.category?.toLowerCase() === 'microcredentials');
                 // Status logic (green if updated in last 7 days, yellow if 7-30, red otherwise)
@@ -180,24 +414,50 @@ export default function FacultyStudents() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`inline-block w-4 h-4 rounded-full ${statusColor}`}></span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <button
-                        onClick={() => handleStudentClick(student.userID)}
-                        className="px-3 py-1 bg-[#800000] text-white rounded hover:bg-[#600000] text-sm font-semibold"
-                      >
-                        View
-                      </button>
-                    </td>
+                                  <td className="px-4 py-3 whitespace-nowrap">
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() => handleStudentClick(student.userID)}
+                                        className="px-3 py-1 bg-[#800000] text-white rounded hover:bg-[#600000] text-sm font-semibold"
+                                      >
+                                        View
+                                      </button>
+                                      {facultyCourses.length > 0 && (
+                                        <>
+                                          {isStudentEnrolledInFacultyCourse(student.userID) ? (
+                                            <button
+                                              onClick={() => handleRemoveStudent(student)}
+                                              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold flex items-center gap-1"
+                                              title="Remove from Course"
+                                            >
+                                              <UserMinus className="w-3 h-3" />
+                                              Remove
+                                            </button>
+                                          ) : (
+                                            <button
+                                              onClick={() => handleAddStudent(student)}
+                                              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-semibold flex items-center gap-1"
+                                              title="Add to Course"
+                                            >
+                                              <UserPlus className="w-3 h-3" />
+                                              Add
+                                            </button>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                  </td>
                   </tr>
                 );
               })}
               {filteredStudents.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">No students found</td>
+                  <td colSpan={6} className="text-center py-8 text-gray-500 dark:text-gray-400">No students found</td>
                 </tr>
               )}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
@@ -231,7 +491,18 @@ export default function FacultyStudents() {
             </div>
             <div className="mb-4">
               <span className="font-semibold text-[#800000] uppercase tracking-wide text-xs">Description:</span>
-              <p className="mt-1 text-gray-700 dark:text-gray-200 break-words whitespace-pre-line">{viewPortfolio.portfolioDescription}</p>
+              <div className="mt-1 text-gray-700 dark:text-gray-200 break-words text-left">
+                {viewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
+                  <div key={index} className="mb-1">
+                    {line.trim() && (
+                      <div className="flex items-start">
+                        <span className="text-[#D4AF37] mr-2 mt-1">•</span>
+                        <span>{line.trim()}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
             {viewPortfolio.githubLink && (
               <div className="mb-2">
@@ -300,14 +571,109 @@ export default function FacultyStudents() {
           </div>
         </div>
       )}
+
+                  {/* Add/Remove Student from Course Modal */}
+                  {showRemoveModal && studentToRemove && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md shadow-lg">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className={`p-2 rounded-full ${
+                            modalAction === 'remove' 
+                              ? 'bg-red-100 dark:bg-red-900/20' 
+                              : 'bg-green-100 dark:bg-green-900/20'
+                          }`}>
+                            {modalAction === 'remove' ? (
+                              <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                            ) : (
+                              <UserPlus className="w-6 h-6 text-green-600 dark:text-green-400" />
+                            )}
+                          </div>
+                          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                            {modalAction === 'remove' ? 'Remove Student from Course' : 'Add Student to Course'}
+                          </h2>
+                        </div>
+                        
+                        <div className="mb-4">
+                          <p className="text-gray-600 dark:text-gray-300 mb-2">
+                            {modalAction === 'remove' ? (
+                              <>
+                                Are you sure you want to remove <strong>{studentToRemove.fname} {studentToRemove.lname}</strong> from a course?
+                              </>
+                            ) : (
+                              <>
+                                Add <strong>{studentToRemove.fname} {studentToRemove.lname}</strong> to one of your courses?
+                              </>
+                            )}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {modalAction === 'remove' ? (
+                              'This action will remove the student from the selected course and may affect their portfolio items associated with that course.'
+                            ) : (
+                              'This will associate the student\'s portfolio with the selected course.'
+                            )}
+                          </p>
+                        </div>
+
+                        <div className="mb-6">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {modalAction === 'remove' ? 'Select Course to Remove From:' : 'Select Course to Add To:'}
+                          </label>
+                          <select
+                            value={selectedCourse}
+                            onChange={(e) => setSelectedCourse(e.target.value)}
+                            className={`w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                              modalAction === 'remove' 
+                                ? 'focus:ring-red-500' 
+                                : 'focus:ring-green-500'
+                            }`}
+                          >
+                            <option value="">Select a course...</option>
+                            {facultyCourses.map((course) => (
+                              <option key={course.id} value={course.courseCode}>
+                                {course.courseCode} - {course.courseName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="flex gap-3 justify-end">
+                          <button
+                            onClick={cancelRemoveStudent}
+                            className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={modalAction === 'remove' ? confirmRemoveStudent : confirmAddStudent}
+                            disabled={!selectedCourse}
+                            className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 ${
+                              modalAction === 'remove'
+                                ? 'bg-red-600 hover:bg-red-700'
+                                : 'bg-green-600 hover:bg-green-700'
+                            }`}
+                          >
+                            {modalAction === 'remove' ? (
+                              <>
+                                <UserMinus className="w-4 h-4" />
+                                Remove Student
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus className="w-4 h-4" />
+                                Add Student
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
     </div>
   );
 }
 
 function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, onViewPortfolio, token, setStudentPortfolios }) {
   const [activeTab, setActiveTab] = React.useState('Projects');
-  const [expandedMicro, setExpandedMicro] = React.useState({});
-  const [expandedProject, setExpandedProject] = React.useState({});
 
   // Calculate summary data
   const totalItems = portfolios.length;
@@ -317,15 +683,6 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
 
   // Activity timeline (recently updated portfolios)
   const recentActivity = [...portfolios].sort((a, b) => new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt)).slice(0, 5);
-
-  function getCredentialIcon(title) {
-    const lower = (title || '').toLowerCase();
-    if (lower.includes('security')) return <Shield className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('data')) return <BarChart className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('aws') || lower.includes('certificate') || lower.includes('certification')) return <FileText className="w-7 h-7 text-gray-700 dark:text-gray-300" />;
-    if (lower.includes('react')) return <GraduationCap className="w-7 h-7 text-[#D4AF37]" />;
-    return <GraduationCap className="w-7 h-7 text-[#D4AF37]" />;
-  }
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8 p-8">
@@ -360,16 +717,12 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-0 mb-6 border-b border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded-t-xl overflow-hidden">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
         {['Micro-credentials', 'Projects', 'Activity Timeline', 'Skills Summary'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 text-lg font-semibold border-b-2 transition-all focus:outline-none
-              ${activeTab === tab
-                ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37] bg-white dark:bg-gray-900'
-                : 'border-transparent text-gray-700 dark:text-gray-300 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700'}`}
-            style={{ minWidth: '180px' }}
+            className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
           >
             {tab}
           </button>
@@ -380,97 +733,69 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
       {activeTab === 'Projects' && (
         <div className="space-y-6">
           {groupedPortfolios.projects.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400">No projects found.</div>
+            <div className="text-center text-gray-500">No projects found.</div>
           ) : (
-            groupedPortfolios.projects.map((project) => {
-              const isExpanded = expandedProject[project.portfolioID];
-              const preview = project.portfolioDescription ? project.portfolioDescription.split('\n')[0].slice(0, 60) + (project.portfolioDescription.length > 60 ? '...' : '') : '';
-              return (
-                <div key={project.portfolioID} className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileText className="w-7 h-7 text-[#800000] dark:text-[#D4AF37]" />
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
-                    </div>
-                    {/* Skill tags */}
-                    <div className="flex flex-wrap gap-2">
-                      {project.skills && project.skills.map((skill, idx) => (
-                        <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">{skill.skillName || skill}</span>
-                      ))}
-                    </div>
+            groupedPortfolios.projects.map((project) => (
+              <div key={project.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <FileText className="w-6 h-6 text-[#800000]" />
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
+                    <div className="text-sm text-gray-500">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
                   </div>
-                  <div className="text-gray-700 dark:text-gray-300 mb-2">{isExpanded ? project.portfolioDescription : preview}</div>
-                  <div className="flex gap-2 flex-wrap mt-2">
-                    <button
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                      onClick={() => setExpandedProject(prev => ({ ...prev, [project.portfolioID]: !prev[project.portfolioID] }))}
-                    >
-                      {isExpanded ? 'Hide' : 'View'}
-                    </button>
-                    {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200">GitHub</a>}
-                    {/* Add more buttons as needed */}
+                  {/* Skill tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {project.skills && project.skills.map((skill, idx) => (
+                      <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold" style={{background: '#e0e7ff', color: '#3730a3'}}>{skill.skillName || skill}</span>
+                    ))}
                   </div>
                 </div>
-              );
-            })
+                <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
+                <div className="flex gap-2 flex-wrap">
+                  {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
+                  {/* Add more buttons as needed */}
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
       {activeTab === 'Micro-credentials' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {groupedPortfolios.microcredentials.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400 col-span-full">No micro-credentials found.</div>
+            <div className="text-center text-gray-500">No micro-credentials found.</div>
           ) : (
-            groupedPortfolios.microcredentials.map((cred) => {
-              const isExpanded = expandedMicro[cred.portfolioID];
-              const preview = cred.portfolioDescription ? cred.portfolioDescription.split('\n')[0].slice(0, 60) + (cred.portfolioDescription.length > 60 ? '...' : '') : '';
-              return (
-                <div key={cred.portfolioID} className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-5 flex gap-4 items-start shadow-sm">
-                  <div className="flex-shrink-0">
-                    {getCredentialIcon(cred.certTitle || cred.portfolioTitle)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-gray-900 dark:text-white text-lg mb-0.5">{cred.certTitle || cred.portfolioTitle}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Earned: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
-                    <div className="text-gray-700 dark:text-gray-300 text-sm mb-3">
-                      {isExpanded ? cred.portfolioDescription : preview}
-                    </div>
-                    <button
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                      onClick={() => setExpandedMicro(prev => ({ ...prev, [cred.portfolioID]: !prev[cred.portfolioID] }))}
-                    >
-                      {isExpanded ? 'Hide' : 'View'}
-                    </button>
+            groupedPortfolios.microcredentials.map((cred) => (
+              <div key={cred.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cred.certTitle || cred.portfolioTitle}</h2>
+                    <div className="text-sm text-gray-500">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
                   </div>
                 </div>
-              );
-            })
+                <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
+                {/* Add more info/buttons as needed */}
+              </div>
+            ))
           )}
         </div>
       )}
       {activeTab === 'Activity Timeline' && (
-        <div className="relative pl-8">
+        <div className="space-y-6">
           {recentActivity.length === 0 ? (
-            <div className="text-center text-gray-500 dark:text-gray-400">No recent activity.</div>
+            <div className="text-center text-gray-500">No recent activity.</div>
           ) : (
-            <>
-              {/* Vertical timeline line */}
-              <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200 dark:bg-gray-700 rounded-full" style={{ zIndex: 0 }}></div>
-              <div className="space-y-6">
-                {recentActivity.map((item, idx) => (
-                  <div key={item.portfolioID || idx} className="relative flex gap-4 items-start">
-                    {/* Timeline dot */}
-                    <span className={`absolute left-[-30px] top-4 w-4 h-4 rounded-full border-2 border-white dark:border-gray-900 z-10 ${idx === 0 ? 'bg-pink-500' : idx === 1 ? 'bg-blue-400' : idx === 2 ? 'bg-yellow-400' : 'bg-green-400'}`}></span>
-                    <div className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-xl p-4 flex-1 shadow-sm">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">{item.portfolioTitle}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.lastUpdated ? new Date(item.lastUpdated).toLocaleString() : item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</div>
-                      <div className="text-gray-700 dark:text-gray-300 text-sm">{item.portfolioDescription}</div>
-                    </div>
-                  </div>
-                ))}
+            recentActivity.map((item, idx) => (
+              <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#800000]" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
+                  <span className="text-xs text-gray-500">{new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
               </div>
-            </>
+            ))
           )}
         </div>
       )}
@@ -493,26 +818,26 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
               percent: total ? Math.round((count / total) * 100) : 0
             })).sort((a, b) => b.count - a.count);
             if (chartData.length === 0) {
-              return <div className="text-gray-400 dark:text-gray-500 italic">No programming languages found.</div>;
+              return <div className="text-gray-400 italic">No programming languages found.</div>;
             }
             return (
               <div className="max-w-xl mx-auto">
                 <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
                 <ResponsiveContainer width="100%" height={50 * chartData.length}>
-                  <RechartsBarChart
+                  <BarChart
                     layout="vertical"
                     data={chartData}
                     margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
                     barCategoryGap={20}
                   >
                     <XAxis type="number" hide domain={[0, Math.max(...chartData.map(d => d.count), 1)]} />
-                    <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18, fill: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151' }} width={100} />
+                    <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18 }} width={100} />
                     <Bar dataKey="count" fill="#FFD700" radius={20} barSize={30}>
                       <LabelList dataKey="percent" position="insideRight" formatter={v => `${v}%`} style={{ fill: '#333', fontWeight: 'bold', fontSize: 16 }} />
                       <LabelList dataKey="count" position="right" formatter={v => v} style={{ fill: '#800000', fontWeight: 'bold', fontSize: 28 }} />
                     </Bar>
                     <Tooltip formatter={(value, name, props) => [`${value} projects`, 'Count']} />
-                  </RechartsBarChart>
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             );

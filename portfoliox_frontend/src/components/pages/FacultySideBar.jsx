@@ -27,6 +27,7 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const storedProfilePic = localStorage.getItem('profilePic');
   const [profilePic, setProfilePic] = useState(storedProfilePic);
+  const [facultyName, setFacultyName] = useState('');
   const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useTheme();
 
@@ -47,10 +48,57 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
           setProfilePic(null);
         }
       }
+      
+      // Also listen for name changes
+      if (e?.key === 'fname' || e?.key === 'lname' || !e) {
+        fetchFacultyName();
+      }
+    };
+
+    // Fetch faculty name from API
+    const fetchFacultyName = async () => {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+      
+      if (token && userId) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            const fullName = `${userData.fname || ''} ${userData.lname || ''}`.trim();
+            setFacultyName(fullName || userData.username || 'Faculty');
+          }
+        } catch (error) {
+          console.error('Error fetching faculty data:', error);
+          // Fallback to localStorage if API fails
+          const storedFname = localStorage.getItem('fname');
+          const storedLname = localStorage.getItem('lname');
+          if (storedFname && storedLname) {
+            setFacultyName(`${storedFname} ${storedLname}`);
+          } else {
+            setFacultyName(localStorage.getItem('username') || 'Faculty');
+          }
+        }
+      } else {
+        // Fallback to localStorage if no token/userId
+        const storedFname = localStorage.getItem('fname');
+        const storedLname = localStorage.getItem('lname');
+        if (storedFname && storedLname) {
+          setFacultyName(`${storedFname} ${storedLname}`);
+        } else {
+          setFacultyName(localStorage.getItem('username') || 'Faculty');
+        }
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
     handleStorageChange();
+    fetchFacultyName();
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
@@ -110,7 +158,10 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
-              <div className="flex items-center space-x-3">
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              >
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
                   <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
                 </div>
@@ -120,13 +171,16 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
                   </h1>
                   <span className="text-xs font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
-              </div>
+              </button>
             )}
             
             {isCollapsed && (
-              <div className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto`}>
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto hover:opacity-80 transition-opacity`}
+              >
                 <Sparkles className={`w-5 h-5 ${maroonText}`} />
-              </div>
+              </button>
             )}
 
             <button
@@ -167,10 +221,10 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm truncate">
-                  {localStorage.getItem('username') || 'Faculty'}
+                  {facultyName || 'Faculty'}
                 </p>
                 <p className="text-white/60 text-xs truncate">
-                  Faculty Member
+                  Faculty
                 </p>
                 <div className="flex items-center mt-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>

@@ -43,7 +43,7 @@ export default function Notification({ message, type = 'info', onClose }) {
   );
 }
 
-export function ConfirmDialog({ open, title, message, onConfirm, onCancel }) {
+export function ConfirmDialog({ open, title, message, onConfirm, onCancel, confirmText = "Yes, Continue" }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -66,7 +66,7 @@ export function ConfirmDialog({ open, title, message, onConfirm, onCancel }) {
             onClick={onConfirm}
             className="px-4 py-2 rounded-lg bg-[#800000] text-white font-semibold hover:bg-[#600000] transition-colors border-2 border-[#D4AF37]"
           >
-            Yes, Validate
+            {confirmText}
           </button>
         </div>
       </div>

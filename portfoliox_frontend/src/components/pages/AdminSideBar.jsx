@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard,
   Users,
@@ -26,7 +25,6 @@ const goldText = "text-[#D4AF37]";
 export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [profilePic, setProfilePic] = useState(localStorage.getItem('profilePic'));
-  const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
@@ -91,7 +89,6 @@ export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect })
     if (onItemSelect) {
       onItemSelect(item.id);
     }
-    navigate(item.path);
   };
 
   const handleSignOut = () => {
@@ -99,7 +96,7 @@ export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect })
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
-    navigate('/auth/login');
+    window.location.href = '/auth/login';
   };
 
   return (
@@ -117,7 +114,10 @@ export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect })
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
-              <div className="flex items-center space-x-3">
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              >
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
                   <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
                 </div>
@@ -127,13 +127,16 @@ export default function AdminSideBar({ activeItem = 'Dashboard', onItemSelect })
                   </h1>
                   <span className="text-xs font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
-              </div>
+              </button>
             )}
             
             {isCollapsed && (
-              <div className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto`}>
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto hover:opacity-80 transition-opacity`}
+              >
                 <Sparkles className={`w-5 h-5 ${maroonText}`} />
-              </div>
+              </button>
             )}
 
             <button

@@ -45,7 +45,7 @@ export default function AuthPage({ mode = "login" }) {
     }));
   };
 
-  const handleGitHubLogin = async () => {
+   const handleGitHubLogin = async () => {
     try {
       // Redirect to GitHub OAuth2 authorization URL
       window.location.href = "http://localhost:8080/oauth2/authorization/github";
@@ -57,7 +57,7 @@ export default function AuthPage({ mode = "login" }) {
   const handleGoogleLogin = async () => {
     setMessage({ type: "error", text: "Google OAuth not implemented yet" });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
@@ -90,6 +90,8 @@ export default function AuthPage({ mode = "login" }) {
           localStorage.setItem("userId", data.userId);
           localStorage.setItem("username", data.username);
           localStorage.setItem("role", data.role);
+          localStorage.setItem("fname", data.fname);
+          localStorage.setItem("lname", data.lname);
 
           // Fetch user profile and set profilePic in localStorage
           try {
@@ -459,7 +461,7 @@ export default function AuthPage({ mode = "login" }) {
             </div>
           </div>
 
-          {/* Trust Indicators
+          {/* Trust Indicators */}
           <div className="mt-8 text-center text-sm text-gray-500">
             <div className="flex flex-wrap justify-center items-center gap-6">
               <div className="flex items-center space-x-2">
@@ -475,7 +477,7 @@ export default function AuthPage({ mode = "login" }) {
                 <span>Trusted by 10K+ students</span>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

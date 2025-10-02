@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
 import { 
@@ -13,7 +12,8 @@ import {
   LogOut,
   Settings,
   Sun,
-  Moon
+  Moon,
+  BookOpen
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
@@ -27,7 +27,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const storedProfilePic = localStorage.getItem('profilePic');
   const [profilePic, setProfilePic] = useState(storedProfilePic);
-  const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
   const { darkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
@@ -65,6 +65,39 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
     };
   }, []);
 
+  // Fetch user's full name
+  useEffect(() => {
+    const fetchUserFullName = async () => {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+      
+      if (token && userId) {
+        try {
+          const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            const fullName = `${userData.fname || ''} ${userData.lname || ''}`.trim();
+            setFullName(fullName || userData.username || 'User');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          // Fallback to username if API fails
+          setFullName(localStorage.getItem('username') || 'User');
+        }
+      } else {
+        // Fallback to username if no token/userId
+        setFullName(localStorage.getItem('username') || 'User');
+      }
+    };
+
+    fetchUserFullName();
+  }, []);
+
   const menuItems = [
     { 
       id: 'Dashboard', 
@@ -72,6 +105,13 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
       label: 'Dashboard',
       description: 'Overview & Analytics',
       path: '/dashboard'
+    },
+    { 
+      id: 'My Course', 
+      icon: BookOpen, 
+      label: 'My Course',
+      description: 'Enrolled Subjects',
+      path: '/dashboard/mycourse'
     },
     { 
       id: 'My Portfolio', 
@@ -100,7 +140,6 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
     if (onItemSelect) {
       onItemSelect(item.id);
     }
-    navigate(item.path);
   };
 
   const handleSignOut = () => {
@@ -110,13 +149,13 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     // Redirect to login page
-    navigate('/auth/login');
+    window.location.href = '/auth/login';
   };
 
   return (
     <div className={`relative h-screen ${maroon} dark:bg-gray-800 transition-all duration-300 ease-in-out ${
       isCollapsed ? 'w-20' : 'w-72'
-    } flex flex-col shadow-2xl`}>
+    } flex flex-col shadow-2xl z-50`}>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#800000] via-[#600000] to-[#800000] dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 opacity-90"></div>
@@ -128,7 +167,10 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
-              <div className="flex items-center space-x-3">
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              >
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
                   <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-8 h-8 object-contain" />
                 </div>
@@ -139,13 +181,16 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                   </h1>
                   <span className="text-xs font-semibold text-gray-200 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
-              </div>
+              </button>
             )}
             
             {isCollapsed && (
-              <div className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto`}>
+              <button 
+                onClick={() => handleItemClick({ id: 'Dashboard' })}
+                className={`w-8 h-8 ${goldBgSolid} rounded-lg flex items-center justify-center mx-auto hover:opacity-80 transition-opacity`}
+              >
                 <Sparkles className={`w-5 h-5 ${maroonText}`} />
-              </div>
+              </button>
             )}
 
             <button
@@ -180,13 +225,13 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center text-white font-bold text-lg">
-                    {localStorage.getItem('username')?.substring(0, 2)?.toUpperCase() || 'U'}
+                    {fullName ? fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : localStorage.getItem('username')?.substring(0, 2)?.toUpperCase() || 'U'}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm truncate">
-                  {localStorage.getItem('username') || 'User'}
+                  {fullName || localStorage.getItem('username') || 'User'}
                 </p>
                 <p className="text-white/60 text-xs truncate">
                   {localStorage.getItem('role')?.toLowerCase() || 'Student'}

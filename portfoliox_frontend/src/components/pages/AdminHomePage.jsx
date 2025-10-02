@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AdminSideBar from "./AdminSideBar";
 import {
   Users,
@@ -44,17 +44,28 @@ export default function AdminHomePage() {
     setActiveItem(itemId);
   };
 
+  const renderContent = () => {
+    switch (activeItem) {
+      case 'Dashboard':
+        return <DashboardContent />;
+      case 'Requests':
+        return <AdminRequest />;
+      case 'Faculty':
+        return <AdminFaculty />;
+      case 'Students':
+        return <AdminStudents />;
+      case 'Profile':
+        return <Profile />;
+      default:
+        return <DashboardContent />;
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSideBar activeItem={activeItem} onItemSelect={handleMenuItemSelect} />
       <div className="flex-1 overflow-auto">
-        <Routes>
-          <Route path="/" element={<DashboardContent />} />
-          <Route path="/requests" element={<AdminRequest />} />
-          <Route path="/faculty" element={<AdminFaculty />} />
-          <Route path="/students" element={<AdminStudents />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
+        {renderContent()}
       </div>
     </div>
   );

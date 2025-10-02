@@ -17,7 +17,19 @@ import {
   Loader2,
   Bell,
   Search,
-  Plus
+  Plus,
+  Sparkles,
+  Code,
+  Trophy,
+  Eye,
+  FolderKanban,
+  Share2,
+  ArrowRight,
+  TrendingDown,
+  Zap,
+  Star,
+  ExternalLink,
+  Github
 } from 'lucide-react';
 import FacultyStudents from './FacultyStudents';
 import Profile from './Profile';
@@ -130,40 +142,61 @@ export default function FacultyHomePage() {
   };
 
   return (
-    <div className={`flex h-screen bg-gray-50 dark:bg-gray-900 ${darkMode ? 'dark' : ''}`}>
-      <FacultySideBar activeItem={activeItem} onItemSelect={setActiveItem} />
+    <div className={`flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden`}>
+      {/* Sidebar */}
+      <FacultySideBar 
+        activeItem={activeItem} 
+        onItemSelect={setActiveItem} 
+      />
+      
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navigation Bar */}
-        <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50 px-8 py-4">
+        {/* Enhanced Top Navigation Bar */}
+        <header className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              <h1 className={`text-2xl font-black ${maroonText} dark:text-white`}>
-                {activeItem}
-              </h1>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-8 bg-gradient-to-b from-[#800000] to-[#D4AF37] rounded-full"></div>
+                <h1 className={`text-2xl font-black ${maroonText} dark:text-white`}>
+                  {activeItem}
+                </h1>
+              </div>
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                <span>Home</span>
+                <ArrowRight className="w-4 h-4" />
+                <span className={`${goldText} font-medium`}>{activeItem}</span>
+              </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Search Bar */}
+              {/* Enhanced Search Bar */}
               <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search students, projects..."
-                  className="pl-10 pr-4 py-2 w-64 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all dark:text-white"
+                  className="pl-10 pr-4 py-2.5 w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
                 />
               </div>
               
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
+              {/* Enhanced Notifications */}
+              <button className="relative p-2.5 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200">
                 <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
+              </button>
+              
+              {/* Enhanced Add New Button */}
+              <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add New</span>
+                <Sparkles className="w-4 h-4 opacity-70" />
               </button>
             </div>
           </div>
         </header>
-
+        
         {/* Main Content */}
-        <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-transparent via-gray-50/30 to-transparent dark:from-transparent dark:via-gray-800/30 dark:to-transparent">
           {renderContent()}
         </main>
       </div>
@@ -191,92 +224,261 @@ function DashboardContent({ loading, error, data, stats }) {
   }
 
   const statCards = [
-    {
-      title: "Total Students",
+    { 
+      icon: Users, 
+      label: 'Total Students', 
       value: stats?.totalStudents ?? 0,
-      trend: '',
-      icon: Users,
-      color: "text-blue-600 dark:text-blue-400"
+      change: `${stats?.totalStudents ?? 0} enrolled`, 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
-    {
-      title: "Active Projects",
+    { 
+      icon: Code, 
+      label: 'Active Projects', 
       value: stats?.totalProjects ?? 0,
-      trend: '',
-      icon: FolderGit2,
-      color: "text-green-600 dark:text-green-400"
+      change: `${stats?.totalProjects ?? 0} projects`, 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
-    {
-      title: "Microcredentials",
+    { 
+      icon: Trophy, 
+      label: 'Microcredentials', 
       value: stats?.totalMicrocredentials ?? 0,
-      trend: '',
-      icon: Award,
-      color: `${goldText} dark:text-[#D4AF37]`
+      change: `${stats?.totalMicrocredentials ?? 0} achievements`, 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     },
-    {
-      title: "Recent Activity",
+    { 
+      icon: Activity, 
+      label: 'Recent Activity', 
       value: stats?.recentActivity?.length ?? 0,
-      trend: '',
-      icon: Activity,
-      color: "text-purple-600 dark:text-purple-400"
+      change: 'Last 24 hours', 
+      color: 'text-[#800000] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
+      trend: 'up'
     }
   ];
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-[#800000] to-[#600000] dark:from-[#800000]/90 dark:to-[#600000]/90 rounded-2xl p-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-l from-[#D4AF37]/20 to-transparent rounded-full blur-3xl"></div>
+    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+      {/* Enhanced Welcome Section */}
+      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-3xl p-8 text-white overflow-hidden shadow-2xl">
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-r from-white/5 to-transparent rounded-full blur-2xl"></div>
+        <div className="absolute top-4 right-4">
+          <Sparkles className="w-6 h-6 text-[#D4AF37] animate-pulse" />
+        </div>
+        
         <div className="relative z-10">
-          <h2 className="text-3xl font-bold mb-2">Welcome back, {data?.fname || 'Faculty'}! 👋</h2>
-          <p className="text-white/80 text-lg mb-6">
-            Here's what's happening with your students today.
-          </p>
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                Welcome back, {data?.fname || 'Faculty'}! 
+                <span className="inline-block ml-2 animate-bounce">👋</span>
+              </h2>
+              <p className="text-white/90 text-lg leading-relaxed mb-2">
+                You have <span className="font-semibold text-[#D4AF37]">{stats?.totalStudents ?? 0} students</span> with 
+                <span className="font-medium"> {stats?.totalProjects ?? 0} active projects</span> and 
+                <span className="font-medium"> {stats?.totalMicrocredentials ?? 0} microcredentials</span>.
+              </p>
+              <p className="text-white/70 text-sm">
+                Monitor student progress and manage their portfolios
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={() => setActiveItem('Students')}
+              className={`${goldBgSolid} text-[#800000] px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-2`}
+            >
+              <Users className="w-5 h-5" />
+              <span>View Students</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => setActiveItem('Courses')}
+              className="border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105 flex items-center space-x-2 backdrop-blur-sm"
+            >
+              <FolderKanban className="w-5 h-5" />
+              <span>Manage Courses</span>
+              <ExternalLink className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
+            <div key={index} className={`${stat.bgColor} rounded-2xl p-6 shadow-lg border border-white/20 dark:border-gray-700/50 hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm`}>
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-700">
-                  <Icon className={`w-6 h-6 ${stat.color}`} />
+                <div className={`p-4 rounded-2xl bg-white/80 dark:bg-gray-800/80 ${stat.color} shadow-lg`}>
+                  <Icon className="w-6 h-6" />
                 </div>
-                <Activity className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <div className="flex items-center space-x-1">
+                  {stat.trend === 'up' ? (
+                    <TrendingUp className="w-4 h-4 text-[#800000]" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 text-[#800000]" />
+                  )}
+                </div>
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stat.value}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{stat.title}</p>
-                {stat.trend && <p className="text-green-600 dark:text-green-400 text-xs font-medium">{stat.trend}</p>}
+                <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-1 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  {stat.value}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">{stat.label}</p>
+                <p className="text-[#800000] dark:text-[#D4AF37] text-xs font-medium flex items-center space-x-1">
+                  <span>{stat.change}</span>
+                </p>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Recent Activity List */}
-      <div className="mt-8">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
-        {stats?.recentActivity && stats.recentActivity.length > 0 ? (
-          <ul className="space-y-3">
-            {stats.recentActivity.map((item, idx) => (
-              <li key={item.portfolioID || idx} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-[#800000]" />
-                  <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{item.student?.fname} {item.student?.lname} &bull; {item.category}</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500">{new Date(item.lastUpdated || item.createdAt).toLocaleString()}</div>
+      {/* Enhanced Recent Activity & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Enhanced Recent Activity */}
+        <div className="lg:col-span-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Recent Activity</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Latest student portfolio updates</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <Activity className="w-6 h-6 text-[#D4AF37]" />
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            {stats?.recentActivity && stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((item, index) => (
+                <div key={item.portfolioID || index} className="group relative bg-gradient-to-r from-[#800000]/5 to-[#D4AF37]/5 dark:from-[#800000]/10 dark:to-[#D4AF37]/10 p-5 rounded-2xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] border border-[#800000]/10 dark:border-[#D4AF37]/10">
+                  <div className="flex items-start space-x-4">
+                    <div className="relative">
+                      <div className="w-3 h-3 bg-gradient-to-r from-[#800000] to-[#D4AF37] rounded-full"></div>
+                      {index < stats.recentActivity.length - 1 && (
+                        <div className="absolute top-3 left-1.5 w-0.5 h-16 bg-gradient-to-b from-[#800000]/30 to-transparent dark:from-[#D4AF37]/30"></div>
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors">
+                            {item.portfolioTitle}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                            {item.portfolioDescription}
+                          </p>
+                          
+                          <div className="flex items-center gap-4 text-xs">
+                            <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                              <Clock className="w-3 h-3" />
+                              {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
+                            </span>
+                            
+                            <span className="text-[#800000] dark:text-[#D4AF37] font-medium">
+                              {item.student?.fname} {item.student?.lname}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2 ml-4">
+                          {item.category?.toLowerCase() === 'project' ? (
+                            <div className="p-2 bg-[#800000]/10 dark:bg-[#D4AF37]/10 rounded-xl">
+                              <Code className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
+                            </div>
+                          ) : (
+                            <div className="p-2 bg-[#D4AF37]/10 dark:bg-[#800000]/10 rounded-xl">
+                              <Trophy className="w-4 h-4 text-[#D4AF37] dark:text-[#800000]" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400">No recent activity.</div>
-        )}
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <Activity className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
+                </div>
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No recent activity to show</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Students haven't updated their portfolios recently</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Enhanced Quick Actions */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-100/50 dark:border-gray-700/50">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quick Actions</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Manage your students</p>
+            </div>
+            <div className="p-3 bg-gradient-to-r from-[#D4AF37]/20 to-[#800000]/10 rounded-2xl">
+              <Zap className="w-6 h-6 text-[#D4AF37]" />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <button 
+              onClick={() => setActiveItem('Students')}
+              className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#800000] text-white rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">View Students</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Manage student accounts</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
+            </button>
+            <button 
+              onClick={() => setActiveItem('Courses')}
+              className="w-full group relative bg-gradient-to-r from-[#D4AF37]/10 via-[#800000]/10 to-[#D4AF37]/10 dark:from-[#D4AF37]/20 dark:via-[#800000]/20 dark:to-[#D4AF37]/20 hover:from-[#D4AF37]/20 hover:via-[#800000]/20 hover:to-[#D4AF37]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#D4AF37]/20 dark:border-[#800000]/20"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#D4AF37] text-[#800000] rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <FolderKanban className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#D4AF37] dark:text-[#800000] mb-1">Manage Courses</h4>
+                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Review student projects</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
+            </button>
+            <button 
+              onClick={() => setActiveItem('Profile')}
+              className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-[#800000] text-white rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                  <User className="w-5 h-5" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Profile Settings</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Update your account</p>
+                </div>
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
