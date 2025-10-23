@@ -71,13 +71,9 @@ export default function AuthPage({ mode = "login" }) {
     try {
       if (isLogin) {
         // Login
-        const res = await fetch(`/api/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: formData.username,
-            password: formData.password
-          })
+        const res = await api.post("/api/login", {
+          username: formData.username,
+          password: formData.password
         });
         const data = await res.json();
         if (!res.ok) {
@@ -94,9 +90,7 @@ export default function AuthPage({ mode = "login" }) {
 
           // Fetch user profile and set profilePic in localStorage
           try {
-            const userRes = await fetch(`/api/user/${data.userId}`, {
-              headers: { 'Authorization': `Bearer ${data.token}` },
-            });
+            const userRes = await api.get(`/api/user/${data.userId}`);
             if (userRes.ok) {
               const userData = await userRes.json();
               if (userData.profilePic) {
@@ -121,17 +115,13 @@ export default function AuthPage({ mode = "login" }) {
         }
       } else {
         // Signup
-        const res = await fetch(`/api/signup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        const res = await api.post("/api/signup", {
             fname: formData.firstName,
             lname: formData.lastName,
             username: formData.username,
             email: formData.email,
             password: formData.password,
             role: formData.role
-          })
         });
         const data = await res.json();
         if (!res.ok) {
