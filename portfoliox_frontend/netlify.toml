@@ -1,7 +1,8 @@
 [build]
   base = "portfoliox_frontend"
   publish = "portfoliox_frontend/dist"
-  command = "npm run build"
+  # Clean install + rebuild Rollup before building
+  command = "npm ci && npm rebuild rollup && npm run build"
 
 [build.environment]
   NODE_VERSION = "20.11.1"
