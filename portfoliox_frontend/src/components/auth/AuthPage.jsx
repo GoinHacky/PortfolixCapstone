@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, CheckCircle, Moon, Sun } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
+import api from "../../api/apiConfig";
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -10,8 +11,6 @@ const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
 const goldBgSolid = "bg-[#D4AF37]";
 const maroonText = "text-[#800000]";
 const goldText = "text-[#D4AF37]";
-
-const API_BASE = "http://localhost:8080/api/auth";
 
 export default function AuthPage({ mode = "login" }) {
   const navigate = useNavigate();
@@ -48,7 +47,7 @@ export default function AuthPage({ mode = "login" }) {
    const handleGitHubLogin = async () => {
     try {
       // Redirect to GitHub OAuth2 authorization URL
-      window.location.href = "http://localhost:8080/oauth2/authorization/github";
+      window.location.href = "${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github";
     } catch (error) {
       setMessage({ type: "error", text: "Failed to initiate GitHub login" });
     }
@@ -72,7 +71,7 @@ export default function AuthPage({ mode = "login" }) {
     try {
       if (isLogin) {
         // Login
-        const res = await fetch(`${API_BASE}/login`, {
+        const res = await fetch(`/api/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -95,7 +94,7 @@ export default function AuthPage({ mode = "login" }) {
 
           // Fetch user profile and set profilePic in localStorage
           try {
-            const userRes = await fetch(`${API_BASE}/user/${data.userId}`, {
+            const userRes = await fetch(`/api/user/${data.userId}`, {
               headers: { 'Authorization': `Bearer ${data.token}` },
             });
             if (userRes.ok) {
@@ -104,7 +103,7 @@ export default function AuthPage({ mode = "login" }) {
                 const profilePicPath = userData.profilePic.startsWith('/uploads/')
                   ? userData.profilePic
                   : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, '')}`;
-                const fullProfilePicUrl = `http://localhost:8080${profilePicPath}`;
+                const fullProfilePicUrl = `${import.meta.env.VITE_API_BASE_URL}${profilePicPath}`;
                 localStorage.setItem('profilePic', fullProfilePicUrl);
                 window.dispatchEvent(new Event('storage'));
               }
@@ -122,7 +121,7 @@ export default function AuthPage({ mode = "login" }) {
         }
       } else {
         // Signup
-        const res = await fetch(`${API_BASE}/signup`, {
+        const res = await fetch(`/api/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
