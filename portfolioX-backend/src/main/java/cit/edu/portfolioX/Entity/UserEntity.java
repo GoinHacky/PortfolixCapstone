@@ -34,7 +34,7 @@ public class UserEntity {
     private String lname;
     private String bio;
     
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String profilePic; // Base64 encoded image or URL to stored image
     
     private LocalDateTime createdAt;
