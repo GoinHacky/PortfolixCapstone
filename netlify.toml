@@ -1,0 +1,17 @@
+[build]
+  base = "portfoliox_frontend"
+  publish = "portfoliox_frontend/dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20.11.1"
+  NETLIFY_USE_YARN = "true"
+  VITE_API_BASE_URL = "https://portfolioxbackend.onrender.com"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
