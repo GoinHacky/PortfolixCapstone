@@ -3,7 +3,9 @@ package cit.edu.portfolioX;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import cit.edu.portfolioX.Entity.Role;
@@ -11,7 +13,9 @@ import cit.edu.portfolioX.Entity.UserEntity;
 import cit.edu.portfolioX.Entity.UserEntity.UserStatus;
 import cit.edu.portfolioX.Repository.UserRepository;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "cit.edu.portfolioX")
+@EntityScan(basePackages = "cit.edu.portfolioX.Entity")
+@EnableJpaRepositories(basePackages = "cit.edu.portfolioX.Repository")
 public class PortfolioXApplication {
 
 	public static void main(String[] args) {
