@@ -70,81 +70,78 @@ export default function AuthPage({ mode = "login" }) {
 
     try {
       if (isLogin) {
-        // Login
+        // ✅ LOGIN with axios
         const res = await api.post("/api/login", {
           username: formData.username,
-          password: formData.password
+          password: formData.password,
         });
-        const data = await res.json();
-        if (!res.ok) {
-          setMessage({ type: "error", text: data.error || "Login failed" });
-        } else {
-          setMessage({ type: "success", text: "Login successful!" });
-          // Save auth data
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userId", data.userId);
-          localStorage.setItem("username", data.username);
-          localStorage.setItem("role", data.role);
-          localStorage.setItem("fname", data.fname);
-          localStorage.setItem("lname", data.lname);
 
-          // Fetch user profile and set profilePic in localStorage
-          try {
-            const userRes = await api.get(`/api/user/${data.userId}`);
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              if (userData.profilePic) {
-                const profilePicPath = userData.profilePic.startsWith('/uploads/')
-                  ? userData.profilePic
-                  : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, '')}`;
-                const fullProfilePicUrl = `${import.meta.env.VITE_API_BASE_URL}${profilePicPath}`;
-                localStorage.setItem('profilePic', fullProfilePicUrl);
-                window.dispatchEvent(new Event('storage'));
-              }
-            }
-          } catch (e) { /* ignore profile pic errors */ }
+        const data = res.data;
 
-          // Redirect based on role
-          if (data.role === 'ADMIN') {
-            navigate('/admin/dashboard');
-          } else if (data.role === 'FACULTY') {
-            navigate('/faculty/dashboard');
-          } else {
-            navigate('/dashboard');
+        setMessage({ type: "success", text: "Login successful!" });
+
+        // Save auth data
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("fname", data.fname);
+        localStorage.setItem("lname", data.lname);
+
+        // Fetch user profile
+        try {
+          const userRes = await api.get(`/api/user/${data.userId}`);
+          const userData = userRes.data;
+          if (userData.profilePic) {
+            const profilePicPath = userData.profilePic.startsWith("/uploads/")
+              ? userData.profilePic
+              : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, "")}`;
+            const fullProfilePicUrl = `${import.meta.env.VITE_API_BASE_URL}${profilePicPath}`;
+            localStorage.setItem("profilePic", fullProfilePicUrl);
+            window.dispatchEvent(new Event("storage"));
           }
+        } catch {
+          /* ignore */
         }
+
+        // Redirect based on role
+        if (data.role === "ADMIN") navigate("/admin/dashboard");
+        else if (data.role === "FACULTY") navigate("/faculty/dashboard");
+        else navigate("/dashboard");
       } else {
-        // Signup
+        // ✅ SIGNUP with axios
         const res = await api.post("/api/signup", {
-            fname: formData.firstName,
-            lname: formData.lastName,
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
-            role: formData.role
+          fname: formData.firstName,
+          lname: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
         });
-        const data = await res.json();
-        if (!res.ok) {
-          setMessage({ type: "error", text: data.error || "Signup failed" });
+
+        const data = res.data;
+        setMessage({ type: "success", text: data.message });
+
+        if (formData.role === "FACULTY") {
+          setMessage({
+            type: "success",
+            text: "Faculty account created. Awaiting admin approval.",
+          });
         } else {
-          setMessage({ type: "success", text: data.message });
-          // If faculty registration, show pending approval message
-          if (formData.role === "FACULTY") {
-            setMessage({ type: "success", text: "Faculty account created. Awaiting admin approval." });
-          } else {
-            // For students, automatically redirect to login
-            setTimeout(() => {
-              setIsLogin(true);
-            }, 2000);
-          }
+          setTimeout(() => setIsLogin(true), 2000);
         }
       }
     } catch (err) {
-      setMessage({ type: "error", text: "Network error. Please try again." });
+      console.error(err);
+      setMessage({
+        type: "error",
+        text: err.response?.data?.error || "Network error. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
   };
+
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
