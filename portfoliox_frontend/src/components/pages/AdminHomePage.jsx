@@ -29,6 +29,7 @@ import AdminStudents from './AdminStudents';
 import Profile from './Profile';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line, CartesianGrid, Area, AreaChart } from 'recharts';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -102,7 +103,7 @@ function DashboardContent() {
       setLoading(true);
       try {
         // Fetch students
-        const studentsRes = await fetch('http://localhost:8080/api/users/students', {
+        const studentsRes = await fetch(`${getApiBaseUrl()}/api/users/students`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!studentsRes.ok) {
@@ -116,7 +117,7 @@ function DashboardContent() {
         const students = await studentsRes.json();
 
         // Fetch faculty
-        const facultyRes = await fetch('http://localhost:8080/api/users/faculty', {
+        const facultyRes = await fetch(`${getApiBaseUrl()}/api/users/faculty`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!facultyRes.ok) {
@@ -130,7 +131,7 @@ function DashboardContent() {
         const faculty = await facultyRes.json();
 
         // Fetch portfolios
-        const portfoliosRes = await fetch('http://localhost:8080/api/portfolios', {
+        const portfoliosRes = await fetch(`${getApiBaseUrl()}/api/portfolios`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!portfoliosRes.ok) {

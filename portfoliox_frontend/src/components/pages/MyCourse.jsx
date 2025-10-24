@@ -35,7 +35,7 @@ export default function MyCourse() {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:8080/api/courses/student/${userId}`, {
+        const res = await fetch(`${getApiBaseUrl()}/api/courses/student/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (res.status === 403) {
@@ -68,7 +68,7 @@ export default function MyCourse() {
       try {
         setProjectsLoading(true);
         // Fetch all portfolios for the student and filter on client
-        const res = await fetch(`http://localhost:8080/api/portfolios/student/${userId}`, {
+        const res = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) {
@@ -117,7 +117,7 @@ export default function MyCourse() {
       body.append('courseCode', selectedCourse.courseCode);
       body.append('skills', JSON.stringify(skills));
 
-      const res = await fetch('http://localhost:8080/api/portfolios', {
+      const res = await fetch('${getApiBaseUrl()}/api/portfolios', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body
@@ -141,7 +141,7 @@ export default function MyCourse() {
     const token = localStorage.getItem('token');
     setAiLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/ai/enhance-description', {
+      const response = await fetch('${getApiBaseUrl()}/api/ai/enhance-description', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

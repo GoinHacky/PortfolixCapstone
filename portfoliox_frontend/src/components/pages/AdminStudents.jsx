@@ -55,7 +55,7 @@ export default function AdminStudents() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/users/students', {
+      const response = await fetch('${getApiBaseUrl()}/api/users/students', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -85,7 +85,7 @@ export default function AdminStudents() {
     const portfoliosMap = {};
     for (const student of studentsList) {
       try {
-        const response = await fetch(`http://localhost:8080/api/portfolios/student/${student.userID}`, {
+        const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${student.userID}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (response.ok) {
@@ -105,7 +105,7 @@ export default function AdminStudents() {
     if (portfolios[studentId]) return; // Already fetched
 
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${studentId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${studentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -142,7 +142,7 @@ export default function AdminStudents() {
 
   const handleResetPassword = async (student) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/students/${student.userID}/reset-password`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/students/${student.userID}/reset-password`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -165,7 +165,7 @@ export default function AdminStudents() {
 
   const handleDeleteAccount = async (student) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/students/${student.userID}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/students/${student.userID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -628,10 +628,10 @@ export default function AdminStudents() {
                   <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Certificate Image:</span>
                   <div className="mt-2">
                     <img
-                      src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                      src={`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
                       alt="Certificate"
                       className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                      onClick={() => setPreviewImage(`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
                     />
                   </div>
                 </div>

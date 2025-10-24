@@ -15,6 +15,7 @@ import {
   Key,
   AlertTriangle
 } from 'lucide-react';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -49,7 +50,7 @@ export default function AdminFaculty() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://localhost:8080/api/users/faculty', {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/faculty`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -76,7 +77,7 @@ export default function AdminFaculty() {
   const handleApproval = async (userId, approve) => {
     setProcessingId(userId);
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/approve/${userId}?approve=${approve}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/approve/${userId}?approve=${approve}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -98,7 +99,7 @@ export default function AdminFaculty() {
 
   const handleResetPassword = async (faculty) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/faculty/${faculty.userID}/reset-password`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/faculty/${faculty.userID}/reset-password`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -121,7 +122,7 @@ export default function AdminFaculty() {
 
   const handleDeleteAccount = async (facultyToDelete) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/faculty/${facultyToDelete.userID}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/faculty/${facultyToDelete.userID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -221,7 +222,7 @@ export default function AdminFaculty() {
               <div className="flex items-center gap-4">
                 {f.profilePic ? (
                   <img
-                    src={f.profilePic.startsWith('http') ? f.profilePic : `http://localhost:8080${f.profilePic}`}
+                    src={f.profilePic.startsWith('http') ? f.profilePic : `${getApiBaseUrl()}${f.profilePic}`}
                     alt={f.fname + ' ' + f.lname}
                     className="w-12 h-12 rounded-full object-cover border-2 border-[#800000] bg-white"
                     onError={e => { e.target.onerror = null; e.target.src = ''; }}
