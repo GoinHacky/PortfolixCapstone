@@ -104,15 +104,15 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
         // Expose authorization header for JWT
-        configuration.setExposedHeaders(Arrays.asList(
-            HttpHeaders.AUTHORIZATION,
-            "Access-Control-Allow-Origin",
-            "Access-Control-Allow-Credentials"
-        ));
+        // configuration.setExposedHeaders(Arrays.asList(
+        //     HttpHeaders.AUTHORIZATION,
+        //     "Access-Control-Allow-Origin",
+        //     "Access-Control-Allow-Credentials"
+        // ));
         
         // Enable credentials for cookies and authorization headers
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        //configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
