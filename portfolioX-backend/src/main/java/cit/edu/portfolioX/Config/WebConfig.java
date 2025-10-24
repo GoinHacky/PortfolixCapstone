@@ -48,7 +48,12 @@ public class WebConfig implements WebMvcConfigurer {
             "http://localhost:5173",
             "http://localhost:3000"
         ));
-        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+        // also allow origin patterns in case of dynamic hosts
+        config.setAllowedOriginPatterns(Arrays.asList(
+            "https://*.netlify.app",
+            "http://localhost:*"
+        ));
+        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setMaxAge(3600L);
 

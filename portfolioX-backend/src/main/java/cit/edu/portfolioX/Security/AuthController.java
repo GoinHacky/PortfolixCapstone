@@ -27,6 +27,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication", description = "Authentication management APIs")
+@CrossOrigin(origins = {"https://portfolixcapstone.netlify.app", "http://localhost:5173", "http://localhost:3000"}, allowCredentials = "true")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 

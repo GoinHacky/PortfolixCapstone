@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -34,6 +35,9 @@ public class GitHubOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
     
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -107,9 +111,10 @@ public class GitHubOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             // Generate JWT token
             String token = jwtUtil.generateToken(user.getUsername());
             
-            // Redirect to frontend with token
+            // Redirect to configured frontend (use frontendUrl)
             String redirectUrl = String.format(
-                "http://localhost:5173/auth/github-callback?token=%s&userId=%d&username=%s&role=%s&profilePic=%s",
+                "%s/auth/github-callback?token=%s&userId=%d&username=%s&role=%s&profilePic=%s",
+                frontendUrl,
                 token,
                 user.getUserID(),
                 user.getUsername(),
