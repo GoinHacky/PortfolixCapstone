@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Folder, GraduationCap, X, ChevronDown, ChevronRight, FileText, RefreshCw, UserMinus, AlertTriangle, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -46,7 +47,7 @@ export default function FacultyStudents() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('${getApiBaseUrl()}/api/users/students', {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/students`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

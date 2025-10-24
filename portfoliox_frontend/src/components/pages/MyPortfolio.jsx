@@ -216,7 +216,7 @@ export default function MyPortfolio() {
 
       const url = editingPortfolio
         ? `${getApiBaseUrl()}/api/portfolios/${editingPortfolio.portfolioID}`
-        : '${getApiBaseUrl()}/api/portfolios';
+        : `${getApiBaseUrl()}/api/portfolios`;
 
       const method = editingPortfolio ? 'PUT' : 'POST';
 
@@ -417,7 +417,7 @@ export default function MyPortfolio() {
 
                 console.log('Sending content to AI:', content); // Debug log
 
-                const enhanceResponse = await fetch('${getApiBaseUrl()}/api/ai/enhance-resume', {
+                const enhanceResponse = await fetch(`${getApiBaseUrl()}/api/ai/enhance-resume`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -756,7 +756,7 @@ export default function MyPortfolio() {
                       type="button"
                       onClick={async () => {
                         try {
-                          const response = await fetch('${getApiBaseUrl()}/api/ai/enhance-description', {
+                          const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',

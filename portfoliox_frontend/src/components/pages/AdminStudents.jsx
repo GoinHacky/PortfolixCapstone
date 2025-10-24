@@ -17,6 +17,7 @@ import {
   FileText
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -55,7 +56,7 @@ export default function AdminStudents() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('${getApiBaseUrl()}/api/users/students', {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/students`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
