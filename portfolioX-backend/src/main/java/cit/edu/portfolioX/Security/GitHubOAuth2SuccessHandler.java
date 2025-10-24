@@ -127,7 +127,7 @@ public class GitHubOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             
         } catch (Exception e) {
             logger.error("Error during GitHub OAuth2 authentication: {}", e.getMessage(), e);
-            String errorUrl = "http://localhost:5173/auth/login?error=oauth_error";
+            String errorUrl = frontendUrl + "/auth/login?error=oauth_error";
             getRedirectStrategy().sendRedirect(request, response, errorUrl);
         }
     }
