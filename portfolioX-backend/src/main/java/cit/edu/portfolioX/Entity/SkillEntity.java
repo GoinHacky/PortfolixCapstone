@@ -12,7 +12,7 @@ public class SkillEntity {
     private Long skillID;
 
     @ManyToOne
-    @JoinColumn(name = "portfolioid", referencedColumnName = "portfolioid")
+    @JoinColumn(name = "portfolioid") // remove explicit referencedColumnName for simplicity
     @JsonBackReference
     private PortfolioEntity portfolio;
 

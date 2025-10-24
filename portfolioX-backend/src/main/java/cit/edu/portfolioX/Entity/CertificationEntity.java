@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "certification_entity")
 public class CertificationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,11 +15,10 @@ public class CertificationEntity {
     private LocalDate issueDate;
 
     @ManyToOne
-    @JoinColumn(name = "portfolioID")
+    @JoinColumn(name = "portfolioid") // standardized name (lowercase)
     private PortfolioEntity portfolio;
 
     public CertificationEntity() {
-        
     }
 
     public Long getCertID() {
