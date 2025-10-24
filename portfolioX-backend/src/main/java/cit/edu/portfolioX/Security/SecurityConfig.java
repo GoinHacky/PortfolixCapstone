@@ -1,6 +1,7 @@
 package cit.edu.portfolioX.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,6 +29,9 @@ public class SecurityConfig {
 
     @Autowired
     private GitHubOAuth2SuccessHandler githubOAuth2SuccessHandler;
+
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -59,9 +63,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("http://localhost:5173/auth/login")
+                .loginPage(frontendUrl + "/auth/login")
                 .successHandler(githubOAuth2SuccessHandler)
-                .failureUrl("http://localhost:5173/auth/login?error=oauth_error")
+                .failureUrl(frontendUrl + "/auth/login?error=oauth_error")
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
