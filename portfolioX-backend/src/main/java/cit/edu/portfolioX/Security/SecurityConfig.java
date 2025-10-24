@@ -17,6 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 
@@ -61,6 +62,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/users/faculty").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/students/**").hasAnyRole("FACULTY", "ADMIN")
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    // Don't redirect API requests to login page
+                    if (request.getRequestURI().startsWith("/api/")) {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                    } else {
+                        response.sendRedirect(frontendUrl + "/auth/login");
+                    }
+                })
             )
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/auth/login")
