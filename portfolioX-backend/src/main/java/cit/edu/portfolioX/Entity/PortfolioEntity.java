@@ -34,7 +34,7 @@ public class PortfolioEntity {
     private UserEntity user;
 
     private String portfolioTitle;
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String portfolioDescription;
     private String courseCode;
 
