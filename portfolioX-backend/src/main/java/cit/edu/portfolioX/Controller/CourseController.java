@@ -26,7 +26,7 @@ import cit.edu.portfolioX.Service.UserService;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "https://portfolixcapstone.netlify.app"})
 public class CourseController {
     @Autowired
     private CourseService courseService;

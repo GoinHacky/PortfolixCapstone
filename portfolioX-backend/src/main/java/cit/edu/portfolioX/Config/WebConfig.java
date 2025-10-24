@@ -27,41 +27,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .resourceChain(true);
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://localhost:3000", "https://portfolixcapstone.netlify.app")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
-
-    // Add this bean so CORS headers are applied early (before Spring Security filters)
-    @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        // exact origins; include your Netlify domain and local dev origins
-        config.setAllowedOrigins(Arrays.asList(
-            "https://portfolixcapstone.netlify.app",
-            "http://localhost:5173",
-            "http://localhost:3000"
-        ));
-        // also allow origin patterns in case of dynamic hosts
-        config.setAllowedOriginPatterns(Arrays.asList(
-            "https://*.netlify.app",
-            "http://localhost:*"
-        ));
-        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return bean;
-    }
+    // CORS is now handled in SecurityConfig.java to avoid conflicts
 }

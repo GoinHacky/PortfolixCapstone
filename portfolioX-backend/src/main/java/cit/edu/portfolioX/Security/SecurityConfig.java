@@ -75,25 +75,28 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // add your deployed frontend origin(s) here
+        
+        // Add your deployed frontend origin(s) here
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
             "http://localhost:5173",
             "https://portfolixcapstone.netlify.app"
         ));
+        
+        // Allow all common HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList(
-            HttpHeaders.AUTHORIZATION,
-            HttpHeaders.CONTENT_TYPE,
-            HttpHeaders.ACCEPT,
-            "X-Requested-With",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
+        
+        // Allow all headers
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Expose authorization header for JWT
         configuration.setExposedHeaders(Arrays.asList(
-            HttpHeaders.AUTHORIZATION
+            HttpHeaders.AUTHORIZATION,
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
         ));
+        
+        // Enable credentials for cookies and authorization headers
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
