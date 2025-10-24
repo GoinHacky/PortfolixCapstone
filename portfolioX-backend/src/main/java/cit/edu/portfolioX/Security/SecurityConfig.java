@@ -91,9 +91,10 @@ public class SecurityConfig {
         
         // Add your deployed frontend origin(s) here
         configuration.setAllowedOrigins(Arrays.asList(
+            "https://portfolixcapstone.netlify.app",
             "http://localhost:3000",
-            "http://localhost:5173",
-            "https://portfolixcapstone.netlify.app"
+            "http://localhost:5173"
+            
         ));
         
         // Allow all common HTTP methods
