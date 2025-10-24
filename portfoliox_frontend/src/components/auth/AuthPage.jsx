@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, CheckCircle, Moon, Sun } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
-import api from "../../api/apiConfig";
+import api, { getApiBaseUrl } from "../../api/apiConfig";
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -47,7 +47,7 @@ export default function AuthPage({ mode = "login" }) {
    const handleGitHubLogin = async () => {
     try {
       // Redirect to GitHub OAuth2 authorization URL
-      window.location.href = "${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github";
+      window.location.href = `${getApiBaseUrl()}/oauth2/authorization/github`;
     } catch (error) {
       setMessage({ type: "error", text: "Failed to initiate GitHub login" });
     }
@@ -71,7 +71,7 @@ export default function AuthPage({ mode = "login" }) {
     try {
       if (isLogin) {
         // ✅ LOGIN with axios
-        const res = await api.post("/api/login", {
+        const res = await api.post("/api/auth/login", {
           username: formData.username,
           password: formData.password,
         });
@@ -96,7 +96,7 @@ export default function AuthPage({ mode = "login" }) {
             const profilePicPath = userData.profilePic.startsWith("/uploads/")
               ? userData.profilePic
               : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, "")}`;
-            const fullProfilePicUrl = `${import.meta.env.VITE_API_BASE_URL}${profilePicPath}`;
+            const fullProfilePicUrl = `${getApiBaseUrl()}${profilePicPath}`;
             localStorage.setItem("profilePic", fullProfilePicUrl);
             window.dispatchEvent(new Event("storage"));
           }
@@ -110,7 +110,7 @@ export default function AuthPage({ mode = "login" }) {
         else navigate("/dashboard");
       } else {
         // ✅ SIGNUP with axios
-        const res = await api.post("/api/signup", {
+        const res = await api.post("/api/auth/signup", {
           fname: formData.firstName,
           lname: formData.lastName,
           username: formData.username,

@@ -34,6 +34,7 @@ import {
 import FacultyStudents from './FacultyStudents';
 import Profile from './Profile';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getApiBaseUrl } from '../../api/apiConfig';
 import FacultyCourses from './FacultyCourses';
 
 const maroon = "bg-[#800000]";
@@ -71,7 +72,7 @@ export default function FacultyHomePage() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -92,7 +93,7 @@ export default function FacultyHomePage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const studentsRes = await fetch('http://localhost:8080/api/users/students', {
+      const studentsRes = await fetch('${getApiBaseUrl()}/api/users/students', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!studentsRes.ok) throw new Error('Failed to fetch students');
@@ -100,7 +101,7 @@ export default function FacultyHomePage() {
       let allPortfolios = [];
       for (const student of students) {
         try {
-          const portRes = await fetch(`http://localhost:8080/api/portfolios/student/${student.userID}`, {
+          const portRes = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${student.userID}`, {
             headers: { 'Authorization': `Bearer ${token}` },
           });
           if (portRes.ok) {

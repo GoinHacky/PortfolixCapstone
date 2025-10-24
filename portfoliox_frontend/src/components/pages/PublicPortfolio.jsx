@@ -12,7 +12,7 @@ export default function PublicPortfolio() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:8080/api/portfolios/public/${token}`);
+        const res = await fetch(`${getApiBaseUrl()}/api/portfolios/public/${token}`);
         if (!res.ok) throw new Error('Portfolio not found');
         const data = await res.json();
         setPortfolio(data);
@@ -67,7 +67,7 @@ export default function PublicPortfolio() {
                 <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
                 <div className="mt-2">
                   <img
-                    src={`http://localhost:8080/${portfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                    src={`${getApiBaseUrl()}/${portfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
                     alt="Certificate"
                     className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow"
                   />

@@ -46,7 +46,7 @@ export default function FacultyStudents() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/users/students', {
+      const response = await fetch('${getApiBaseUrl()}/api/users/students', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -78,7 +78,7 @@ export default function FacultyStudents() {
   const fetchFacultyCourses = async () => {
     try {
       const userId = localStorage.getItem('userId');
-      const response = await fetch(`http://localhost:8080/api/courses/faculty/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/courses/faculty/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -100,7 +100,7 @@ export default function FacultyStudents() {
       // Fetch portfolios for each student
       for (const student of studentsList) {
         try {
-          const response = await fetch(`http://localhost:8080/api/portfolios/student/${student.userID}`, {
+          const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${student.userID}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -127,7 +127,7 @@ export default function FacultyStudents() {
   const fetchStudentPortfolios = async (studentId) => {
     try {
       console.log('Fetching portfolios for student:', studentId);
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${studentId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${studentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -197,7 +197,7 @@ export default function FacultyStudents() {
 
     try {
       console.log('Removing student:', studentToRemove.userID, 'from course:', selectedCourse);
-      const response = await fetch(`http://localhost:8080/api/courses/${selectedCourse}/remove-student/${studentToRemove.userID}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/remove-student/${studentToRemove.userID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -275,7 +275,7 @@ export default function FacultyStudents() {
 
     try {
       console.log('Adding student:', studentToRemove.userID, 'to course:', selectedCourse);
-      const response = await fetch(`http://localhost:8080/api/courses/${selectedCourse}/add-student/${studentToRemove.userID}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/add-student/${studentToRemove.userID}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -528,10 +528,10 @@ export default function FacultyStudents() {
                   <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Certificate Image:</span>
                   <div className="mt-2">
                     <img
-                      src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                      src={`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
                       alt="Certificate"
                       className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                      onClick={() => setPreviewImage(`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
                     />
                   </div>
                 </div>
@@ -689,7 +689,7 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
       {/* Profile Header */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
         <img
-          src={student.profilePic ? (student.profilePic.startsWith('http') ? student.profilePic : `http://localhost:8080${student.profilePic}`) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.fname + ' ' + student.lname)}
+          src={student.profilePic ? (student.profilePic.startsWith('http') ? student.profilePic : `${getApiBaseUrl()}${student.profilePic}`) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.fname + ' ' + student.lname)}
           alt={student.fname + ' ' + student.lname}
           className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow-lg bg-white"
         />

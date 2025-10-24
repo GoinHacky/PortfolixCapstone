@@ -9,6 +9,7 @@ import {
   XCircle,
   AlertTriangle
 } from 'lucide-react';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -36,7 +37,7 @@ export default function AdminRequest() {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/users/faculty/pending', {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/faculty/pending`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -64,7 +65,7 @@ export default function AdminRequest() {
   const handleApproval = async (userId, approve) => {
     setProcessingId(userId);
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/approve/${userId}?approve=${approve}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/approve/${userId}?approve=${approve}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../contexts/ThemeContext";
+import { getApiBaseUrl } from '../../api/apiConfig';
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
 import { 
   Home, 
@@ -62,7 +63,7 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
       
       if (token && userId) {
         try {
-          const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+          const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PublicPortfolio from './PublicPortfolio';
 import { useNotification } from '../../contexts/NotificationContext';
 
+import { getApiBaseUrl } from '../../api/apiConfig';
 export default function SharePortfolio() {
   const navigate = useNavigate();
   const [portfolios, setPortfolios] = useState([]);
@@ -32,7 +33,7 @@ export default function SharePortfolio() {
 
   const fetchPortfolios = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -62,7 +63,7 @@ export default function SharePortfolio() {
 
   const fetchPortfolioLink = async (portfolioId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/${portfolioId}/public-link`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/public-link`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -87,7 +88,7 @@ export default function SharePortfolio() {
   const generateLink = async (portfolioId) => {
     setActionLoading(prev => ({ ...prev, [portfolioId]: true }));
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/${portfolioId}/public-link`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/public-link`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -136,7 +137,7 @@ export default function SharePortfolio() {
       setPreviewError(null);
       setPreviewPortfolio(null);
       try {
-        const res = await fetch(`http://localhost:8080/api/portfolios/public/${input}`);
+        const res = await fetch(`${getApiBaseUrl()}/api/portfolios/public/${input}`);
         if (!res.ok) throw new Error('Portfolio not found');
         const data = await res.json();
         setPreviewPortfolio(data);
@@ -153,7 +154,7 @@ export default function SharePortfolio() {
   const togglePublicStatus = async (portfolioId, currentStatus) => {
     setActionLoading(prev => ({ ...prev, [portfolioId]: true }));
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/${portfolioId}/public-status?isPublic=${!currentStatus}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/public-status?isPublic=${!currentStatus}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -395,10 +396,10 @@ export default function SharePortfolio() {
                       <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
                       <div className="mt-2">
                         <img
-                          src={`http://localhost:8080/${previewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                          src={`${getApiBaseUrl()}/${previewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
                           alt="Certificate"
                           className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                          onClick={() => setPreviewImage(`http://localhost:8080/${previewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                          onClick={() => setPreviewImage(`${getApiBaseUrl()}/${previewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
                         />
                       </div>
                     </div>

@@ -86,7 +86,7 @@ export default function Profile() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -125,7 +125,7 @@ export default function Profile() {
         const profilePicPath = userData.profilePic.startsWith('/uploads/') 
           ? userData.profilePic 
           : `/uploads/${userData.profilePic.replace(/^.*[\\\/]/, '')}`;
-        const fullProfilePicUrl = `http://localhost:8080${profilePicPath}`;
+        const fullProfilePicUrl = `${getApiBaseUrl()}${profilePicPath}`;
         console.log('Setting profile picture URL:', fullProfilePicUrl);
         localStorage.setItem('profilePic', fullProfilePicUrl);
         setPreviewUrl(fullProfilePicUrl);
@@ -139,7 +139,7 @@ export default function Profile() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/settings/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/settings/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -297,7 +297,7 @@ export default function Profile() {
         formDataToSend.append('profilePic', profilePic);
       }
 
-      const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -320,7 +320,7 @@ export default function Profile() {
       const data = await response.json();
       
       if (data.profilePic) {
-        const fullProfilePicUrl = `http://localhost:8080${data.profilePic}`;
+        const fullProfilePicUrl = `${getApiBaseUrl()}${data.profilePic}`;
         console.log('Profile picture updated successfully:', fullProfilePicUrl);
         localStorage.setItem('profilePic', fullProfilePicUrl);
         setPreviewUrl(fullProfilePicUrl);
@@ -389,7 +389,7 @@ export default function Profile() {
       formData.append('currentPassword', passwordData.currentPassword);
       formData.append('newPassword', passwordData.newPassword);
 
-      const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -432,7 +432,7 @@ export default function Profile() {
     setLoading(true);
     try {
       // First verify the password by attempting to login
-      const loginResponse = await fetch('http://localhost:8080/api/auth/login', {
+      const loginResponse = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -453,7 +453,7 @@ export default function Profile() {
       }
 
       // If password is correct, proceed with deletion
-      const response = await fetch(`http://localhost:8080/api/auth/user/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

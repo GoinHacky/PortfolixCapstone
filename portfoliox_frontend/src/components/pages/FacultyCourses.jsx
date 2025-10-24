@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, CheckCircle, XCircle, Loader2, FileText } from 'lucide-react';
 import { ConfirmDialog } from '../Notification';
 
+import { getApiBaseUrl } from '../../api/apiConfig';
 const maroon = "#800000";
 const gold = "#D4AF37";
 
@@ -41,7 +42,7 @@ export default function FacultyCourses() {
 
   const fetchAllStudents = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/users/students', {
+      const res = await fetch('${getApiBaseUrl()}/api/users/students', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) return; // silently ignore
@@ -56,7 +57,7 @@ export default function FacultyCourses() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/courses/faculty/${facultyId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/courses/faculty/${facultyId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch courses');
@@ -74,7 +75,7 @@ export default function FacultyCourses() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch('http://localhost:8080/api/courses', {
+      const res = await fetch('${getApiBaseUrl()}/api/courses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -98,7 +99,7 @@ export default function FacultyCourses() {
     if (studentNames[userId]) return studentNames[userId];
     
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.ok) {
@@ -124,7 +125,7 @@ export default function FacultyCourses() {
     setProjectLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/courses/${course.courseCode}/projects`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/courses/${course.courseCode}/projects`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch projects');
@@ -133,7 +134,7 @@ export default function FacultyCourses() {
 
       // fetch enrolled students for this course
       try {
-        const sres = await fetch(`http://localhost:8080/api/courses/${course.courseCode}/students`, {
+        const sres = await fetch(`${getApiBaseUrl()}/api/courses/${course.courseCode}/students`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (sres.ok) {
@@ -162,7 +163,7 @@ export default function FacultyCourses() {
     if (!selectedCourse) return;
     setStudentProjectsLoading(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/courses/${selectedCourse.courseCode}/students/${studentId}/projects`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse.courseCode}/students/${studentId}/projects`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch student projects');
@@ -181,7 +182,7 @@ export default function FacultyCourses() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/courses/${selectedCourse.courseCode}/add-student/${addStudentUserId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse.courseCode}/add-student/${addStudentUserId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
@@ -194,7 +195,7 @@ export default function FacultyCourses() {
       // refresh enrolled list
       if (selectedCourse) {
         try {
-          const sres = await fetch(`http://localhost:8080/api/courses/${selectedCourse.courseCode}/students`, {
+          const sres = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse.courseCode}/students`, {
             headers: { 'Authorization': `Bearer ${token}` },
           });
           if (sres.ok) {
@@ -226,7 +227,7 @@ export default function FacultyCourses() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/portfolios/${projectId}/validate`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/portfolios/${projectId}/validate`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -263,7 +264,7 @@ export default function FacultyCourses() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/portfolios/${projectId}/unvalidate`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/portfolios/${projectId}/unvalidate`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -292,7 +293,7 @@ export default function FacultyCourses() {
     setPortfolioLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/portfolios/${projectId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/portfolios/${projectId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch portfolio');

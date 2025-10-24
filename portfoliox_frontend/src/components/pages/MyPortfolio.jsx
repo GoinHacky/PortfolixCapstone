@@ -4,6 +4,7 @@ import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight,
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ConfirmDialog } from '../Notification';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 export default function MyPortfolio() {
   const location = useLocation();
@@ -90,7 +91,7 @@ export default function MyPortfolio() {
   const fetchPortfolios = async () => {
     try {
       console.log('Fetching portfolios for user:', userId);
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ export default function MyPortfolio() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/courses/student/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/courses/student/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (response.ok) {
@@ -143,7 +144,7 @@ export default function MyPortfolio() {
     setPortfolioToDelete(null);
     if (!portfolioId) return;
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/${portfolioId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -214,8 +215,8 @@ export default function MyPortfolio() {
       formDataPayload.append('skills', JSON.stringify(formData.skills));
 
       const url = editingPortfolio
-        ? `http://localhost:8080/api/portfolios/${editingPortfolio.portfolioID}`
-        : 'http://localhost:8080/api/portfolios';
+        ? `${getApiBaseUrl()}/api/portfolios/${editingPortfolio.portfolioID}`
+        : '${getApiBaseUrl()}/api/portfolios';
 
       const method = editingPortfolio ? 'PUT' : 'POST';
 
@@ -322,7 +323,7 @@ export default function MyPortfolio() {
 
   const togglePublicStatus = async (portfolioId, currentStatus) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/${portfolioId}/public-status?isPublic=${!currentStatus}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/public-status?isPublic=${!currentStatus}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -389,7 +390,7 @@ export default function MyPortfolio() {
             onClick={async () => {
               try {
                 // First, get the current resume content
-                const portfoliosResponse = await fetch(`http://localhost:8080/api/portfolios/student/${userId}`, {
+                const portfoliosResponse = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
                   headers: {
                     'Authorization': `Bearer ${token}`,
                   },
@@ -416,7 +417,7 @@ export default function MyPortfolio() {
 
                 console.log('Sending content to AI:', content); // Debug log
 
-                const enhanceResponse = await fetch('http://localhost:8080/api/ai/enhance-resume', {
+                const enhanceResponse = await fetch('${getApiBaseUrl()}/api/ai/enhance-resume', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -440,7 +441,7 @@ export default function MyPortfolio() {
                 }
                 
                 // Now generate the enhanced PDF
-                const response = await fetch(`http://localhost:8080/api/portfolios/generate-resume/${userId}?enhanced=true`, {
+                const response = await fetch(`${getApiBaseUrl()}/api/portfolios/generate-resume/${userId}?enhanced=true`, {
                   method: 'POST',
                   headers: {
                     'Authorization': `Bearer ${token}`,
@@ -755,7 +756,7 @@ export default function MyPortfolio() {
                       type="button"
                       onClick={async () => {
                         try {
-                          const response = await fetch('http://localhost:8080/api/ai/enhance-description', {
+                          const response = await fetch('${getApiBaseUrl()}/api/ai/enhance-description', {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',
@@ -890,7 +891,7 @@ export default function MyPortfolio() {
                       >
                         {certFilePreview || (formData.certFile && typeof formData.certFile === 'string') ? (
                           <img
-                            src={certFilePreview || (typeof formData.certFile === 'string' ? `http://localhost:8080/${formData.certFile.replace(/^uploads\//, 'uploads/')}` : undefined)}
+                            src={certFilePreview || (typeof formData.certFile === 'string' ? `${getApiBaseUrl()}/${formData.certFile.replace(/^uploads\//, 'uploads/')}` : undefined)}
                             alt="Certificate Preview"
                             className="max-h-32 rounded shadow mb-2"
                             style={{ objectFit: 'contain' }}
@@ -1165,10 +1166,10 @@ export default function MyPortfolio() {
                     <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
                     <div className="mt-2">
                       <img
-                        src={`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
+                        src={`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
                         alt="Certificate"
                         className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => setPreviewImage(`http://localhost:8080/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
+                        onClick={() => setPreviewImage(`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
                       />
                     </div>
                   </div>

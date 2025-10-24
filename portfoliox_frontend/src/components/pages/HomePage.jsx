@@ -38,6 +38,7 @@ import Profile from './Profile';
 import { ChevronRight } from "lucide-react";
 import { useTheme } from '../../contexts/ThemeContext';
 
+import { getApiBaseUrl } from '../../api/apiConfig';
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
 const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
@@ -96,7 +97,7 @@ export default function HomePage() {
 
   const fetchPortfolioData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${localStorage.getItem('userId')}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${localStorage.getItem('userId')}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
@@ -283,7 +284,7 @@ function DashboardContent() {
   const fetchDashboardData = async () => {
     try {
       // Fetch portfolio data
-      const response = await fetch(`http://localhost:8080/api/portfolios/student/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
