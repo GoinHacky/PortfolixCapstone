@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 export default function PublicPortfolio() {
   const { token } = useParams();

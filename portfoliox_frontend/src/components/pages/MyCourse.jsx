@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getApiBaseUrl } from '../../api/apiConfig';
 
 export default function MyCourse() {
   const [courses, setCourses] = useState([]);
@@ -117,7 +118,7 @@ export default function MyCourse() {
       body.append('courseCode', selectedCourse.courseCode);
       body.append('skills', JSON.stringify(skills));
 
-      const res = await fetch('${getApiBaseUrl()}/api/portfolios', {
+      const res = await fetch(`${getApiBaseUrl()}/api/portfolios`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body
@@ -141,7 +142,7 @@ export default function MyCourse() {
     const token = localStorage.getItem('token');
     setAiLoading(true);
     try {
-      const response = await fetch('${getApiBaseUrl()}/api/ai/enhance-description', {
+      const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
