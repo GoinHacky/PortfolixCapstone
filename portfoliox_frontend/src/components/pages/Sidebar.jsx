@@ -104,7 +104,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
       id: 'Dashboard', 
       icon: Home, 
       label: 'Dashboars',
-      description: 'Overview & Analytics',
+      description: 'Overview & Analyticssss',
       path: '/dashboard'
     },
     { 
