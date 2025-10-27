@@ -101,9 +101,9 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
 
   const menuItems = [
     { 
-      id: 'Dashboars', 
+      id: 'Dashboard', 
       icon: Home, 
-      label: 'Dashboard',
+      label: 'Dashboars',
       description: 'Overview & Analytics',
       path: '/dashboard'
     },
