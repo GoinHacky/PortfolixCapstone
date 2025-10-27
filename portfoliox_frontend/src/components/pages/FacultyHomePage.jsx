@@ -93,7 +93,7 @@ export default function FacultyHomePage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const studentsRes = await fetch('${getApiBaseUrl()}/api/users/students', {
+      const studentsRes = await fetch(`${getApiBaseUrl()}/api/users/students`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!studentsRes.ok) throw new Error('Failed to fetch students');

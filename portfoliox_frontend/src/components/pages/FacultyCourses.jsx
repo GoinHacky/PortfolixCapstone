@@ -42,7 +42,7 @@ export default function FacultyCourses() {
 
   const fetchAllStudents = async () => {
     try {
-      const res = await fetch('${getApiBaseUrl()}/api/users/students', {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/students`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!res.ok) return; // silently ignore
@@ -75,7 +75,7 @@ export default function FacultyCourses() {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch('${getApiBaseUrl()}/api/courses', {
+      const res = await fetch(`${getApiBaseUrl()}/api/courses`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

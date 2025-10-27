@@ -90,7 +90,7 @@ export default function AuthPage({ mode = "login" }) {
 
         // Fetch user profile
         try {
-          const userRes = await api.get(`/api/user/${data.userId}`);
+          const userRes = await api.get(`/api/users/${data.userId}`);
           const userData = userRes.data;
           if (userData.profilePic) {
             const profilePicPath = userData.profilePic.startsWith("/uploads/")
