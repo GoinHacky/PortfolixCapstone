@@ -126,13 +126,13 @@ export default function NotificationPanel() {
 
   // Fetch on mount and when panel opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && token && userId) {
       fetchNotifications();
       // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchNotifications, 30000);
       return () => clearInterval(interval);
     }
-  }, [isOpen]);
+  }, [isOpen, token, userId]);
 
   // Close panel when clicking outside
   useEffect(() => {
