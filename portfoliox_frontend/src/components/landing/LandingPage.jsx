@@ -187,7 +187,7 @@ export default function LandingPage() {
   };
 
   const handleStartFree = () => {
-    navigate('/auth/register');
+    navigate('/auth/signup');
   };
 
   const handleWatchDemo = () => {
@@ -254,8 +254,8 @@ export default function LandingPage() {
         </div>
 
         {/* Enhanced Navigation */}
-        <nav className="relative z-50 w-full py-4 glass-morphism sticky top-0 border-b border-white/20 dark:border-gray-800/50">
-          <div className="container mx-auto flex items-center justify-between px-6">
+        <nav className="relative z-50 w-full py-4 glass-morphism sticky top-0 border-b border-white/20 dark:border-gray-800/50 backdrop-blur-lg">
+          <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
@@ -309,21 +309,36 @@ export default function LandingPage() {
             </div>
 
             {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <div className="md:hidden flex items-center gap-3">
+              <button
+                onClick={handleSignIn}
+                className="px-4 py-2 text-sm font-semibold rounded-lg shadow-sm bg-white/80 dark:bg-gray-900/60 text-[#800000] dark:text-[#D4AF37] border border-[#800000]/20 dark:border-[#D4AF37]/30"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-gray-700 dark:text-gray-300 border border-transparent rounded-md hover:bg-white/30 dark:hover:bg-gray-800/60 transition"
+                aria-label="Toggle navigation"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <div className="md:hidden absolute top-full left-0 w-full glass-morphism border-t border-white/20 dark:border-gray-800/50">
+            <div className="md:hidden absolute top-full left-0 w-full glass-morphism border-t border-white/20 dark:border-gray-800/50 backdrop-blur-xl">
               <div className="px-6 py-4 space-y-4">
                 <a href="#features" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Features</a>
                 <a href="#testimonials" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Success Stories</a>
                 <a href="#pricing" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Pricing</a>
+                <button
+                  onClick={handleSignIn}
+                  className="w-full px-6 py-3 text-[#800000] dark:text-[#D4AF37] font-semibold border border-[#800000]/30 dark:border-[#D4AF37]/40 rounded-xl bg-white/80 dark:bg-gray-900/40"
+                >
+                  Sign In
+                </button>
                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                   <button 
                     onClick={handleStartFree}
@@ -339,8 +354,8 @@ export default function LandingPage() {
 
         {/* Enhanced Hero Section */}
         <section className="relative z-10 min-h-screen flex items-center">
-          <div className="container mx-auto px-6 py-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div className={`space-y-8 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'} transition-all duration-1000`}>
                 <div className="inline-flex items-center px-4 py-2 glass-morphism rounded-full border border-[#D4AF37]/30 mb-6">
@@ -350,7 +365,7 @@ export default function LandingPage() {
                   <span className="text-sm font-medium text-[#800000] dark:text-[#D4AF37]">🚀 New: AI Portfolio Builder</span>
                 </div>
                 
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-tight text-shadow">
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
                   Your Academic
                   <span className="block bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">
                     Excellence
@@ -358,12 +373,12 @@ export default function LandingPage() {
                   <span className="block">Showcased</span>
                 </h1>
                 
-                <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-lg">
+                <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-lg text-center sm:text-left">
                   Create academic portfolios that land internships, jobs, and admissions. 
                   
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 sm:justify-start justify-center">
                   <button 
                     onClick={handleStartFree}
                     className="px-8 py-4 gradient-shift text-white rounded-xl hover:shadow-2xl transition-all duration-300 text-lg font-semibold flex items-center justify-center gap-3 hover-lift group"
@@ -380,7 +395,7 @@ export default function LandingPage() {
                   </button>
                 </div>
                 
-                <div className="flex items-center gap-6 pt-8">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-8 text-center sm:text-left">
                   <div className="flex -space-x-3">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <img
