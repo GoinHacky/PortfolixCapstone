@@ -228,14 +228,15 @@ public class AuthController {
                         return ResponseEntity.badRequest().body(Map.of("error", "Image file too large. Maximum size is 1MB"));
                     }
 
-                    // Save file
+                    // Save file in user-specific directory for data isolation
+                    String userDir = "user_" + userId;
                     String fileName = UUID.randomUUID() + "_" + profilePic.getOriginalFilename();
-                    Path filePath = Paths.get(uploadDir, fileName);
+                    Path filePath = Paths.get(uploadDir, userDir, fileName);
                     Files.createDirectories(filePath.getParent());
                     Files.write(filePath, profilePic.getBytes());
 
                     // Store URL path instead of file system path
-                    user.setProfilePic("/uploads/" + fileName);
+                    user.setProfilePic("/uploads/" + userDir + "/" + fileName);
                     logger.info("Profile picture saved successfully at: {}. Size: {} bytes", filePath, profilePic.getSize());
                 } catch (Exception e) {
                     logger.error("Error saving profile picture: {}", e.getMessage());
