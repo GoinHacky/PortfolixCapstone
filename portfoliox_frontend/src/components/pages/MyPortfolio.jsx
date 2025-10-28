@@ -215,7 +215,7 @@ export default function MyPortfolio() {
         }
       }
 
-      formDataPayload.append('skills', JSON.stringify(formData.skills));
+      formDataPayload.append('skills', JSON.stringify(formData.skills.map(skill => ({ skillName: skill }))));
 
       const url = editingPortfolio
         ? `${getApiBaseUrl()}/api/portfolios/${editingPortfolio.portfolioID}`

@@ -138,6 +138,10 @@ export default function NotificationPanel() {
     }
   }, [isOpen, authInfo.token, authInfo.userId]);
 
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
   // Close panel when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
