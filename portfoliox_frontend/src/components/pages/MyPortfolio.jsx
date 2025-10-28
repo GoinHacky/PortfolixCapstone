@@ -889,9 +889,16 @@ export default function MyPortfolio() {
                         }}
                         style={{ minHeight: 120 }}
                       >
-                        {certFilePreview || (formData.certFile && typeof formData.certFile === 'string') ? (
+                        {certFilePreview ? (
                           <img
-                            src={certFilePreview || (typeof formData.certFile === 'string' ? `${getApiBaseUrl()}/${formData.certFile.replace(/^uploads\//, 'uploads/')}` : undefined)}
+                            src={certFilePreview}
+                            alt="Certificate Preview"
+                            className="max-h-32 rounded shadow mb-2"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        ) : formData.certFile && typeof formData.certFile === 'string' ? (
+                          <img
+                            src={`${getApiBaseUrl()}/${formData.certFile.replace(/^uploads\//, 'uploads/')}`}
                             alt="Certificate Preview"
                             className="max-h-32 rounded shadow mb-2"
                             style={{ objectFit: 'contain' }}

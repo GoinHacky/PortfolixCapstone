@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import SideBar from "./Sidebar";
+import NotificationPanel from "../NotificationPanel";
 import { 
-  Bell, 
   Search, 
   Plus, 
   TrendingUp, 
@@ -235,10 +235,7 @@ export default function HomePage() {
               </div>
               
               {/* Enhanced Notifications */}
-              <button className="relative p-2.5 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
-              </button>
+              <NotificationPanel />
               
               {/* Enhanced Add New Button */}
               <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
