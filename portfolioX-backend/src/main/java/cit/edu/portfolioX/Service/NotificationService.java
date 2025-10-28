@@ -166,6 +166,29 @@ public class NotificationService {
     }
 
     /**
+     * Notify student that their project was validated by faculty
+     */
+    public void notifyProjectValidated(UserEntity student, UserEntity faculty, Long projectId) {
+        try {
+            String title = "Project Validated";
+            String message = faculty.getFname() + " " + faculty.getLname() + " validated your project.";
+
+            createNotification(
+                student,
+                NotificationType.PROJECT_SUBMISSION,
+                title,
+                message,
+                faculty.getUserID(),
+                projectId,
+                "PROJECT"
+            );
+            logger.info("Project validation notification sent to: {}", student.getUsername());
+        } catch (Exception e) {
+            logger.error("Error notifying project validation: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Notify student about course enrollment
      */
     public void notifyCourseEnrollment(UserEntity student, String courseName) {

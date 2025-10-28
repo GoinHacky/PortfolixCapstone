@@ -49,6 +49,7 @@ import cit.edu.portfolioX.Entity.SkillEntity;
 import cit.edu.portfolioX.Entity.UserEntity;
 import cit.edu.portfolioX.Security.JwtUtil;
 import cit.edu.portfolioX.Service.CourseService;
+import cit.edu.portfolioX.Service.NotificationService;
 import cit.edu.portfolioX.Service.PortfolioService;
 import cit.edu.portfolioX.Service.UserService;
 
@@ -69,6 +70,9 @@ public class PortfolioController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Value("${server.url:http://localhost:8080}")
     private String serverUrl;
@@ -172,6 +176,20 @@ public class PortfolioController {
 
             PortfolioEntity savedPortfolio = service.save(portfolio);
             logger.info("Portfolio created successfully with ID: {}", savedPortfolio.getPortfolioID());
+
+            if ("project".equalsIgnoreCase(category)) {
+                try {
+                    Long projectId = savedPortfolio.getPortfolioID();
+                    if (courseCode != null && !courseCode.isBlank()) {
+                        courseService.findByCourseCode(courseCode)
+                            .filter(course -> course.getCreatedBy() != null)
+                            .flatMap(course -> userService.getById(course.getCreatedBy()))
+                            .ifPresent(faculty -> notificationService.notifyProjectSubmission(faculty, user, projectId));
+                    }
+                } catch (Exception notifyEx) {
+                    logger.warn("Failed to trigger project submission notification: {}", notifyEx.getMessage());
+                }
+            }
 
             return ResponseEntity.ok(Map.of(
                 "portfolioID", savedPortfolio.getPortfolioID(),
@@ -688,6 +706,15 @@ public class PortfolioController {
             portfolio.setValidatedByName(faculty.getFname() + " " + faculty.getLname());
             portfolio.setValidatedById(faculty.getUserID());
             service.save(portfolio);
+
+            try {
+                if (portfolio.getUser() != null) {
+                    notificationService.notifyProjectValidated(portfolio.getUser(), faculty, portfolio.getPortfolioID());
+                }
+            } catch (Exception notifyEx) {
+                logger.warn("Failed to notify student about project validation: {}", notifyEx.getMessage());
+            }
+
             return ResponseEntity.ok(Map.of(
                 "portfolioID", portfolio.getPortfolioID(),
                 "validatedByFaculty", true,
