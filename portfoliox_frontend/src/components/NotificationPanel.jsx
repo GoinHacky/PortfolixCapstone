@@ -20,13 +20,24 @@ export default function NotificationPanel() {
       const response = await fetch(`${getApiBaseUrl()}/api/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
+
+      if (response.status === 401) {
+        // Token expired or invalid, clear storage and redirect
+        localStorage.clear();
+        window.location.href = '/auth/login';
+        return;
+      }
 
       if (response.ok) {
         const data = await response.json();
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
+      } else {
+        console.warn('Failed to fetch notifications:', response.status);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -42,8 +53,16 @@ export default function NotificationPanel() {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
+
+      if (response.status === 401) {
+        localStorage.clear();
+        window.location.href = '/auth/login';
+        return;
+      }
 
       if (response.ok) {
         fetchNotifications();
@@ -60,8 +79,16 @@ export default function NotificationPanel() {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
+
+      if (response.status === 401) {
+        localStorage.clear();
+        window.location.href = '/auth/login';
+        return;
+      }
 
       if (response.ok) {
         fetchNotifications();
@@ -78,8 +105,16 @@ export default function NotificationPanel() {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
       });
+
+      if (response.status === 401) {
+        localStorage.clear();
+        window.location.href = '/auth/login';
+        return;
+      }
 
       if (response.ok) {
         fetchNotifications();
@@ -174,7 +209,7 @@ export default function NotificationPanel() {
 
       {/* Notification Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 flex flex-col">
+        <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-[9999] max-h-96 flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <div>
