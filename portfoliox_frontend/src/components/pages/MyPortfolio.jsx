@@ -382,10 +382,13 @@ export default function MyPortfolio() {
   }, [formData.githubLink, formData.category]);
 
   return (
-    <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">My Portfolio</h1>
-        <div className="flex gap-4">
+    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">My Portfolio</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Organize and showcase your projects and microcredentials</p>
+        </div>
+        <div className="flex flex-wrap gap-4">
           <button
             onClick={async () => {
               try {
@@ -478,7 +481,7 @@ export default function MyPortfolio() {
                 showNotification({ message: 'Failed to generate enhanced resume', type: 'error' });
               }
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] text-white rounded-lg hover:bg-[#B8860B] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white rounded-xl shadow-sm hover:shadow-md transition-all"
           >
             <Wand2 size={16} />
             Generate AI-Enhanced Resume
@@ -487,7 +490,7 @@ export default function MyPortfolio() {
       </div>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="relative max-w-xl">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
@@ -497,7 +500,7 @@ export default function MyPortfolio() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search portfolios by title, description, or content..."
-            className="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white dark:bg-gray-800 dark:text-white"
+            className="block w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
           />
           {searchTerm && (
             <button
@@ -522,12 +525,12 @@ export default function MyPortfolio() {
       </div>
 
       {/* Portfolio Folders */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Projects Folder */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('projects')}
-            className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700"
+            className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
           >
             {expandedFolders.projects ? (
               <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
@@ -535,8 +538,8 @@ export default function MyPortfolio() {
               <Folder className="w-6 h-6 text-[#D4AF37]" />
             )}
             <div className="flex-1 flex items-center">
-              <span className="font-medium text-gray-800 dark:text-white">Projects</span>
-              <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-full">
+              <span className="font-semibold text-gray-800 dark:text-white">Projects</span>
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.projects.length}
               </span>
             </div>
@@ -548,29 +551,29 @@ export default function MyPortfolio() {
           </button>
           
           {expandedFolders.projects && (
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-6 bg-gradient-to-b from-white/60 via-white/40 to-white/20 dark:from-gray-900/70 dark:via-gray-900/60 dark:to-gray-900/40">
               <div className="mb-4">
                 <button
                   onClick={() => handleAddPortfolio('project')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
                 >
                   <Plus size={16} />
                   Add New Project
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {groupedPortfolios.projects.map((portfolio) => (
                   <div key={portfolio.portfolioID} 
-                    className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200"
+                    className="group bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
                   >
                     <div className="p-4">
                       <div className="flex items-start gap-3 mb-3">
                         <FileText className="w-5 h-5 text-[#800000] mt-1" />
                         <div className="flex-1">
-                          <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
+                          <h3 className="font-semibold text-gray-800 dark:text-white tracking-tight">{portfolio.portfolioTitle}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-2 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
                           {portfolio.validatedByFaculty && (
-                            <span className="inline-block mt-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
+                            <span className="inline-block mt-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">
                               Validated by {portfolio.validatedByName}
                             </span>
                           )}
@@ -610,9 +613,14 @@ export default function MyPortfolio() {
                         </div>
                       </div>
                       {portfolio.skills && portfolio.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-3">
                           {portfolio.skills.map((skill, idx) => (
-                            <span key={idx} className="bg-[#D4AF37] text-[#800000] px-2 py-0.5 rounded-full text-xs font-semibold">{skill.skillName || skill}</span>
+                            <span
+                              key={idx}
+                              className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-0.5 rounded-full text-xs font-semibold shadow-sm"
+                            >
+                              {skill.skillName || skill}
+                            </span>
                           ))}
                         </div>
                       )}
@@ -621,7 +629,7 @@ export default function MyPortfolio() {
                 ))}
               </div>
               {groupedPortfolios.projects.length === 0 && (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <div className="text-center py-10 text-gray-500 dark:text-gray-400 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-white/40 dark:bg-gray-900/40">
                   {searchTerm 
                     ? 'No projects match your search.'
                     : 'No projects yet. Click "Add New Project" to create one.'}
@@ -632,10 +640,10 @@ export default function MyPortfolio() {
         </div>
 
         {/* Microcredentials Folder */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('microcredentials')}
-            className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700"
+            className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
           >
             {expandedFolders.microcredentials ? (
               <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
@@ -643,8 +651,8 @@ export default function MyPortfolio() {
               <Folder className="w-6 h-6 text-[#D4AF37]" />
             )}
             <div className="flex-1 flex items-center">
-              <span className="font-medium text-gray-800 dark:text-white">Microcredentials</span>
-              <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-full">
+              <span className="font-semibold text-gray-800 dark:text-white">Microcredentials</span>
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.microcredentials.length}
               </span>
             </div>
@@ -656,20 +664,20 @@ export default function MyPortfolio() {
           </button>
           
           {expandedFolders.microcredentials && (
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-6 bg-gradient-to-b from-white/60 via-white/40 to-white/20 dark:from-gray-900/70 dark:via-gray-900/60 dark:to-gray-900/40">
               <div className="mb-4">
                 <button
                   onClick={() => handleAddPortfolio('microcredentials')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
                 >
                   <Plus size={16} />
                   Add New Microcredential
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {groupedPortfolios.microcredentials.map((portfolio) => (
                   <div key={portfolio.portfolioID} 
-                    className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200"
+                    className="group bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
                   >
                     <div className="p-4">
                       <div className="flex items-start gap-3 mb-3">
@@ -687,29 +695,29 @@ export default function MyPortfolio() {
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => setViewPortfolio(portfolio)}
-                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md"
+                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md"
                             title="View details"
                           >
                             <Eye size={16} />
                           </button>
                           <button
                             onClick={() => handleEdit(portfolio)}
-                            className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md"
+                            className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md"
                           >
                             <Edit size={16} />
                           </button>
                           <button
                             onClick={() => requestDelete(portfolio.portfolioID)}
-                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md"
+                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md"
                           >
                             <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
                       {portfolio.skills && portfolio.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-3">
                           {portfolio.skills.map((skill, idx) => (
-                            <span key={idx} className="bg-[#D4AF37] text-[#800000] px-2 py-0.5 rounded-full text-xs font-semibold">{skill.skillName || skill}</span>
+                            <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-0.5 rounded-full text-xs font-semibold shadow-sm">{skill.skillName || skill}</span>
                           ))}
                         </div>
                       )}
@@ -718,7 +726,7 @@ export default function MyPortfolio() {
                 ))}
               </div>
               {groupedPortfolios.microcredentials.length === 0 && (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <div className="text-center py-10 text-gray-500 dark:text-gray-400 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-white/40 dark:bg-gray-900/40">
                   {searchTerm 
                     ? 'No microcredentials match your search.'
                     : 'No microcredentials yet. Click "Add New Microcredential" to create one.'}
@@ -730,8 +738,8 @@ export default function MyPortfolio() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40 p-4">
+          <div className="bg-white/95 dark:bg-gray-900/95 border border-[#800000]/15 dark:border-[#D4AF37]/15 p-6 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
               {editingPortfolio ? 'Edit Portfolio' : `Add New ${formData.category === 'project' ? 'Project' : 'Microcredential'}`}
             </h2>
@@ -744,7 +752,7 @@ export default function MyPortfolio() {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     required
                   />
                 </div>
@@ -794,8 +802,8 @@ export default function MyPortfolio() {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                    rows="3"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-3 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                    rows="4"
                     required
                   />
                 </div>
@@ -806,7 +814,7 @@ export default function MyPortfolio() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                   >
                     <option value="project">Project</option>
                     <option value="microcredentials">Microcredentials</option>
@@ -821,8 +829,7 @@ export default function MyPortfolio() {
                       name="githubLink"
                       value={formData.githubLink}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                      required
+                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -834,7 +841,7 @@ export default function MyPortfolio() {
                       name="courseCode"
                       value={formData.courseCode}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
+                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     >
                       <option value="">-- None --</option>
                       {courses.map(course => (
@@ -855,8 +862,7 @@ export default function MyPortfolio() {
                         name="certTitle"
                         value={formData.certTitle}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                        required
+                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -866,12 +872,11 @@ export default function MyPortfolio() {
                         name="issueDate"
                         value={formData.issueDate}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2"
-                        required
+                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate Image</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Certificate</label>
                       <div
                         className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${formData.certFile ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-[#800000]'}`}
                         onClick={() => fileInputRef.current && fileInputRef.current.click()}
@@ -1075,7 +1080,7 @@ export default function MyPortfolio() {
                         {formData.skills.map((lang, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm"
+                                className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm"
                           >
                             {lang}
                             <button

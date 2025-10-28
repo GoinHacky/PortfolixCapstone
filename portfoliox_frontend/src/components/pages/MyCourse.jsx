@@ -1,5 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  BookOpen,
+  GraduationCap,
+  FolderGit2,
+  Github,
+  Sparkles,
+  PlusCircle
+} from 'lucide-react';
 import { getApiBaseUrl } from '../../api/apiConfig';
 
 export default function MyCourse() {
@@ -96,10 +107,8 @@ export default function MyCourse() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="inline-block">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#800000] mb-4"></div>
-          </div>
+        <div className="text-center space-y-4">
+          <Loader2 className="h-12 w-12 mx-auto animate-spin text-[#800000]" />
           <p className="text-gray-600 dark:text-gray-400 font-medium">Loading your courses...</p>
         </div>
       </div>
@@ -109,11 +118,11 @@ export default function MyCourse() {
   if (error) {
     return (
       <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-            <span className="text-3xl">⚠️</span>
+        <div className="text-center max-w-md space-y-3">
+          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl mx-auto flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <p className="text-red-600 dark:text-red-400 font-medium mb-2">{error}</p>
+          <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Please try refreshing the page or contact support</p>
         </div>
       </div>
@@ -192,8 +201,9 @@ export default function MyCourse() {
       </div>
       
       {createdOk && (
-        <div className="mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-medium shadow-sm">
-          ✓ {createdOk}
+        <div className="mb-6 flex items-center gap-2 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-medium shadow-sm">
+          <CheckCircle2 className="w-5 h-5" />
+          <span>{createdOk}</span>
         </div>
       )}
 
@@ -202,7 +212,7 @@ export default function MyCourse() {
           {courses.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <span className="text-3xl">📚</span>
+                <BookOpen className="w-10 h-10 text-[#800000] dark:text-[#D4AF37]" />
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">You are not enrolled in any course yet.</p>
               <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">Contact your faculty to enroll in a course</p>
@@ -217,7 +227,7 @@ export default function MyCourse() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="p-3 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-2xl">📖</span>
+                      <GraduationCap className="w-6 h-6 text-[#800000] dark:text-[#D4AF37]" />
                     </div>
                     <span className="text-xs font-semibold text-[#800000] dark:text-[#D4AF37] bg-[#800000]/10 dark:bg-[#D4AF37]/10 px-3 py-1 rounded-full">{course.courseCode}</span>
                   </div>
@@ -263,16 +273,16 @@ export default function MyCourse() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm">Showcase your work and achievements</p>
               </div>
               {projectsLoading && (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#800000]"></div>
-                  <span className="text-sm text-gray-500">Loading...</span>
+                <div className="flex items-center gap-2 text-[#800000]">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
               )}
             </div>
             {courseProjects.length === 0 && !projectsLoading ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-3xl">💻</span>
+                  <FolderGit2 className="w-10 h-10 text-[#800000] dark:text-[#D4AF37]" />
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 font-medium mb-2">No projects yet for this course</p>
                 <p className="text-gray-500 dark:text-gray-500 text-sm">Click "Create Project" to showcase your first project</p>
@@ -283,7 +293,7 @@ export default function MyCourse() {
                   <div key={p.portfolioID} className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-[#800000] dark:hover:border-[#D4AF37]">
                     <div className="mb-4">
                       <div className="inline-block p-2 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-lg mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-lg">🎯</span>
+                        <FolderGit2 className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
                       </div>
                       <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors line-clamp-2">{p.portfolioTitle}</h3>
                     </div>
@@ -307,7 +317,8 @@ export default function MyCourse() {
                         rel="noopener noreferrer" 
                         className="inline-flex items-center gap-2 text-sm font-medium text-[#800000] dark:text-[#D4AF37] hover:underline transition-colors"
                       >
-                        🔗 View on GitHub
+                        <Github className="w-4 h-4" />
+                        View on GitHub
                       </a>
                     )}
                   </div>
@@ -327,7 +338,10 @@ export default function MyCourse() {
             </div>
             {createError && (
               <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
-                ⚠️ {createError}
+                <span className="inline-flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  {createError}
+                </span>
               </div>
             )}
             <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
@@ -350,7 +364,12 @@ export default function MyCourse() {
                     className="text-xs font-medium text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1 transition-colors" 
                     disabled={aiLoading}
                   >
-                    ✨ {aiLoading ? 'Enhancing...' : 'Enhance with AI'}
+                    {aiLoading ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
+                    {aiLoading ? 'Enhancing...' : 'Enhance with AI'}
                   </button>
                 </div>
                 <textarea
@@ -431,7 +450,14 @@ export default function MyCourse() {
                 disabled={creating || !form.title || !form.description} 
                 className="px-6 py-2.5 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {creating ? '⏳ Creating...' : '✓ Create Project'}
+                <span className="inline-flex items-center gap-2">
+                  {creating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <PlusCircle className="w-4 h-4" />
+                  )}
+                  {creating ? 'Creating...' : 'Create Project'}
+                </span>
               </button>
             </div>
           </div>

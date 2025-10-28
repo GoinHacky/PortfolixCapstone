@@ -185,20 +185,20 @@ export default function SharePortfolio() {
   });
 
   return (
-    <div className="p-8 bg-gray-50 dark:bg-gray-900">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Share Portfolio</h1>
+    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
+      <div className="mb-10">
+        <h1 className="text-3xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent mb-4">Share Portfolio</h1>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <input
             type="text"
             placeholder="Paste a portfolio token or ID to preview..."
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 dark:text-white"
+            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
             value={publicLinkInput}
             onChange={e => setPublicLinkInput(e.target.value)}
           />
           <button
             onClick={handleOpenPublicLink}
-            className="px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors"
+            className="px-5 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium shadow-sm hover:shadow-md transition-all"
           >
             Preview Portfolio
           </button>
@@ -208,13 +208,13 @@ export default function SharePortfolio() {
             <input
               type="text"
               placeholder="Search portfolios..."
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] bg-white dark:bg-gray-800 dark:text-white"
+            className="px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -227,11 +227,16 @@ export default function SharePortfolio() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPortfolios.map((portfolio) => (
-          <div key={portfolio.portfolioID} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <div
+            key={portfolio.portfolioID}
+            className="bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
+          >
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{portfolio.portfolioTitle || 'Untitled Portfolio'}</h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400 capitalize">{portfolio.category || 'No Category'}</span>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white tracking-tight">{portfolio.portfolioTitle || 'Untitled Portfolio'}</h3>
+                <span className="inline-flex items-center px-2 py-0.5 mt-1 text-xs font-medium bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] rounded-full capitalize">
+                  {portfolio.category || 'No Category'}
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Link2 className="w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -242,10 +247,10 @@ export default function SharePortfolio() {
             
             {portfolio.link ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-800/70 rounded-xl border border-gray-100 dark:border-gray-700">
                   <div className="flex-1 truncate mr-2">
                     {portfolio.link.isActive ? (
-                      <span className="text-sm text-gray-600 dark:text-gray-300">{links[portfolio.portfolioID]}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-200">{links[portfolio.portfolioID]}</span>
                     ) : (
                       <span className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-yellow-700 dark:text-yellow-300 text-sm">This portfolio is <b>private</b>. Unlock to enable sharing.</span>
                     )}
@@ -281,7 +286,7 @@ export default function SharePortfolio() {
                       {portfolio.link.isActive ? (
                         <Unlock className="w-5 h-5 text-green-600" />
                       ) : (
-                        <Lock className="w-5 h-5 text-gray-500" />
+                        <Lock className="w-5 h-5 text-[#D4AF37]" />
                       )}
                     </button>
                   </div>
@@ -295,7 +300,7 @@ export default function SharePortfolio() {
               <button
                 onClick={() => generateLink(portfolio.portfolioID)}
                 disabled={!!actionLoading[portfolio.portfolioID]}
-                className="w-full px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {!!actionLoading[portfolio.portfolioID] ? 'Generating...' : 'Generate Sharing Link'}
               </button>
@@ -305,7 +310,7 @@ export default function SharePortfolio() {
       </div>
 
       {filteredPortfolios.length === 0 && (
-        <div className="text-center py-8">
+        <div className="text-center py-12 border border-dashed border-gray-300 dark:border-gray-700 rounded-2xl mt-8 bg-white/50 dark:bg-gray-900/40">
           <p className="text-gray-500 dark:text-gray-400">No portfolios found matching your criteria.</p>
         </div>
       )}
@@ -317,8 +322,8 @@ export default function SharePortfolio() {
           {previewLoading && <div className="p-8 text-center text-gray-500">Loading...</div>}
           {previewError && <div className="p-8 text-center text-red-600">{previewError}</div>}
           {previewPortfolio && (
-            <div className="bg-gray-100 flex items-center justify-center font-serif rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-              <div className="w-full max-w-2xl mx-auto bg-white border border-gray-200 rounded-lg p-8">
+            <div className="bg-white/70 dark:bg-gray-900/70 flex items-center justify-center font-serif rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-lg">
+              <div className="w-full max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/90 border border-gray-100 dark:border-gray-700 rounded-xl p-8">
                 <div className="flex items-center mb-2">
                   <svg className="w-5 h-5 text-[#800000] mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
                   <div className="ml-3">

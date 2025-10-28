@@ -490,11 +490,11 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Profile Settings</h1>
+            <h1 className="text-3xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">Profile Settings</h1>
             <p className="text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
           </div>
           <button
