@@ -8,12 +8,16 @@ export default function NotificationPanel() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef(null);
-  const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId');
+  const [authInfo, setAuthInfo] = useState({ token: null, userId: null });
 
   // Fetch notifications
   const fetchNotifications = async () => {
+    const token = authInfo.token || localStorage.getItem('token');
+    const userId = authInfo.userId || localStorage.getItem('userId');
     if (!token || !userId) return;
+    if (!authInfo.token || !authInfo.userId) {
+      setAuthInfo({ token, userId });
+    }
     
     try {
       setLoading(true);
@@ -126,13 +130,13 @@ export default function NotificationPanel() {
 
   // Fetch on mount and when panel opens
   useEffect(() => {
-    if (isOpen && token && userId) {
+    if (isOpen) {
       fetchNotifications();
       // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchNotifications, 30000);
       return () => clearInterval(interval);
     }
-  }, [isOpen, token, userId]);
+  }, [isOpen, authInfo.token, authInfo.userId]);
 
   // Close panel when clicking outside
   useEffect(() => {

@@ -22,6 +22,7 @@ export default function SharePortfolio() {
 
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+  const frontendBaseUrl = (import.meta.env.VITE_PUBLIC_APP_URL || window.location.origin).replace(/\/$/, '');
 
   useEffect(() => {
     if (!token) {
@@ -74,7 +75,7 @@ export default function SharePortfolio() {
         // Extract the token from the backend link
         const tokenMatch = link.match(/([a-f0-9\-]{36})$/);
         const publicToken = tokenMatch ? tokenMatch[1] : link;
-        link = `http://localhost:5173/public/view/${publicToken}`;
+        link = `${frontendBaseUrl}/public/view/${publicToken}`;
         setLinks(prev => ({
           ...prev,
           [portfolioId]: link
@@ -100,7 +101,7 @@ export default function SharePortfolio() {
       // Always use the React public view route for sharing
       const tokenMatch = link.match(/([a-f0-9\-]{36})$/);
       const publicToken = tokenMatch ? tokenMatch[1] : link;
-      link = `http://localhost:5173/public/view/${publicToken}`;
+      link = `${frontendBaseUrl}/public/view/${publicToken}`;
       setLinks(prev => ({
         ...prev,
         [portfolioId]: link
@@ -127,12 +128,16 @@ export default function SharePortfolio() {
   const handleOpenPublicLink = async () => {
     if (publicLinkInput && publicLinkInput.trim().length > 0) {
       let input = publicLinkInput.trim();
-      // Remove known prefixes if present
-      input = input.replace(/^https?:\/\/localhost:8080\/api\/portfolios\/public\//, '');
-      input = input.replace(/^https?:\/\/localhost:8080\/public\/view\//, '');
-      input = input.replace(/^https?:\/\/localhost:5173\/public\/view\//, '');
-      input = input.replace(/^\/api\/portfolios\/public\//, '');
-      input = input.replace(/^\/public\/view\//, '');
+      // Attempt to extract token from full URLs
+      try {
+        const url = new URL(input);
+        input = url.pathname.split('/').filter(Boolean).pop() || '';
+      } catch (err) {
+        // Not a full URL, fall back to regex stripping of known prefixes
+        input = input.replace(/.*\/public\/view\//i, '');
+        input = input.replace(/.*\/api\/portfolios\/public\//i, '');
+      }
+      input = input.replace(/^\/+/g, '');
       setPreviewLoading(true);
       setPreviewError(null);
       setPreviewPortfolio(null);
