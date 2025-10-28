@@ -208,19 +208,6 @@ export default function LandingPage() {
     };
   }, []);
 
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = original || '';
-    }
-    return () => {
-      document.body.style.overflow = original || '';
-    };
-  }, [mobileMenuOpen]);
-
   const features = [
     {
       icon: <BookOpen className="w-8 h-8" />,
@@ -440,37 +427,23 @@ export default function LandingPage() {
             </button>
           </div>
 
-          {/* Mobile Navigation as Drawer */}
+          {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                onClick={() => setMobileMenuOpen(false)}
-              />
-              {/* Drawer Panel */}
-              <div className="fixed inset-y-0 right-0 w-80 max-w-full bg-white dark:bg-gray-900 shadow-xl z-50 md:hidden overflow-y-auto">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">Menu</span>
-                  <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-gray-600 dark:text-gray-300" aria-label="Close menu">
-                    <X className="w-5 h-5" />
+            <div className="md:hidden absolute top-full left-0 w-full glass-morphism border-t border-white/20 dark:border-gray-800/50">
+              <div className="px-6 py-4 space-y-4">
+                <a href="#features" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Features</a>
+                <a href="#testimonials" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Success Stories</a>
+                <a href="#pricing" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Pricing</a>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button 
+                    onClick={handleStartFree}
+                    className="w-full px-6 py-3 gradient-shift text-white font-semibold rounded-xl"
+                  >
+                    Start Free
                   </button>
                 </div>
-                <div className="px-6 py-4 space-y-4">
-                  <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-gray-800 dark:text-gray-200 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Features</a>
-                  <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block text-gray-800 dark:text-gray-200 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Success Stories</a>
-                  <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-gray-800 dark:text-gray-200 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Pricing</a>
-                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button 
-                      onClick={() => { setMobileMenuOpen(false); handleStartFree(); }}
-                      className="w-full px-6 py-3 gradient-shift text-white font-semibold rounded-xl"
-                    >
-                      Start Free
-                    </button>
-                  </div>
-                </div>
               </div>
-            </>
+            </div>
           )}
         </nav>
 

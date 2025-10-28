@@ -14,9 +14,7 @@ import {
   Settings,
   Sun,
   Moon,
-  BookOpen,
-  Menu,
-  X
+  BookOpen
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
@@ -32,25 +30,6 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
   const [profilePic, setProfilePic] = useState(storedProfilePic);
   const [fullName, setFullName] = useState('');
   const { darkMode, toggleDarkMode } = useTheme();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  useEffect(() => {
-    // Determine initial mobile state and listen for resize
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768; // md breakpoint
-      setIsMobile(mobile);
-      if (!mobile) {
-        setIsMobileOpen(false);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   useEffect(() => {
     const handleStorageChange = (e) => {
@@ -162,9 +141,6 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
     if (onItemSelect) {
       onItemSelect(item.id);
     }
-    if (isMobile) {
-      setIsMobileOpen(false);
-    }
   };
 
   const handleSignOut = () => {
@@ -178,33 +154,9 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
   };
 
   return (
-    <>
-      {/* Mobile backdrop */}
-      {isMobile && isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-
-      {/* Floating mobile open button */}
-      {isMobile && !isMobileOpen && (
-        <button
-          onClick={() => setIsMobileOpen(true)}
-          className="fixed bottom-4 left-4 z-40 rounded-full p-3 bg-[#800000] text-white shadow-lg md:hidden"
-          aria-label="Open menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      )}
-
-      <div className={`${
-        isMobile
-          ? `fixed inset-y-0 left-0 z-50 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 w-72`
-          : ''
-      } relative h-screen ${maroon} dark:bg-gray-800 transition-all duration-300 ease-in-out ${
-        isMobile ? 'w-72' : (isCollapsed ? 'w-20' : 'w-72')
-      } flex flex-col shadow-2xl`}>
+    <div className={`relative h-screen ${maroon} dark:bg-gray-800 transition-all duration-300 ease-in-out ${
+      isCollapsed ? 'w-20' : 'w-72'
+    } flex flex-col shadow-2xl z-50`}>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#800000] via-[#600000] to-[#800000] dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 opacity-90"></div>
@@ -242,10 +194,9 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
               </button>
             )}
 
-            {/* Desktop collapse toggle, hidden on mobile */}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white hidden md:inline-flex"
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white"
             >
               {isCollapsed ? (
                 <ChevronRight className="w-4 h-4" />
@@ -253,17 +204,6 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                 <ChevronLeft className="w-4 h-4" />
               )}
             </button>
-
-            {/* Mobile close button inside header */}
-            {isMobile && (
-              <button
-                onClick={() => setIsMobileOpen(false)}
-                className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors text-white/80 hover:text-white"
-                aria-label="Close menu"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
 
@@ -375,6 +315,6 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
