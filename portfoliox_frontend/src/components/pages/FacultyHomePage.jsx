@@ -15,7 +15,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Loader2,
-  Bell,
   Search,
   Plus,
   Sparkles,
@@ -36,6 +35,7 @@ import Profile from './Profile';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getApiBaseUrl } from '../../api/apiConfig';
 import FacultyCourses from './FacultyCourses';
+import NotificationPanel from '../NotificationPanel';
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -153,7 +153,7 @@ export default function FacultyHomePage() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Enhanced Top Navigation Bar */}
-        <header className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
+        <header className="relative z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-3">
@@ -181,10 +181,7 @@ export default function FacultyHomePage() {
               </div>
               
               {/* Enhanced Notifications */}
-              <button className="relative p-2.5 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
-              </button>
+              <NotificationPanel />
               
               {/* Enhanced Add New Button */}
               <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
