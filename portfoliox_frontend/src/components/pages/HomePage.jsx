@@ -600,10 +600,10 @@ function DashboardContent() {
                   <Award className="w-5 h-5" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-[#D4AF37] dark:text-[#800000] mb-1">Add Microcredential</h4>
-                  <p className="text-[#D4AF37] dark:text-[#800000] text-sm">Highlight your achievements</p>
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Add Microcredential</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Highlight your achievements</p>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-[#D4AF37] dark:text-[#800000] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </div>
             </button>
             <button 
