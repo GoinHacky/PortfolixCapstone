@@ -35,6 +35,7 @@ export default function Profile() {
   const [profilePic, setProfilePic] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(localStorage.getItem('profilePic'));
   const [uploadingProfilePic, setUploadingProfilePic] = useState(false);
+  const [profilePicError, setProfilePicError] = useState(false);
 
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -556,22 +557,24 @@ export default function Profile() {
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 border-4 border-white dark:border-gray-600 shadow-lg">
-                  {previewUrl ? (
+                  {previewUrl && !profilePicError ? (
                     <img 
                       src={previewUrl} 
                       alt="Profile" 
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         console.error('Failed to load profile picture:', previewUrl);
+                        setProfilePicError(true);
                         setPreviewUrl(null);
                         localStorage.removeItem('profilePic');
                       }}
                       onLoad={() => {
                         console.log('Profile picture loaded successfully:', previewUrl);
+                        setProfilePicError(false);
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
                       <User className="w-16 h-16 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
