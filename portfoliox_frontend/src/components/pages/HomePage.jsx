@@ -363,15 +363,6 @@ function DashboardContent() {
       color: `${goldText} dark:text-[#D4AF37]`,
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
-    },
-    { 
-      icon: Eye, 
-      label: 'Profile Views', 
-      value: dashboardData.profileViews,
-      change: 'Last 30 days', 
-      color: 'text-[#800000] dark:text-[#D4AF37]',
-      bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
-      trend: 'up'
     }
   ];
 
@@ -380,8 +371,8 @@ function DashboardContent() {
       <div className="p-8 space-y-8">
         <div className="animate-pulse">
           <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-2xl mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[1, 2, 3, 4].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {[1, 2, 3].map((i) => (
               <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
             ))}
           </div>

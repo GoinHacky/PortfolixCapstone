@@ -310,7 +310,7 @@ function DashboardContent() {
         <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Overview of system statistics and activities</p>
       </div>
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div className={`rounded-2xl shadow-xl border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}> <h3 className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-2">Total Students</h3> <div className="text-3xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.totalStudents}</div> </div>
         <div className={`rounded-2xl shadow-xl border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}> <h3 className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-2">Total Faculty</h3> <div className="text-3xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.totalFaculty}</div> </div>
         <div className={`rounded-2xl shadow-xl border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}> <h3 className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-2">Total Projects</h3> <div className="text-3xl font-bold text-[#800000] dark:text-[#D4AF37]">{dashboardData.totalProjects}</div> </div>
