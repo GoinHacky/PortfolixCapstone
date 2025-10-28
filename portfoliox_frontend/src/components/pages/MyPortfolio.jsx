@@ -33,6 +33,7 @@ export default function MyPortfolio() {
   const [previewImage, setPreviewImage] = useState(null);
   const fileInputRef = useRef(null);
   const [certFilePreview, setCertFilePreview] = useState(null);
+  const [existingCertPath, setExistingCertPath] = useState(null);
   const { showNotification } = useNotification();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState(null);
@@ -171,7 +172,7 @@ export default function MyPortfolio() {
     setFormData({
       title: portfolio.portfolioTitle,
       description: portfolio.portfolioDescription,
-      category: portfolio.category.toLowerCase(),
+      category: portfolio.category,
       githubLink: portfolio.githubLink || '',
       certTitle: portfolio.certTitle || '',
       issueDate: portfolio.issueDate || '',
@@ -179,6 +180,8 @@ export default function MyPortfolio() {
       skills: portfolio.skills?.map(s => s.skillName) || [],
       courseCode: portfolio.courseCode || '',
     });
+    setExistingCertPath(portfolio.certFile || null);
+    setCertFilePreview(null);
     setShowForm(true);
   };
 
@@ -265,6 +268,8 @@ export default function MyPortfolio() {
         skills: [],
         courseCode: '',
       });
+      setExistingCertPath(null);
+      setCertFilePreview(null);
       fetchPortfolios();
       showNotification({ message: `Portfolio ${editingPortfolio ? 'updated' : 'created'} successfully!`, type: 'success' });
     } catch (error) {
@@ -878,7 +883,7 @@ export default function MyPortfolio() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Certificate</label>
                       <div
-                        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${formData.certFile ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-[#800000]'}`}
+                        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${(formData.certFile || existingCertPath) ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-[#800000]'}`}
                         onClick={() => fileInputRef.current && fileInputRef.current.click()}
                         onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
                         onDrop={e => {
@@ -908,6 +913,13 @@ export default function MyPortfolio() {
                             className="max-h-32 rounded shadow mb-2"
                             style={{ objectFit: 'contain' }}
                           />
+                        ) : existingCertPath ? (
+                          <img
+                            src={`${getApiBaseUrl()}/${existingCertPath.replace(/^uploads\//, 'uploads/')}`}
+                            alt="Certificate Preview"
+                            className="max-h-32 rounded shadow mb-2"
+                            style={{ objectFit: 'contain' }}
+                          />
                         ) : (
                           <>
                             <span className="text-gray-400 dark:text-gray-500 mb-2">
@@ -933,13 +945,14 @@ export default function MyPortfolio() {
                           accept=".jpg,.jpeg,.png"
                           required={!editingPortfolio}
                         />
-                        {formData.certFile && (
+                        {(formData.certFile || existingCertPath) && (
                           <button
                             type="button"
                             className="mt-2 px-3 py-1 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded text-xs hover:bg-red-200 dark:hover:bg-red-800"
                             onClick={e => {
                               e.stopPropagation();
                               setFormData(prev => ({ ...prev, certFile: null }));
+                              setExistingCertPath(null);
                               setCertFilePreview(null);
                               if (fileInputRef.current) fileInputRef.current.value = '';
                             }}
