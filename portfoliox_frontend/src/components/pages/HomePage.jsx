@@ -207,7 +207,7 @@ export default function HomePage() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Enhanced Top Navigation Bar */}
-        <header className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
+        <header className="relative z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-3">

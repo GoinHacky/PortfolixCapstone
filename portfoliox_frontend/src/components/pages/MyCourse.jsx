@@ -94,11 +94,30 @@ export default function MyCourse() {
   }, [selectedCourse]);
 
   if (loading) {
-    return <div className="p-8">Loading courses...</div>;
+    return (
+      <div className="p-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#800000] mb-4"></div>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Loading your courses...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-8 text-red-600">{error}</div>;
+    return (
+      <div className="p-8 flex items-center justify-center min-h-screen">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-600 dark:text-red-400 font-medium mb-2">{error}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Please try refreshing the page or contact support</p>
+        </div>
+      </div>
+    );
   }
 
   const handleCreateProject = async () => {
@@ -166,26 +185,44 @@ export default function MyCourse() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">My Courses</h1>
+    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/30 to-transparent dark:from-transparent dark:via-gray-800/30 dark:to-transparent min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-4xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent mb-2">My Courses</h1>
+        <p className="text-gray-600 dark:text-gray-400">Manage your enrolled courses and projects</p>
+      </div>
+      
       {createdOk && (
-        <div className="mb-4 p-3 rounded bg-green-100 text-green-700">{createdOk}</div>
+        <div className="mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-medium shadow-sm">
+          ✓ {createdOk}
+        </div>
       )}
 
       {!selectedCourse && (
         <>
           {courses.length === 0 ? (
-            <div className="text-gray-500">You are not enrolled in any course yet.</div>
+            <div className="text-center py-16">
+              <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <span className="text-3xl">📚</span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">You are not enrolled in any course yet.</p>
+              <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">Contact your faculty to enroll in a course</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
                 <div
                   key={course.id || course.courseCode}
-                  className={`bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-md transition`}
+                  className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-[#800000] dark:hover:border-[#D4AF37]`}
                   onClick={() => { setSelectedCourse(course); }}
                 >
-                  <div className="font-bold text-lg text-[#800000]">{course.courseCode}</div>
-                  <div className="text-gray-700 dark:text-gray-300">{course.courseName}</div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="p-3 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-2xl">📖</span>
+                    </div>
+                    <span className="text-xs font-semibold text-[#800000] dark:text-[#D4AF37] bg-[#800000]/10 dark:bg-[#D4AF37]/10 px-3 py-1 rounded-full">{course.courseCode}</span>
+                  </div>
+                  <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors">{course.courseName}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">Click to view projects →</div>
                 </div>
               ))}
             </div>
@@ -194,43 +231,85 @@ export default function MyCourse() {
       )}
 
       {selectedCourse && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-500">Selected Course</div>
-              <div className="text-xl font-semibold text-[#800000]">{selectedCourse.courseCode} · <span className="text-gray-800 dark:text-gray-200">{selectedCourse.courseName}</span></div>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => setSelectedCourse(null)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300">Back</button>
-              <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000]">Create Project</button>
+        <div className="space-y-6">
+          <div className="bg-gradient-to-r from-[#800000]/5 to-[#D4AF37]/5 dark:from-[#800000]/10 dark:to-[#D4AF37]/10 rounded-2xl p-6 border border-[#800000]/10 dark:border-[#D4AF37]/10">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Selected Course</div>
+                <div className="text-3xl font-black text-[#800000] dark:text-[#D4AF37] mb-1">{selectedCourse.courseCode}</div>
+                <div className="text-lg text-gray-700 dark:text-gray-300 font-semibold">{selectedCourse.courseName}</div>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setSelectedCourse(null)} 
+                  className="px-6 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+                >
+                  ← Back
+                </button>
+                <button 
+                  onClick={() => setShowCreate(true)} 
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-200"
+                >
+                  + Create Project
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">My Projects in this Course</h2>
-              {projectsLoading && <span className="text-sm text-gray-500">Loading...</span>}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Projects in this Course</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Showcase your work and achievements</p>
+              </div>
+              {projectsLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#800000]"></div>
+                  <span className="text-sm text-gray-500">Loading...</span>
+                </div>
+              )}
             </div>
             {courseProjects.length === 0 && !projectsLoading ? (
-              <div className="text-gray-500">No projects yet for this course. Click "Create Project" to add one.</div>
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-3xl">💻</span>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 font-medium mb-2">No projects yet for this course</p>
+                <p className="text-gray-500 dark:text-gray-500 text-sm">Click "Create Project" to showcase your first project</p>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courseProjects.map((p) => (
-                  <div key={p.portfolioID} className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200">
-                    <div className="p-4">
-                      <div className="font-medium text-gray-800 dark:text-white">{p.portfolioTitle}</div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{p.portfolioDescription}</p>
-                      {p.githubLink && (
-                        <a href={p.githubLink} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-block mt-2">View on GitHub</a>
-                      )}
-                      {p.skills && p.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {p.skills.map((skill, idx) => (
-                            <span key={idx} className="bg-[#D4AF37] text-[#800000] px-2 py-0.5 rounded-full text-xs font-semibold">{skill.skillName || skill}</span>
-                          ))}
-                        </div>
-                      )}
+                  <div key={p.portfolioID} className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-[#800000] dark:hover:border-[#D4AF37]">
+                    <div className="mb-4">
+                      <div className="inline-block p-2 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-lg mb-3 group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-lg">🎯</span>
+                      </div>
+                      <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors line-clamp-2">{p.portfolioTitle}</h3>
                     </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 break-words whitespace-pre-line">{p.portfolioDescription}</p>
+                    
+                    {p.skills && p.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {p.skills.slice(0, 3).map((skill, idx) => (
+                          <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{skill.skillName || skill}</span>
+                        ))}
+                        {p.skills.length > 3 && (
+                          <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">+{p.skills.length - 3}</span>
+                        )}
+                      </div>
+                    )}
+                    
+                    {p.githubLink && (
+                      <a 
+                        href={p.githubLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-flex items-center gap-2 text-sm font-medium text-[#800000] dark:text-[#D4AF37] hover:underline transition-colors"
+                      >
+                        🔗 View on GitHub
+                      </a>
+                    )}
                   </div>
                 ))}
               </div>
@@ -240,60 +319,75 @@ export default function MyCourse() {
       )}
 
       {showCreate && selectedCourse && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreate(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-4">
-              <div className="text-lg font-semibold text-gray-800 dark:text-white">Add New Project</div>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowCreate(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-2xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Add New Project</h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Create and showcase your project for {selectedCourse.courseCode}</p>
             </div>
-            {createError && <div className="mb-3 p-2 rounded bg-red-100 text-red-700 text-sm">{createError}</div>}
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            {createError && (
+              <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium">
+                ⚠️ {createError}
+              </div>
+            )}
+            <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Project Title</label>
                 <input
                   type="text"
+                  placeholder="e.g., E-Commerce Platform"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent transition-all"
                 />
               </div>
               <div>
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                  <button type="button" onClick={enhanceWithAI} className="text-xs text-[#800000] dark:text-[#D4AF37] hover:underline" disabled={aiLoading}>
-                    {aiLoading ? 'Enhancing...' : 'Enhance with AI'}
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Description</label>
+                  <button 
+                    type="button" 
+                    onClick={enhanceWithAI} 
+                    className="text-xs font-medium text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1 transition-colors" 
+                    disabled={aiLoading}
+                  >
+                    ✨ {aiLoading ? 'Enhancing...' : 'Enhance with AI'}
                   </button>
                 </div>
                 <textarea
                   rows={4}
+                  placeholder="Describe your project, what you built, and what you learned..."
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent transition-all resize-none"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                <select disabled value={'project'} className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
-                  <option value="project">Project</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                  <select disabled value={'project'} className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed opacity-75">
+                    <option value="project">Project</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Course Code</label>
+                  <select disabled className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white cursor-not-allowed opacity-75">
+                    <option>{selectedCourse.courseCode}</option>
+                  </select>
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub Link</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">GitHub Link (Optional)</label>
                 <input
                   type="url"
+                  placeholder="https://github.com/username/project"
                   value={form.githubLink}
                   onChange={(e) => setForm({ ...form, githubLink: e.target.value })}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Code (preselected)</label>
-                <select disabled className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
-                  <option>{selectedCourse.courseCode}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Programming Languages</label>
-                <div className="flex flex-wrap gap-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Programming Languages</label>
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
                   {programmingLanguages.map(lang => (
                     <button
                       key={lang}
@@ -301,22 +395,43 @@ export default function MyCourse() {
                       onClick={() => {
                         setSkills(prev => prev.includes(lang) ? prev.filter(s => s !== lang) : [...prev, lang]);
                       }}
-                      className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
                         skills.includes(lang)
-                          ? 'bg-[#800000] text-white shadow'
-                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-[#D4AF37] hover:text-[#800000]'
+                          ? 'bg-gradient-to-r from-[#800000] to-[#600000] text-white shadow-md scale-105'
+                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:bg-[#D4AF37]/10'
                       }`}
                     >
                       {lang}
                     </button>
                   ))}
                 </div>
+                {skills.length > 0 && (
+                  <div className="mt-3 p-3 bg-[#800000]/5 dark:bg-[#800000]/10 rounded-xl border border-[#800000]/20 dark:border-[#D4AF37]/20">
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Selected ({skills.length}):</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map(skill => (
+                        <span key={skill} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300">Cancel</button>
-              <button onClick={handleCreateProject} disabled={creating || !form.title || !form.description} className="px-4 py-2 bg-[#800000] text-white rounded-lg hover:bg-[#600000] disabled:opacity-50">
-                {creating ? 'Creating...' : 'Create'}
+            <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <button 
+                onClick={() => setShowCreate(false)} 
+                className="px-6 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleCreateProject} 
+                disabled={creating || !form.title || !form.description} 
+                className="px-6 py-2.5 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {creating ? '⏳ Creating...' : '✓ Create Project'}
               </button>
             </div>
           </div>
