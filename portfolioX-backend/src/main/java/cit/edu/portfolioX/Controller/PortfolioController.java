@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.geom.PageSize;
@@ -48,6 +49,7 @@ import cit.edu.portfolioX.Entity.PortfolioEntity;
 import cit.edu.portfolioX.Entity.SkillEntity;
 import cit.edu.portfolioX.Entity.UserEntity;
 import cit.edu.portfolioX.Security.JwtUtil;
+import cit.edu.portfolioX.Repository.SkillRepository;
 import cit.edu.portfolioX.Service.CourseService;
 import cit.edu.portfolioX.Service.NotificationService;
 import cit.edu.portfolioX.Service.PortfolioService;
@@ -73,6 +75,9 @@ public class PortfolioController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SkillRepository skillRepository;
 
     @Value("${server.url:http://localhost:8080}")
     private String serverUrl;
@@ -137,9 +142,7 @@ public class PortfolioController {
 
             // Handle skills
             if (skillsJson != null && !skillsJson.isEmpty()) {
-                ObjectMapper mapper = new ObjectMapper();
-                String[] skillsArr = mapper.readValue(skillsJson, String[].class);
-                for (String skillName : skillsArr) {
+                for (String skillName : extractSkillNames(skillsJson)) {
                     SkillEntity skill = new SkillEntity();
                     skill.setSkillName(skillName);
                     skill.setPortfolio(portfolio);
@@ -166,7 +169,7 @@ public class PortfolioController {
                 Path filePath = Paths.get(uploadDir, fileName);
                 Files.createDirectories(filePath.getParent());
                 Files.write(filePath, certFile.getBytes());
-                portfolio.setCertFile(filePath.toString());
+                portfolio.setCertFile(Paths.get("uploads", fileName).toString().replace('\\', '/'));
             }
 
             LinkEntity link = new LinkEntity();
@@ -260,10 +263,9 @@ public class PortfolioController {
 
             // Handle skills
             if (skillsJson != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                String[] skillsArr = skillsJson.isEmpty() ? new String[0] : mapper.readValue(skillsJson, String[].class);
+                List<String> skillNames = skillsJson.isEmpty() ? java.util.Collections.emptyList() : extractSkillNames(skillsJson);
                 List<SkillEntity> skillEntities = new java.util.ArrayList<>();
-                for (String skillName : skillsArr) {
+                for (String skillName : skillNames) {
                     SkillEntity skill = new SkillEntity();
                     skill.setSkillName(skillName);
                     skill.setPortfolio(portfolio);
@@ -272,6 +274,7 @@ public class PortfolioController {
                 if (portfolio.getSkills() == null) {
                     portfolio.setSkills(new java.util.ArrayList<>());
                 }
+                skillRepository.deleteByPortfolio(portfolio);
                 portfolio.getSkills().clear();
                 portfolio.getSkills().addAll(skillEntities);
             }
@@ -301,7 +304,7 @@ public class PortfolioController {
                     Path filePath = Paths.get(uploadDir, fileName);
                     Files.createDirectories(filePath.getParent());
                     Files.write(filePath, certFile.getBytes());
-                    portfolio.setCertFile(filePath.toString());
+                    portfolio.setCertFile(Paths.get("uploads", fileName).toString().replace('\\', '/'));
                 }
             }
 
@@ -772,6 +775,26 @@ public class PortfolioController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error unvalidating project: " + e.getMessage());
         }
+    }
+
+    private List<String> extractSkillNames(String skillsJson) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(skillsJson);
+        List<String> skillNames = new java.util.ArrayList<>();
+
+        if (node.isArray()) {
+            for (JsonNode item : node) {
+                if (item.isTextual()) {
+                    skillNames.add(item.asText());
+                } else if (item.hasNonNull("skillName")) {
+                    skillNames.add(item.get("skillName").asText());
+                }
+            }
+        } else if (node.isTextual()) {
+            skillNames.add(node.asText());
+        }
+
+        return skillNames;
     }
 }
 
