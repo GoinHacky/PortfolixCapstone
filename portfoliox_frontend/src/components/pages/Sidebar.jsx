@@ -251,7 +251,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
         )}
 
         {/* Navigation Menu */}
-        <div className="flex-1 py-6">
+        <div className="flex-1 py-4 overflow-y-auto">
           <nav className="space-y-2 px-4">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -261,7 +261,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  className={`w-full group relative flex items-center px-4 py-4 rounded-2xl transition-all duration-300 ${
+                  className={`w-full group relative flex items-center px-4 py-3 rounded-2xl transition-all duration-300 ${
                     isActive
                       ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white shadow-xl shadow-[#D4AF37]/50 transform scale-105 ring-2 ring-white/20'
                       : 'text-white/80 hover:text-white hover:bg-white/10 hover:scale-105'
@@ -294,33 +294,33 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-white/10 space-y-2 bg-white/5 backdrop-blur-sm">
+        <div className="p-3 border-t border-white/10 space-y-1.5 bg-white/5 backdrop-blur-sm">
           <button 
             onClick={toggleDarkMode}
-            className="w-full group flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 hover:scale-105"
+            className="w-full group flex items-center px-3 py-2.5 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition-all duration-300 hover:scale-105"
           >
-            <div className="p-2 rounded-lg bg-white/10 group-hover:bg-[#D4AF37]/20 group-hover:scale-110 transition-all duration-300">
+            <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-[#D4AF37]/20 group-hover:scale-110 transition-all duration-300">
               {darkMode ? (
-                <Sun className="w-5 h-5 text-[#D4AF37]" />
+                <Sun className="w-4 h-4 text-[#D4AF37]" />
               ) : (
-                <Moon className="w-5 h-5 text-[#D4AF37]" />
+                <Moon className="w-4 h-4 text-[#D4AF37]" />
               )}
             </div>
             {!isCollapsed && (
-              <span className="ml-4 font-bold text-sm">
+              <span className="ml-3 font-bold text-sm">
                 {darkMode ? 'Light Mode' : 'Dark Mode'}
               </span>
             )}
           </button>
           <button 
             onClick={handleSignOut}
-            className="w-full group flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-red-500/20 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-red-400/30"
+            className="w-full group flex items-center px-3 py-2.5 text-white/80 hover:text-white hover:bg-red-500/20 rounded-xl transition-all duration-300 hover:scale-105 border border-transparent hover:border-red-400/30"
           >
-            <div className="p-2 rounded-lg bg-white/10 group-hover:bg-red-500/20 group-hover:scale-110 transition-all duration-300">
-              <LogOut className="w-5 h-5 text-red-400" />
+            <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-red-500/20 group-hover:scale-110 transition-all duration-300">
+              <LogOut className="w-4 h-4 text-red-400" />
             </div>
             {!isCollapsed && (
-              <span className="ml-4 font-bold text-sm">Sign Out</span>
+              <span className="ml-3 font-bold text-sm">Sign Out</span>
             )}
           </button>
         </div>
