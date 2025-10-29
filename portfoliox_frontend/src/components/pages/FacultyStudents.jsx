@@ -30,6 +30,7 @@ export default function FacultyStudents() {
   const [modalAction, setModalAction] = useState('remove'); // 'remove' or 'add'
   const [facultyCourses, setFacultyCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
+  const [courseEnrollments, setCourseEnrollments] = useState({});
   const [notification, setNotification] = useState(null);
 
   const navigate = useNavigate();
@@ -88,10 +89,38 @@ export default function FacultyStudents() {
       if (response.ok) {
         const courses = await response.json();
         setFacultyCourses(courses);
+        await fetchCourseEnrollments(courses);
       }
     } catch (error) {
       console.error('Error fetching faculty courses:', error);
     }
+  };
+
+  const fetchCourseEnrollments = async (coursesList = []) => {
+    const targetCourses = coursesList.length ? coursesList : facultyCourses;
+    if (!targetCourses || targetCourses.length === 0) {
+      setCourseEnrollments({});
+      return;
+    }
+
+    const enrollmentMap = {};
+    for (const course of targetCourses) {
+      try {
+        const res = await fetch(`${getApiBaseUrl()}/api/courses/${course.courseCode}/students`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          enrollmentMap[course.courseCode] = data.map((student) => student.userID);
+        } else {
+          enrollmentMap[course.courseCode] = [];
+        }
+      } catch (err) {
+        console.error(`Error fetching enrollments for ${course.courseCode}:`, err);
+        enrollmentMap[course.courseCode] = [];
+      }
+    }
+    setCourseEnrollments(enrollmentMap);
   };
 
   const fetchAllStudentPortfolios = async (studentsList) => {
@@ -190,7 +219,7 @@ export default function FacultyStudents() {
     setStudentToRemove(student);
     setModalAction('remove');
     setShowRemoveModal(true);
-    setSelectedCourse('');
+    setSelectedCourse(getStudentEnrolledCourse(student.userID) || '');
   };
 
   const confirmRemoveStudent = async () => {
@@ -209,6 +238,7 @@ export default function FacultyStudents() {
       if (response.ok) {
         // Refresh the data
         await refreshPortfolioData();
+        await fetchCourseEnrollments();
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
@@ -244,24 +274,19 @@ export default function FacultyStudents() {
 
   // Check if a student is enrolled in any of the faculty's courses
   const isStudentEnrolledInFacultyCourse = (studentId) => {
-    const studentPortfolios = allStudentPortfolios[studentId] || [];
-    const facultyCourseCodes = facultyCourses.map(course => course.courseCode);
-    
-    return studentPortfolios.some(portfolio => 
-      portfolio.courseCode && facultyCourseCodes.includes(portfolio.courseCode)
+    return Object.values(courseEnrollments).some((studentIds = []) =>
+      Array.isArray(studentIds) && studentIds.includes(studentId)
     );
   };
 
   // Get the course code that a student is enrolled in (if any)
   const getStudentEnrolledCourse = (studentId) => {
-    const studentPortfolios = allStudentPortfolios[studentId] || [];
-    const facultyCourseCodes = facultyCourses.map(course => course.courseCode);
-    
-    const enrolledPortfolio = studentPortfolios.find(portfolio => 
-      portfolio.courseCode && facultyCourseCodes.includes(portfolio.courseCode)
-    );
-    
-    return enrolledPortfolio ? enrolledPortfolio.courseCode : null;
+    for (const [courseCode, studentIds] of Object.entries(courseEnrollments)) {
+      if (Array.isArray(studentIds) && studentIds.includes(studentId)) {
+        return courseCode;
+      }
+    }
+    return null;
   };
 
   const handleAddStudent = (student) => {
@@ -307,6 +332,7 @@ export default function FacultyStudents() {
 
       if (response.ok) {
         await refreshPortfolioData();
+        await fetchCourseEnrollments();
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
