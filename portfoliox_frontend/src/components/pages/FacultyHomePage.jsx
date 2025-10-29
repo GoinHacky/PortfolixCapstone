@@ -249,6 +249,8 @@ function DashboardContent({ loading, error, data, stats }) {
     );
   }
 
+  const quickNavigate = useNavigate();
+
   const statCards = [
     { 
       icon: Users, 
@@ -319,7 +321,7 @@ function DashboardContent({ loading, error, data, stats }) {
           
           <div className="flex flex-wrap gap-4">
             <button 
-              onClick={() => setActiveItem('Students')}
+              onClick={() => quickNavigate('/dashboard/students')}
               className={`${goldBgSolid} text-[#800000] px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-2`}
             >
               <Users className="w-5 h-5" />
@@ -327,7 +329,7 @@ function DashboardContent({ loading, error, data, stats }) {
               <ArrowUpRight className="w-4 h-4" />
             </button>
             <button 
-              onClick={() => setActiveItem('Courses')}
+              onClick={() => quickNavigate('/dashboard/courses')}
               className="border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105 flex items-center space-x-2 backdrop-blur-sm"
             >
               <FolderKanban className="w-5 h-5" />
