@@ -275,7 +275,7 @@ export default function FacultyCourses() {
           witnessedByIds: data.witnessedByIds,
           witnessedByNames: data.witnessedByNames
         }));
-        setSuccess('Microcredential witnessed successfully!');
+        setSuccess('Microcredential verified and witnessed successfully!');
         setTimeout(() => setSuccess(null), 3000);
       } else {
         const errorText = await response.text();
@@ -845,18 +845,38 @@ export default function FacultyCourses() {
                   </div>
                 )}
 
-                {/* Witness Info Display */}
-                {portfolioData.witnessedByNames && portfolioData.witnessedByNames.length > 0 && (
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                    <h4 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">Witnessed By</h4>
-                    <p className="text-gray-700 dark:text-gray-300">{portfolioData.witnessedByNames}</p>
-                  </div>
+                {/* Witness/Validation Status Display */}
+                {portfolioData.category === 'microcredentials' && (
+                  portfolioData.witnessedByNames && portfolioData.witnessedByNames.length > 0 ? (
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <CheckCircle className="w-5 h-5 text-green-700 dark:text-green-400" />
+                        <h4 className="text-lg font-semibold text-green-700 dark:text-green-400">Verified & Witnessed by Faculty</h4>
+                      </div>
+                      <div className="text-gray-700 dark:text-gray-300">
+                        {portfolioData.witnessedByNames.split(',').map((name, idx) => (
+                          <div key={idx} className="flex items-center gap-2 py-1">
+                            <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                            <span>{name.trim()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-yellow-700 dark:text-yellow-400" />
+                        <h4 className="text-lg font-semibold text-yellow-700 dark:text-yellow-400">Pending Faculty Witness</h4>
+                      </div>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-300 mt-2">This microcredential is awaiting verification from faculty members.</p>
+                    </div>
+                  )
                 )}
 
                 {/* Validation/Witness Controls */}
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-[#800000] mb-3">
-                    {portfolioData.category === 'microcredentials' ? 'Witness Controls' : 'Validation Controls'}
+                    {portfolioData.category === 'microcredentials' ? 'Witness & Verify Microcredential' : 'Validation Controls'}
                   </h4>
                   <div className="flex gap-3">
                     {portfolioData.category === 'project' ? (
@@ -893,7 +913,7 @@ export default function FacultyCourses() {
                           className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
                         >
                           <XCircle size={18} />
-                          Remove Witness
+                          Remove My Witness
                         </button>
                       ) : (
                         <button
@@ -904,7 +924,7 @@ export default function FacultyCourses() {
                           className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 font-semibold"
                         >
                           <CheckCircle size={18} />
-                          Witness Microcredential
+                          Witness & Verify
                         </button>
                       )
                     ) : null}
