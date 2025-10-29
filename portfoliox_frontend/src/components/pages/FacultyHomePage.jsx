@@ -70,6 +70,22 @@ export default function FacultyHomePage() {
     fetchDashboardData();
   }, [token, navigate]);
 
+  const getActivityTimestamp = (item) => {
+    if (!item) return 0;
+    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
+    if (!raw) return 0;
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+  };
+
+  const formatActivityDate = (item) => {
+    if (!item) return '—';
+    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
+    if (!raw) return '—';
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
   const fetchUserData = async () => {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/auth/user/${userId}`, {
@@ -112,7 +128,9 @@ export default function FacultyHomePage() {
       }
       const totalProjects = allPortfolios.filter(p => p.category?.toLowerCase() === 'project').length;
       const totalMicrocredentials = allPortfolios.filter(p => p.category?.toLowerCase() === 'microcredentials').length;
-      const recentActivity = [...allPortfolios].sort((a, b) => new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt)).slice(0, 5);
+      const recentActivity = [...allPortfolios]
+        .sort((a, b) => getActivityTimestamp(b) - getActivityTimestamp(a))
+        .slice(0, 5);
       setDashboardStats({
         totalStudents: students.length,
         totalProjects,
@@ -381,7 +399,7 @@ function DashboardContent({ loading, error, data, stats }) {
                           <div className="flex items-center gap-4 text-xs">
                             <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                               <Clock className="w-3 h-3" />
-                              {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
+                              {formatActivityDate(item)}
                             </span>
                             
                             <span className="text-[#800000] dark:text-[#D4AF37] font-medium">

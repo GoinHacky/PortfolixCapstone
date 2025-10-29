@@ -683,7 +683,25 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
   const completion = portfolios.length > 0 ? Math.round((portfolios.filter(p => p.category).length / 12) * 100) : 0; // Example logic
 
   // Activity timeline (recently updated portfolios)
-  const recentActivity = [...portfolios].sort((a, b) => new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt)).slice(0, 5);
+  const getActivityTimestamp = (item) => {
+    if (!item) return 0;
+    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
+    if (!raw) return 0;
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+  };
+
+  const formatActivityDate = (item) => {
+    if (!item) return '—';
+    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
+    if (!raw) return '—';
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
+  const recentActivity = [...portfolios]
+    .sort((a, b) => getActivityTimestamp(b) - getActivityTimestamp(a))
+    .slice(0, 5);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8 p-8">
@@ -792,7 +810,7 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#800000]" />
                   <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
-                  <span className="text-xs text-gray-500">{new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}</span>
+                  <span className="text-xs text-gray-500">{formatActivityDate(item)}</span>
                 </div>
                 <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
               </div>
