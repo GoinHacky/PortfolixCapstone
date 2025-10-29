@@ -194,10 +194,19 @@ export default function MyCourse() {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/30 to-transparent dark:from-transparent dark:via-gray-800/30 dark:to-transparent min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent mb-2">My Courses</h1>
-        <p className="text-gray-600 dark:text-gray-400">Manage your enrolled courses and projects</p>
+    <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
+      {/* Enhanced Header */}
+      <div className="mb-10">
+        <div className="bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10">
+            <h1 className="text-4xl font-black text-white mb-2 tracking-tight">My Courses</h1>
+            <p className="text-[#D4AF37] text-sm font-medium">Manage your enrolled courses and projects</p>
+          </div>
+        </div>
       </div>
       
       {createdOk && (
