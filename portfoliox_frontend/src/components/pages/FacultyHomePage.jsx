@@ -70,20 +70,22 @@ export default function FacultyHomePage() {
     fetchDashboardData();
   }, [token, navigate]);
 
-  const getActivityTimestamp = (item) => {
-    if (!item) return 0;
-    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
-    if (!raw) return 0;
+  const getActivityDate = (item) => {
+    if (!item) return null;
+    const raw = item.updatedAt || item.lastUpdated || item.createdAt || item.issueDate;
+    if (!raw) return null;
     const date = new Date(raw);
-    return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const getActivityTimestamp = (item) => {
+    const date = getActivityDate(item);
+    return date ? date.getTime() : 0;
   };
 
   const formatActivityDate = (item) => {
-    if (!item) return '—';
-    const raw = item.lastUpdated || item.updatedAt || item.createdAt;
-    if (!raw) return '—';
-    const date = new Date(raw);
-    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+    const date = getActivityDate(item);
+    return date ? date.toLocaleDateString() : '—';
   };
 
   const fetchUserData = async () => {

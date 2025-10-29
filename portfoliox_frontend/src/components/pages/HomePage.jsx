@@ -278,6 +278,24 @@ function DashboardContent() {
     fetchDashboardData();
   }, []);
 
+  const getActivityDate = (item) => {
+    if (!item) return null;
+    const raw = item.updatedAt || item.lastUpdated || item.createdAt || item.issueDate;
+    if (!raw) return null;
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const getActivityTimestamp = (item) => {
+    const date = getActivityDate(item);
+    return date ? date.getTime() : 0;
+  };
+
+  const formatActivityDate = (item) => {
+    const date = getActivityDate(item);
+    return date ? date.toLocaleDateString() : '—';
+  };
+
   const fetchDashboardData = async () => {
     try {
       // Fetch portfolio data
@@ -303,9 +321,9 @@ function DashboardContent() {
       const microcredentials = data.filter(p => p.category?.toLowerCase() === 'microcredentials');
       
       // Sort by last updated
-      const recentlyUpdated = [...data].sort((a, b) => {
-        return new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt);
-      }).slice(0, 4); // Get top 4 most recent
+      const recentlyUpdated = [...data]
+        .sort((a, b) => getActivityTimestamp(b) - getActivityTimestamp(a))
+        .slice(0, 4); // Get top 4 most recent
 
       // Extract unique skills from projects
       const allSkills = new Set();
@@ -506,7 +524,7 @@ function DashboardContent() {
                           <div className="flex items-center gap-4 text-xs">
                             <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                               <Clock className="w-3 h-3" />
-                              {new Date(item.lastUpdated || item.createdAt).toLocaleDateString()}
+                              {formatActivityDate(item)}
                             </span>
                             
                             {item.category?.toLowerCase() === 'project' && item.githubLink && (
