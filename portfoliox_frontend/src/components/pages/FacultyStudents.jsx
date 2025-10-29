@@ -996,7 +996,7 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
             groupedPortfolios.projects.map((project) => (
               <div 
                 key={project.portfolioID} 
-                onClick={() => setViewPortfolio(project)}
+                onClick={() => onViewPortfolio(project)}
                 className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 mb-2">
@@ -1030,7 +1030,7 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
             groupedPortfolios.microcredentials.map((cred) => (
               <div 
                 key={cred.portfolioID} 
-                onClick={() => setViewPortfolio(cred)}
+                onClick={() => onViewPortfolio(cred)}
                 className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 mb-2">
