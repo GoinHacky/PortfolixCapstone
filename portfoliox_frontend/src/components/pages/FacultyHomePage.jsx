@@ -223,6 +223,14 @@ export default function FacultyHomePage() {
 function DashboardContent({ loading, error, data, stats }) {
   const { darkMode } = useTheme();
 
+  const formatActivityDate = (item) => {
+    if (!item) return '—';
+    const raw = item?.lastUpdated || item?.updatedAt || item?.createdAt;
+    if (!raw) return '—';
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
