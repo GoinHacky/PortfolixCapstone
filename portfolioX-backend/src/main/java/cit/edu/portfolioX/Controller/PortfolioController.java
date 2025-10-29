@@ -465,7 +465,7 @@ public class PortfolioController {
                 .setPadding(15)
                 .setWidth(UnitValue.createPercentValue(70))
                 .setMarginTop(-40)
-                .setMarginLeft(UnitValue.createPercentValue(15))
+                .setMarginLeft(70) // Approximate 15% of A4 width
                 .setMarginBottom(10);
 
             nameBox.add(new Paragraph((user.getFname() + " " + user.getLname()).toUpperCase())
@@ -473,14 +473,12 @@ public class PortfolioController {
                 .setTextAlignment(TextAlignment.CENTER)
                 .setFontColor(darkGrayColor)
                 .setBold()
-                .setMarginBottom(5)
-                .setLetterSpacing(2));
+                .setMarginBottom(5));
 
-            nameBox.add(new Paragraph(user.getProgramMajor() != null ? user.getProgramMajor().toUpperCase() : "STUDENT")
+            nameBox.add(new Paragraph("STUDENT")
                 .setFontSize(14)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFontColor(lightGrayColor)
-                .setLetterSpacing(1.5));
+                .setFontColor(lightGrayColor));
 
             document.add(nameBox);
 
@@ -944,8 +942,7 @@ public class PortfolioController {
                 .setFontSize(12)
                 .setFontColor(new DeviceRgb(255, 255, 255))
                 .setBold()
-                .setTextAlignment(TextAlignment.CENTER)
-                .setLetterSpacing(2))
+                .setTextAlignment(TextAlignment.CENTER))
             .setBackgroundColor(maroonColor)
             .setBorder(Border.NO_BORDER)
             .setPadding(10);
