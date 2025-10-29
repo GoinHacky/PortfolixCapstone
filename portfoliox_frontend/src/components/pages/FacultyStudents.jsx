@@ -32,6 +32,7 @@ export default function FacultyStudents() {
   const [selectedCourse, setSelectedCourse] = useState('');
   const [courseEnrollments, setCourseEnrollments] = useState({});
   const [notification, setNotification] = useState(null);
+  const [confirmationDialog, setConfirmationDialog] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -212,7 +213,7 @@ export default function FacultyStudents() {
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 5000);
+    setTimeout(() => setNotification(null), 4000);
   };
 
   const handleRemoveStudent = (student) => {
@@ -222,13 +223,10 @@ export default function FacultyStudents() {
     setSelectedCourse(getStudentEnrolledCourse(student.userID) || '');
   };
 
-  const confirmRemoveStudent = async () => {
+  const performRemoveStudent = async () => {
     if (!selectedCourse || !studentToRemove) return;
 
     try {
-      const confirmed = window.confirm(`Are you sure you want to remove ${studentToRemove.fname} ${studentToRemove.lname} from ${selectedCourse}?`);
-      if (!confirmed) return;
-
       console.log('Removing student:', studentToRemove.userID, 'from course:', selectedCourse);
       const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/remove-student/${studentToRemove.userID}`, {
         method: 'DELETE',
@@ -245,7 +243,15 @@ export default function FacultyStudents() {
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
-        alert(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from ${selectedCourse}.`);
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from ${selectedCourse}.`, 'success');
+        return;
+      } else if (response.status === 404) {
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} is not enrolled in ${selectedCourse}.`, 'error');
+        return;
+      } else if (response.status === 401) {
+        localStorage.clear();
+        navigate('/auth/login');
+        return;
       } else {
         let errorMessage = 'Unknown error';
         try {
@@ -297,6 +303,37 @@ export default function FacultyStudents() {
       return !enrolledStudents.includes(studentId);
     });
 
+  const openConfirmationDialog = () => {
+    if (!studentToRemove || !selectedCourse) {
+      showNotification('Please select a course first.', 'error');
+      return;
+    }
+
+    const actionCopy = modalAction === 'add' ? 'add' : 'remove';
+    const title = actionCopy === 'add' ? 'Confirm Add Student' : 'Confirm Remove Student';
+    const description = actionCopy === 'add'
+      ? `Are you sure you want to add ${studentToRemove.fname} ${studentToRemove.lname} to ${selectedCourse}?`
+      : `Are you sure you want to remove ${studentToRemove.fname} ${studentToRemove.lname} from ${selectedCourse}?`;
+
+    setConfirmationDialog({
+      action: actionCopy,
+      title,
+      description
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmationDialog) return;
+    const action = confirmationDialog.action;
+    setConfirmationDialog(null);
+
+    if (action === 'add') {
+      await performAddStudent();
+    } else {
+      await performRemoveStudent();
+    }
+  };
+
   const handleAddStudent = (student) => {
     const availableCourses = getAvailableCoursesForStudent(student.userID);
     if (availableCourses.length === 0) {
@@ -310,13 +347,10 @@ export default function FacultyStudents() {
     setSelectedCourse(availableCourses[0]?.courseCode || '');
   };
 
-  const confirmAddStudent = async () => {
+  const performAddStudent = async () => {
     if (!selectedCourse || !studentToRemove) return;
 
     try {
-      const confirmed = window.confirm(`Are you sure you want to add ${studentToRemove.fname} ${studentToRemove.lname} to ${selectedCourse}?`);
-      if (!confirmed) return;
-
       // Pre-check if student is already enrolled in the selected course
       const enrollmentCheck = await fetch(`${getApiBaseUrl()}/api/courses/student/${studentToRemove.userID}`, {
         headers: {
@@ -336,6 +370,10 @@ export default function FacultyStudents() {
           );
           return;
         }
+      } else if (enrollmentCheck.status === 401) {
+        localStorage.clear();
+        navigate('/auth/login');
+        return;
       }
 
       console.log('Adding student:', studentToRemove.userID, 'to course:', selectedCourse);
@@ -353,7 +391,12 @@ export default function FacultyStudents() {
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
-        alert(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been added to ${selectedCourse}.`);
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been added to ${selectedCourse}.`, 'success');
+        return;
+      } else if (response.status === 401) {
+        localStorage.clear();
+        navigate('/auth/login');
+        return;
       } else {
         let errorMessage = 'Unknown error';
         try {
@@ -423,17 +466,6 @@ export default function FacultyStudents() {
             Refresh
           </button>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div className={`mb-4 p-4 rounded-lg shadow-md ${
-            notification.type === 'error' 
-              ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
-              : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-          }`}>
-            {notification.message}
-          </div>
-        )}
 
         <div className="overflow-x-auto rounded-xl bg-white dark:bg-gray-900 shadow border border-gray-200 dark:border-gray-700">
           {loading && (
@@ -710,7 +742,7 @@ export default function FacultyStudents() {
                             Cancel
                           </button>
                           <button
-                            onClick={modalAction === 'remove' ? confirmRemoveStudent : confirmAddStudent}
+                            onClick={openConfirmationDialog}
                             disabled={!selectedCourse}
                             className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 ${
                               modalAction === 'remove'
@@ -734,6 +766,53 @@ export default function FacultyStudents() {
                       </div>
                     </div>
                   )}
+
+      {/* Confirmation Dialog */}
+      {confirmationDialog && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{confirmationDialog.title}</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{confirmationDialog.description}</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmationDialog(null)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmAction}
+                className={`px-4 py-2 rounded-lg text-white ${confirmationDialog.action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+              >
+                {confirmationDialog.action === 'add' ? 'Confirm Add' : 'Confirm Remove'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {notification && (
+        <div className={`fixed bottom-6 right-6 z-[120] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
+          notification.type === 'error'
+            ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
+            : 'border-emerald-200 text-emerald-700 dark:border-emerald-500/40 dark:text-emerald-300'
+        }`}>
+          <div className="flex items-start gap-3">
+            <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
+            <div className="flex-1">
+              <h4 className="font-semibold mb-1">{notification.type === 'error' ? 'Action Required' : 'Success'}</h4>
+              <p className="text-sm leading-relaxed">{notification.message}</p>
+            </div>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
