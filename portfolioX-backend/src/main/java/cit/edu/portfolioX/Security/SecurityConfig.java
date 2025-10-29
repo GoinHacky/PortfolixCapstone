@@ -69,11 +69,19 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Don't redirect API requests to login page
                     if (request.getRequestURI().startsWith("/api/")) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                    } else {
+                        response.sendRedirect(frontendUrl + "/auth/login");
+                    }
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\":\"Forbidden\"}");
                     } else {
                         response.sendRedirect(frontendUrl + "/auth/login");
                     }
