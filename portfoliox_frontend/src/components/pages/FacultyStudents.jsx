@@ -226,6 +226,9 @@ export default function FacultyStudents() {
     if (!selectedCourse || !studentToRemove) return;
 
     try {
+      const confirmed = window.confirm(`Are you sure you want to remove ${studentToRemove.fname} ${studentToRemove.lname} from ${selectedCourse}?`);
+      if (!confirmed) return;
+
       console.log('Removing student:', studentToRemove.userID, 'from course:', selectedCourse);
       const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/remove-student/${studentToRemove.userID}`, {
         method: 'DELETE',
@@ -242,8 +245,7 @@ export default function FacultyStudents() {
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
-        // Show success message
-        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from the course.`, 'success');
+        alert(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from ${selectedCourse}.`);
       } else {
         let errorMessage = 'Unknown error';
         try {
@@ -289,17 +291,32 @@ export default function FacultyStudents() {
     return null;
   };
 
+  const getAvailableCoursesForStudent = (studentId) =>
+    facultyCourses.filter((course) => {
+      const enrolledStudents = courseEnrollments[course.courseCode] || [];
+      return !enrolledStudents.includes(studentId);
+    });
+
   const handleAddStudent = (student) => {
+    const availableCourses = getAvailableCoursesForStudent(student.userID);
+    if (availableCourses.length === 0) {
+      showNotification(`Student ${student.fname} ${student.lname} is already enrolled in all of your courses.`, 'error');
+      return;
+    }
+
     setStudentToRemove(student);
     setModalAction('add');
     setShowRemoveModal(true);
-    setSelectedCourse('');
+    setSelectedCourse(availableCourses[0]?.courseCode || '');
   };
 
   const confirmAddStudent = async () => {
     if (!selectedCourse || !studentToRemove) return;
 
     try {
+      const confirmed = window.confirm(`Are you sure you want to add ${studentToRemove.fname} ${studentToRemove.lname} to ${selectedCourse}?`);
+      if (!confirmed) return;
+
       // Pre-check if student is already enrolled in the selected course
       const enrollmentCheck = await fetch(`${getApiBaseUrl()}/api/courses/student/${studentToRemove.userID}`, {
         headers: {
@@ -336,7 +353,7 @@ export default function FacultyStudents() {
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
-        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been added to the course.`, 'success');
+        alert(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been added to ${selectedCourse}.`);
       } else {
         let errorMessage = 'Unknown error';
         try {
@@ -476,7 +493,7 @@ export default function FacultyStudents() {
                                             onClick={() => handleAddStudent(student)}
                                             className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                                             title="Add to Course"
-                                            disabled={isStudentEnrolledInFacultyCourse(student.userID)}
+                                            disabled={getAvailableCoursesForStudent(student.userID).length === 0}
                                           >
                                             <UserPlus className="w-3 h-3" />
                                             Add
@@ -676,7 +693,9 @@ export default function FacultyStudents() {
                           >
                             <option value="">Select a course...</option>
                             {facultyCourses.map((course) => (
-                              <option key={course.id} value={course.courseCode}>
+                              <option key={course.id} value={course.courseCode}
+                                disabled={modalAction === 'add' && (courseEnrollments[course.courseCode] || []).includes(studentToRemove?.userID)}
+                              >
                                 {course.courseCode} - {course.courseName}
                               </option>
                             ))}
