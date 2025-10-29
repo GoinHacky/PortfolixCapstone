@@ -275,6 +275,27 @@ export default function FacultyStudents() {
     if (!selectedCourse || !studentToRemove) return;
 
     try {
+      // Pre-check if student is already enrolled in the selected course
+      const enrollmentCheck = await fetch(`${getApiBaseUrl()}/api/courses/student/${studentToRemove.userID}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (enrollmentCheck.ok) {
+        const enrolledCourses = await enrollmentCheck.json();
+        const alreadyEnrolled = Array.isArray(enrolledCourses)
+          && enrolledCourses.some((course) => course.courseCode === selectedCourse);
+
+        if (alreadyEnrolled) {
+          showNotification(
+            `Student ${studentToRemove.fname} ${studentToRemove.lname} is already enrolled in ${selectedCourse}.`,
+            'error'
+          );
+          return;
+        }
+      }
+
       console.log('Adding student:', studentToRemove.userID, 'to course:', selectedCourse);
       const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/add-student/${studentToRemove.userID}`, {
         method: 'POST',
@@ -425,25 +446,24 @@ export default function FacultyStudents() {
                                       </button>
                                       {facultyCourses.length > 0 && (
                                         <>
-                                          {isStudentEnrolledInFacultyCourse(student.userID) ? (
-                                            <button
-                                              onClick={() => handleRemoveStudent(student)}
-                                              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold flex items-center gap-1"
-                                              title="Remove from Course"
-                                            >
-                                              <UserMinus className="w-3 h-3" />
-                                              Remove
-                                            </button>
-                                          ) : (
-                                            <button
-                                              onClick={() => handleAddStudent(student)}
-                                              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-semibold flex items-center gap-1"
-                                              title="Add to Course"
-                                            >
-                                              <UserPlus className="w-3 h-3" />
-                                              Add
-                                            </button>
-                                          )}
+                                          <button
+                                            onClick={() => handleAddStudent(student)}
+                                            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title="Add to Course"
+                                            disabled={isStudentEnrolledInFacultyCourse(student.userID)}
+                                          >
+                                            <UserPlus className="w-3 h-3" />
+                                            Add
+                                          </button>
+                                          <button
+                                            onClick={() => handleRemoveStudent(student)}
+                                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            title="Remove from Course"
+                                            disabled={!isStudentEnrolledInFacultyCourse(student.userID)}
+                                          >
+                                            <UserMinus className="w-3 h-3" />
+                                            Remove
+                                          </button>
                                         </>
                                       )}
                                     </div>
