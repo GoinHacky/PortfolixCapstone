@@ -695,6 +695,12 @@ export default function MyPortfolio() {
                       <div className="space-y-2 mb-3">
                         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{portfolio.certTitle}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
+                        {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-xs font-semibold text-green-700 dark:text-green-400">Witnessed by:</p>
+                            <p className="text-xs text-green-600 dark:text-green-300">{portfolio.witnessedByNames}</p>
+                          </div>
+                        )}
                       </div>
                       <div className="flex justify-end">
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1221,6 +1227,12 @@ export default function MyPortfolio() {
                 <div className="mb-2">
                   <span className="font-semibold text-green-700">Validated by:</span>{' '}
                   <span className="text-gray-800 text-sm">{viewPortfolio.validatedByName}</span>
+                </div>
+              )}
+              {viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 && (
+                <div className="mb-2">
+                  <span className="font-semibold text-green-700">Witnessed by:</span>{' '}
+                  <span className="text-gray-800 text-sm">{viewPortfolio.witnessedByNames}</span>
                 </div>
               )}
               <div className="flex justify-end mt-6">

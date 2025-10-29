@@ -258,6 +258,64 @@ export default function FacultyCourses() {
     });
   };
 
+  const handleWitnessMicrocredential = async (portfolioId) => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/witness`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPortfolioData(prev => ({
+          ...prev,
+          witnessedByIds: data.witnessedByIds,
+          witnessedByNames: data.witnessedByNames
+        }));
+        setSuccess('Microcredential witnessed successfully!');
+        setTimeout(() => setSuccess(null), 3000);
+      } else {
+        const errorText = await response.text();
+        setError(errorText || 'Failed to witness microcredential');
+      }
+    } catch (error) {
+      console.error('Error witnessing microcredential:', error);
+      setError('Failed to witness microcredential. Please try again.');
+    }
+  };
+
+  const handleUnwitnessMicrocredential = async (portfolioId) => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/unwitness`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPortfolioData(prev => ({
+          ...prev,
+          witnessedByIds: data.witnessedByIds,
+          witnessedByNames: data.witnessedByNames
+        }));
+        setSuccess('Witness removed successfully!');
+        setTimeout(() => setSuccess(null), 3000);
+      } else {
+        const errorText = await response.text();
+        setError(errorText || 'Failed to remove witness');
+      }
+    } catch (error) {
+      console.error('Error removing witness:', error);
+      setError('Failed to remove witness. Please try again.');
+    }
+  };
+
   const performUnvalidateProject = async (projectId) => {
     console.log('Attempting to unvalidate project ID:', projectId);
     console.log('Selected project data:', selectedProject);
@@ -787,33 +845,69 @@ export default function FacultyCourses() {
                   </div>
                 )}
 
-                {/* Validation Controls */}
+                {/* Witness Info Display */}
+                {portfolioData.witnessedByNames && portfolioData.witnessedByNames.length > 0 && (
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <h4 className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">Witnessed By</h4>
+                    <p className="text-gray-700 dark:text-gray-300">{portfolioData.witnessedByNames}</p>
+                  </div>
+                )}
+
+                {/* Validation/Witness Controls */}
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-[#800000] mb-3">Validation Controls</h4>
+                  <h4 className="text-lg font-semibold text-[#800000] mb-3">
+                    {portfolioData.category === 'microcredentials' ? 'Witness Controls' : 'Validation Controls'}
+                  </h4>
                   <div className="flex gap-3">
-                    {portfolioData.validatedByFaculty === true ? (
-                      <button
-                        onClick={() => {
-                          handleUnvalidateProject(portfolioData.portfolioID);
-                          setShowPortfolioModal(false);
-                        }}
-                        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
-                      >
-                        <XCircle size={18} />
-                        Unvalidate Project
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          handleValidateProject(portfolioData.portfolioID);
-                          setShowPortfolioModal(false);
-                        }}
-                        className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
-                      >
-                        <CheckCircle size={18} />
-                        Validate Project
-                      </button>
-                    )}
+                    {portfolioData.category === 'project' ? (
+                      portfolioData.validatedByFaculty === true ? (
+                        <button
+                          onClick={() => {
+                            handleUnvalidateProject(portfolioData.portfolioID);
+                            setShowPortfolioModal(false);
+                          }}
+                          className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
+                        >
+                          <XCircle size={18} />
+                          Unvalidate Project
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            handleValidateProject(portfolioData.portfolioID);
+                            setShowPortfolioModal(false);
+                          }}
+                          className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
+                        >
+                          <CheckCircle size={18} />
+                          Validate Project
+                        </button>
+                      )
+                    ) : portfolioData.category === 'microcredentials' ? (
+                      portfolioData.witnessedByIds && portfolioData.witnessedByIds.split(',').includes(localStorage.getItem('userId')) ? (
+                        <button
+                          onClick={() => {
+                            handleUnwitnessMicrocredential(portfolioData.portfolioID);
+                            setShowPortfolioModal(false);
+                          }}
+                          className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
+                        >
+                          <XCircle size={18} />
+                          Remove Witness
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            handleWitnessMicrocredential(portfolioData.portfolioID);
+                            setShowPortfolioModal(false);
+                          }}
+                          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 font-semibold"
+                        >
+                          <CheckCircle size={18} />
+                          Witness Microcredential
+                        </button>
+                      )
+                    ) : null}
                   </div>
                 </div>
               </div>
