@@ -150,7 +150,7 @@ export default function FacultyHomePage() {
   const renderContent = () => {
     switch (activeItem) {
       case 'Dashboard':
-        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} />;
+        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} onNavigate={setActiveItem} />;
       case 'Students':
         return <FacultyStudents />;
       case 'Courses':
@@ -158,7 +158,7 @@ export default function FacultyHomePage() {
       case 'Profile':
         return <Profile />;
       default:
-        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} />;
+        return <DashboardContent loading={loading} error={error} data={userData} stats={dashboardStats} onNavigate={setActiveItem} />;
     }
   };
 
@@ -222,15 +222,21 @@ export default function FacultyHomePage() {
   );
 }
 
-function DashboardContent({ loading, error, data, stats }) {
+function DashboardContent({ loading, error, data, stats, onNavigate }) {
   const { darkMode } = useTheme();
 
   const formatActivityDate = (item) => {
     if (!item) return '—';
-    const raw = item?.lastUpdated || item?.updatedAt || item?.createdAt;
+    const raw = item?.lastUpdated || item?.updatedAt || item?.createdAt || item?.issueDate;
     if (!raw) return '—';
     const date = new Date(raw);
     return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
+  const handleNavigate = (target) => {
+    if (typeof onNavigate === 'function') {
+      onNavigate(target);
+    }
   };
 
   if (loading) {
@@ -248,8 +254,6 @@ function DashboardContent({ loading, error, data, stats }) {
       </div>
     );
   }
-
-  const quickNavigate = useNavigate();
 
   const statCards = [
     { 
@@ -321,7 +325,7 @@ function DashboardContent({ loading, error, data, stats }) {
           
           <div className="flex flex-wrap gap-4">
             <button 
-              onClick={() => quickNavigate('/dashboard/students')}
+              onClick={() => handleNavigate('Students')}
               className={`${goldBgSolid} text-[#800000] px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-2`}
             >
               <Users className="w-5 h-5" />
@@ -329,7 +333,7 @@ function DashboardContent({ loading, error, data, stats }) {
               <ArrowUpRight className="w-4 h-4" />
             </button>
             <button 
-              onClick={() => quickNavigate('/dashboard/courses')}
+              onClick={() => handleNavigate('Courses')}
               className="border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105 flex items-center space-x-2 backdrop-blur-sm"
             >
               <FolderKanban className="w-5 h-5" />
@@ -461,7 +465,7 @@ function DashboardContent({ loading, error, data, stats }) {
           </div>
           <div className="space-y-4">
             <button 
-              onClick={() => setActiveItem('Students')}
+              onClick={() => handleNavigate('Students')}
               className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
               <div className="flex items-center space-x-4">
@@ -476,7 +480,7 @@ function DashboardContent({ loading, error, data, stats }) {
               </div>
             </button>
             <button 
-              onClick={() => setActiveItem('Courses')}
+              onClick={() => handleNavigate('Courses')}
               className="w-full group relative bg-gradient-to-r from-[#D4AF37]/10 via-[#800000]/10 to-[#D4AF37]/10 dark:from-[#D4AF37]/20 dark:via-[#800000]/20 dark:to-[#D4AF37]/20 hover:from-[#D4AF37]/20 hover:via-[#800000]/20 hover:to-[#D4AF37]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#D4AF37]/20 dark:border-[#800000]/20"
             >
               <div className="flex items-center space-x-4">
@@ -491,7 +495,7 @@ function DashboardContent({ loading, error, data, stats }) {
               </div>
             </button>
             <button 
-              onClick={() => setActiveItem('Profile')}
+              onClick={() => handleNavigate('Profile')}
               className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
               <div className="flex items-center space-x-4">
