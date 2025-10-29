@@ -43,7 +43,13 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 
 import cit.edu.portfolioX.Entity.LinkEntity;
 import cit.edu.portfolioX.Entity.PortfolioEntity;
@@ -434,31 +440,66 @@ public class PortfolioController {
             PdfDocument pdf = new PdfDocument(writer);
             pdf.setDefaultPageSize(PageSize.A4);
             Document document = new Document(pdf);
-            document.setMargins(36, 36, 36, 36); // 0.5 inch margins
+            document.setMargins(0, 0, 36, 36); // No top margin for header
 
-            // Color scheme
-            DeviceRgb maroonColor = new DeviceRgb(128, 0, 0);
-            DeviceRgb goldColor = new DeviceRgb(212, 175, 55);
-            DeviceRgb grayColor = new DeviceRgb(128, 128, 128);
+            // Professional Color Scheme (Maroon & Gold)
+            DeviceRgb maroonColor = new DeviceRgb(128, 0, 0);       // Maroon #800000
+            DeviceRgb goldColor = new DeviceRgb(212, 175, 55);      // Gold #D4AF37
+            DeviceRgb darkGrayColor = new DeviceRgb(52, 52, 52);    // Dark Gray #343434
+            DeviceRgb lightGrayColor = new DeviceRgb(127, 127, 127); // Light Gray
+            DeviceRgb whiteColor = new DeviceRgb(255, 255, 255);    // White
 
-            // Header Section
-            Div header = new Div()
+            // ===== HEADER SECTION =====
+            // Maroon background banner
+            Div headerBanner = new Div()
                 .setBackgroundColor(maroonColor)
-                .setPadding(20)
-                .setMarginBottom(20);
+                .setHeight(80)
+                .setWidth(UnitValue.createPercentValue(100))
+                .setMarginBottom(0);
+            document.add(headerBanner);
 
-            header.add(new Paragraph(user.getFname() + " " + user.getLname())
-                .setFontSize(28)
+            // Name box with gold border (overlapping the banner)
+            Div nameBox = new Div()
+                .setBackgroundColor(whiteColor)
+                .setBorder(new SolidBorder(goldColor, 3))
+                .setPadding(15)
+                .setWidth(UnitValue.createPercentValue(70))
+                .setMarginTop(-40)
+                .setMarginLeft(UnitValue.createPercentValue(15))
+                .setMarginBottom(10);
+
+            nameBox.add(new Paragraph((user.getFname() + " " + user.getLname()).toUpperCase())
+                .setFontSize(32)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFontColor(goldColor)
-                .setBold());
+                .setFontColor(darkGrayColor)
+                .setBold()
+                .setMarginBottom(5)
+                .setLetterSpacing(2));
 
-            header.add(new Paragraph(user.getUserEmail())
+            nameBox.add(new Paragraph(user.getProgramMajor() != null ? user.getProgramMajor().toUpperCase() : "STUDENT")
                 .setFontSize(14)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFontColor(new DeviceRgb(255, 255, 255)));
+                .setFontColor(lightGrayColor)
+                .setLetterSpacing(1.5));
 
-            document.add(header);
+            document.add(nameBox);
+
+            // Contact Information (Address | Phone | Email)
+            Paragraph contactInfo = new Paragraph()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(10)
+                .setFontColor(darkGrayColor)
+                .setMarginBottom(20)
+                .setMarginLeft(36)
+                .setMarginRight(36);
+
+            contactInfo.add(new Text("[Address]").setFontColor(lightGrayColor));
+            contactInfo.add(new Text("     "));
+            contactInfo.add(new Text("[Phone]").setFontColor(lightGrayColor));
+            contactInfo.add(new Text("     "));
+            contactInfo.add(new Text(user.getUserEmail()).setFontColor(lightGrayColor));
+
+            document.add(contactInfo);
 
             // Determine if we have valid enhanced content
             String enhancedContentText = null;
@@ -471,86 +512,57 @@ public class PortfolioController {
             logger.info("Enhanced flag: {}, enhanced content length: {}", enhanced, enhancedContentText == null ? 0 : enhancedContentText.length());
 
             if (enhanced && enhancedContentText != null && !enhancedContentText.isEmpty()) {
-                // Add a single section with the enhanced content
-                Paragraph enhancedHeader = new Paragraph("AI-Enhanced Resume Content")
-                    .setFontSize(20)
-                    .setFontColor(maroonColor)
-                    .setBold()
-                    .setMarginBottom(10);
-                document.add(enhancedHeader);
-
-                Div separator = new Div()
-                    .setHeight(1)
-                    .setBackgroundColor(new DeviceRgb(200, 200, 200))
-                    .setMarginBottom(10);
-                document.add(separator);
-
+                // ===== AI-ENHANCED CONTENT SECTION =====
+                addSectionHeader(document, "OBJECTIVE", maroonColor, goldColor, 36);
+                
                 document.add(new Paragraph(enhancedContentText)
-                    .setFontSize(12)
-                    .setFontColor(grayColor)
+                    .setFontSize(11)
+                    .setFontColor(darkGrayColor)
+                    .setMarginLeft(36)
+                    .setMarginRight(36)
                     .setMarginBottom(20));
             } else {
                 // Standard resume generation logic
                 List<PortfolioEntity> portfolios = service.findByUserId(userId);
 
-                // Projects Section
-                Paragraph projectsHeader = new Paragraph("Professional Projects")
-                    .setFontSize(20)
-                    .setFontColor(maroonColor)
-                    .setBold()
-                    .setMarginBottom(10);
-                document.add(projectsHeader);
+                // ===== EXPERIENCE SECTION (Projects) =====
+                addSectionHeader(document, "EXPERIENCE", maroonColor, goldColor, 36);
 
-                Div separator = new Div()
-                    .setHeight(1)
-                    .setBackgroundColor(new DeviceRgb(200, 200, 200))
-                    .setMarginBottom(10);
-                document.add(separator);
 
                 portfolios.stream()
                     .filter(p -> "project".equalsIgnoreCase(p.getCategory()))
                     .forEach(project -> {
-                        // Project Title with Gold Bullet
                         Div projectDiv = new Div()
+                            .setMarginLeft(36)
+                            .setMarginRight(36)
                             .setMarginBottom(15);
 
-                        projectDiv.add(new Paragraph("• " + project.getPortfolioTitle())
-                            .setFontSize(16)
-                            .setFontColor(goldColor)
-                            .setBold());
+                        // Project Title (Bold, Dark Gray)
+                        projectDiv.add(new Paragraph(project.getPortfolioTitle())
+                            .setFontSize(13)
+                            .setFontColor(darkGrayColor)
+                            .setBold()
+                            .setMarginBottom(3));
 
                         // Project Description
                         projectDiv.add(new Paragraph(project.getPortfolioDescription())
-                            .setFontSize(12)
-                            .setMarginLeft(15)
-                            .setMarginTop(5));
+                            .setFontSize(11)
+                            .setFontColor(lightGrayColor)
+                            .setMarginBottom(5));
 
                         // GitHub Link
                         if (project.getGithubLink() != null) {
-                            projectDiv.add(new Paragraph("GitHub Repository: " + project.getGithubLink())
+                            projectDiv.add(new Paragraph("Repository: " + project.getGithubLink())
                                 .setFontSize(10)
                                 .setFontColor(new DeviceRgb(51, 102, 187))
-                                .setMarginLeft(15)
-                                .setMarginTop(5));
+                                .setItalic());
                         }
 
                         document.add(projectDiv);
                     });
 
-                // Microcredentials Section
-                document.add(new Paragraph("\n"));
-                Paragraph credentialsHeader = new Paragraph("Certifications & Microcredentials")
-                    .setFontSize(20)
-                    .setFontColor(maroonColor)
-                    .setBold()
-                    .setMarginBottom(10);
-                document.add(credentialsHeader);
-
-                Div separator2 = new Div()
-                    .setHeight(1)
-                    .setBackgroundColor(new DeviceRgb(200, 200, 200))
-                    .setMarginBottom(10);
-                document.add(separator2);
+                // ===== EDUCATION SECTION (Certifications) =====
+                addSectionHeader(document, "EDUCATION", maroonColor, goldColor, 36);
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
@@ -558,44 +570,44 @@ public class PortfolioController {
                     .filter(p -> "microcredentials".equalsIgnoreCase(p.getCategory()))
                     .forEach(cert -> {
                         Div certDiv = new Div()
+                            .setMarginLeft(36)
+                            .setMarginRight(36)
                             .setMarginBottom(15);
 
-                        // Certificate Title
-                        certDiv.add(new Paragraph("• " + cert.getCertTitle())
-                            .setFontSize(16)
-                            .setFontColor(goldColor)
-                            .setBold());
+                        // Certificate Title (Bold, Dark Gray)
+                        certDiv.add(new Paragraph(cert.getCertTitle())
+                            .setFontSize(13)
+                            .setFontColor(darkGrayColor)
+                            .setBold()
+                            .setMarginBottom(3));
 
                         // Certificate Description
                         certDiv.add(new Paragraph(cert.getPortfolioDescription())
-                            .setFontSize(12)
-                            .setMarginLeft(15)
-                            .setMarginTop(5));
+                            .setFontSize(11)
+                            .setFontColor(lightGrayColor)
+                            .setMarginBottom(5));
 
                         // Issue Date
                         if (cert.getIssueDate() != null) {
                             certDiv.add(new Paragraph("Issued: " + cert.getIssueDate().format(dateFormatter))
                                 .setFontSize(10)
-                                .setFontColor(grayColor)
-                                .setMarginLeft(15)
-                                .setMarginTop(5));
+                                .setFontColor(lightGrayColor)
+                                .setItalic());
                         }
 
                         document.add(certDiv);
                     });
             }
 
-            // Footer
-            document.add(new Paragraph("\n"));
-            Div footerSeparator = new Div()
-                .setHeight(1)
-                .setBackgroundColor(new DeviceRgb(200, 200, 200));
-            document.add(footerSeparator);
-            document.add(new Paragraph("Generated via PortfolioX")
-                .setTextAlignment(TextAlignment.CENTER)
-                .setFontSize(8)
-                .setFontColor(grayColor)
-                .setMarginTop(10));
+            // ===== REFERENCES SECTION =====
+            addSectionHeader(document, "REFERENCES", maroonColor, goldColor, 36);
+            
+            document.add(new Paragraph("[Available upon request.]")
+                .setFontSize(11)
+                .setFontColor(lightGrayColor)
+                .setMarginLeft(36)
+                .setMarginRight(36)
+                .setMarginBottom(20));
 
             document.close();
 
@@ -907,6 +919,49 @@ public class PortfolioController {
         }
 
         return skillNames;
+    }
+
+    // Helper method to create professional section headers
+    private void addSectionHeader(Document document, String title, DeviceRgb maroonColor, DeviceRgb goldColor, float marginLeft) {
+        // Create a table for the section header with maroon box and gold lines
+        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{20, 60, 20}))
+            .setWidth(UnitValue.createPercentValue(100))
+            .setMarginLeft(marginLeft)
+            .setMarginRight(marginLeft)
+            .setMarginBottom(15)
+            .setMarginTop(10);
+
+        // Left gold line
+        Cell leftLine = new Cell()
+            .add(new Paragraph(""))
+            .setBorder(Border.NO_BORDER)
+            .setBorderBottom(new SolidBorder(goldColor, 2))
+            .setPaddingBottom(10);
+
+        // Center maroon box with white text
+        Cell centerBox = new Cell()
+            .add(new Paragraph(title)
+                .setFontSize(12)
+                .setFontColor(new DeviceRgb(255, 255, 255))
+                .setBold()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setLetterSpacing(2))
+            .setBackgroundColor(maroonColor)
+            .setBorder(Border.NO_BORDER)
+            .setPadding(10);
+
+        // Right gold line
+        Cell rightLine = new Cell()
+            .add(new Paragraph(""))
+            .setBorder(Border.NO_BORDER)
+            .setBorderBottom(new SolidBorder(goldColor, 2))
+            .setPaddingBottom(10);
+
+        headerTable.addCell(leftLine);
+        headerTable.addCell(centerBox);
+        headerTable.addCell(rightLine);
+
+        document.add(headerTable);
     }
 }
 
