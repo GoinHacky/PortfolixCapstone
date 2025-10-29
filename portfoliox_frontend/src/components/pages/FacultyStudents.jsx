@@ -253,6 +253,7 @@ export default function FacultyStudents() {
         }
         setCourseEnrollments(updatedEnrollments);
         await refreshPortfolioData();
+        await fetchCourseEnrollments();
         setShowRemoveModal(false);
         setStudentToRemove(null);
         setSelectedCourse('');
@@ -360,32 +361,15 @@ export default function FacultyStudents() {
   const performAddStudent = async () => {
     if (!selectedCourse || !studentToRemove) return;
 
+    if (Array.isArray(courseEnrollments[selectedCourse]) && courseEnrollments[selectedCourse].includes(studentToRemove.userID)) {
+      showNotification(
+        `Student ${studentToRemove.fname} ${studentToRemove.lname} is already enrolled in ${selectedCourse}.`,
+        'error'
+      );
+      return;
+    }
+
     try {
-      // Pre-check if student is already enrolled in the selected course
-      const enrollmentCheck = await fetch(`${getApiBaseUrl()}/api/courses/student/${studentToRemove.userID}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (enrollmentCheck.ok) {
-        const enrolledCourses = await enrollmentCheck.json();
-        const alreadyEnrolled = Array.isArray(enrolledCourses)
-          && enrolledCourses.some((course) => course.courseCode === selectedCourse);
-
-        if (alreadyEnrolled) {
-          showNotification(
-            `Student ${studentToRemove.fname} ${studentToRemove.lname} is already enrolled in ${selectedCourse}.`,
-            'error'
-          );
-          return;
-        }
-      } else if (enrollmentCheck.status === 401) {
-        localStorage.clear();
-        navigate('/auth/login');
-        return;
-      }
-
       console.log('Adding student:', studentToRemove.userID, 'to course:', selectedCourse);
       const response = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse}/add-student/${studentToRemove.userID}`, {
         method: 'POST',
