@@ -353,9 +353,9 @@ export default function LandingPage() {
         </nav>
 
         {/* Enhanced Hero Section */}
-        <section className="relative z-10 min-h-screen flex items-center">
+        <section className="relative z-10 min-h-screen flex items-center py-20">
           <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
               {/* Left Content */}
               <div className={`space-y-8 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'} transition-all duration-1000`}>
                 <div className="inline-flex items-center px-4 py-2 glass-morphism rounded-full border border-[#D4AF37]/30 mb-6">
@@ -365,7 +365,7 @@ export default function LandingPage() {
                   <span className="text-sm font-medium text-[#800000] dark:text-[#D4AF37]">🚀 New: AI Portfolio Builder</span>
                 </div>
                 
-                <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
                   <span className="block">Your Academic</span>
                   <span className="block bg-gradient-to-r from-[#800000] via-[#D4AF37] to-[#800000] bg-clip-text text-transparent animate-pulse" style={{animationDuration: '3s'}}>
                     Excellence
@@ -373,48 +373,27 @@ export default function LandingPage() {
                   <span className="block">Showcased</span>
                 </h1>
                 
-                <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl text-center sm:text-left font-medium">
+                <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl text-center sm:text-left font-medium">
                   Create <span className="text-[#800000] dark:text-[#D4AF37] font-bold">stunning academic portfolios</span> that land internships, jobs, and admissions. 
-                  <span className="block mt-2 text-lg text-gray-600 dark:text-gray-400">Showcase your projects, skills, and achievements with AI-powered tools.</span>
+                  <span className="block mt-2 text-base sm:text-lg text-gray-600 dark:text-gray-400">Showcase your projects, skills, and achievements with AI-powered tools.</span>
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-5 sm:justify-start justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 sm:justify-start justify-center">
                   <button 
                     onClick={handleStartFree}
-                    className="group relative px-10 py-5 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-xl font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
+                    className="group relative px-8 py-4 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-lg font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     <span className="relative z-10">Start Creating Free</span>
-                    <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-2 transition-transform" />
+                    <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
                   </button>
                   <button 
                     onClick={handleWatchDemo}
-                    className="group px-10 py-5 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-xl font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
+                    className="group px-8 py-4 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-lg font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
                   >
-                    <Play className="w-6 h-6 text-[#800000] dark:text-[#D4AF37]" />
+                    <Play className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
                     Watch Demo
                   </button>
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-8 pt-8 justify-center sm:justify-start">
-                  <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 rounded-2xl border border-[#800000]/20 dark:border-[#D4AF37]/20">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#800000] to-[#D4AF37] flex items-center justify-center shadow-lg">
-                      <Star className="w-6 h-6 text-white fill-current" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-black text-[#800000] dark:text-[#D4AF37]">Free Forever</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">No credit card required</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 rounded-2xl border border-[#D4AF37]/20 dark:border-[#800000]/20">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center shadow-lg">
-                      <Star className="w-6 h-6 text-white fill-current" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-black text-[#800000] dark:text-[#D4AF37]">AI-Powered</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Smart portfolio builder</p>
-                    </div>
-                  </div>
                 </div>
               </div>
 
