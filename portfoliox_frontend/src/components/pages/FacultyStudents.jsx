@@ -314,6 +314,64 @@ export default function FacultyStudents() {
       return !enrolledStudents.includes(studentId);
     });
 
+  const handleWitnessMicrocredential = async (portfolioId) => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/witness`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setViewPortfolio(prev => ({
+          ...prev,
+          witnessedByIds: data.witnessedByIds,
+          witnessedByNames: data.witnessedByNames
+        }));
+        await refreshPortfolioData();
+        showNotification('Microcredential witnessed successfully!', 'success');
+      } else {
+        const errorText = await response.text();
+        showNotification(errorText || 'Failed to witness microcredential', 'error');
+      }
+    } catch (error) {
+      console.error('Error witnessing microcredential:', error);
+      showNotification('Failed to witness microcredential. Please try again.', 'error');
+    }
+  };
+
+  const handleUnwitnessMicrocredential = async (portfolioId) => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/unwitness`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setViewPortfolio(prev => ({
+          ...prev,
+          witnessedByIds: data.witnessedByIds,
+          witnessedByNames: data.witnessedByNames
+        }));
+        await refreshPortfolioData();
+        showNotification('Witness removed successfully!', 'success');
+      } else {
+        const errorText = await response.text();
+        showNotification(errorText || 'Failed to remove witness', 'error');
+      }
+    } catch (error) {
+      console.error('Error removing witness:', error);
+      showNotification('Failed to remove witness. Please try again.', 'error');
+    }
+  };
+
   const openConfirmationDialog = () => {
     if (!studentToRemove || !selectedCourse) {
       showNotification('Please select a course first.', 'error');
@@ -630,6 +688,33 @@ export default function FacultyStudents() {
               <div className="mb-2">
                 <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Skills:</span>
                 <span className="ml-2 text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+              </div>
+            )}
+            {viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 && (
+              <div className="mb-4">
+                <span className="font-semibold text-green-700 uppercase tracking-wide text-xs">Witnessed by:</span>
+                <div className="ml-2 text-gray-800 text-sm mt-1">{viewPortfolio.witnessedByNames}</div>
+              </div>
+            )}
+            {viewPortfolio.category === 'microcredentials' && (
+              <div className="flex gap-2 mt-4">
+                {viewPortfolio.witnessedByIds && viewPortfolio.witnessedByIds.split(',').includes(localStorage.getItem('userId')) ? (
+                  <button
+                    onClick={() => handleUnwitnessMicrocredential(viewPortfolio.portfolioID)}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Remove Witness
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID)}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Witness Microcredential
+                  </button>
+                )}
               </div>
             )}
             <div className="flex justify-end mt-6">
