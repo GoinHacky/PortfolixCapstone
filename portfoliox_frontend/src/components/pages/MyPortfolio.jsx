@@ -388,124 +388,131 @@ export default function MyPortfolio() {
 
   return (
     <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">My Portfolio</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Organize and showcase your projects and microcredentials</p>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <button
-            onClick={async () => {
-              try {
-                // First, get the current resume content
-                const portfoliosResponse = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                  },
-                });
-                
-                if (!portfoliosResponse.ok) {
-                  throw new Error('Failed to fetch portfolios');
-                }
-                
-                const portfolios = await portfoliosResponse.json();
-                
-                // Check if user has any portfolios
-                if (!portfolios || portfolios.length === 0) {
-                  throw new Error('No portfolios found. Please add some projects or microcredentials first.');
-                }
+      {/* Enhanced Header */}
+      <div className="mb-10">
+        <div className="bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h1 className="text-4xl font-black text-white mb-2 tracking-tight">My Portfolio</h1>
+              <p className="text-[#D4AF37] text-sm font-medium">Showcase your achievements and skills</p>
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  // First, get the current resume content
+                  const portfoliosResponse = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                    },
+                  });
+                  
+                  if (!portfoliosResponse.ok) {
+                    throw new Error('Failed to fetch portfolios');
+                  }
+                  
+                  const portfolios = await portfoliosResponse.json();
+                  
+                  // Check if user has any portfolios
+                  if (!portfolios || portfolios.length === 0) {
+                    throw new Error('No portfolios found. Please add some projects or microcredentials first.');
+                  }
 
-                // Create a simple text version of the portfolio content
-                const content = portfolios.map(p => `
-                  ${p.portfolioTitle || 'Untitled'}
-                  ${p.portfolioDescription || 'No description'}
-                  ${p.category === 'project' ? `GitHub: ${p.githubLink || 'No link provided'}` : ''}
-                  ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle || 'No title'}, Issued: ${p.issueDate || 'No date'}` : ''}
-                `).join('\n\n');
+                  // Create a simple text version of the portfolio content
+                  const content = portfolios.map(p => `
+                    ${p.portfolioTitle || 'Untitled'}
+                    ${p.portfolioDescription || 'No description'}
+                    ${p.category === 'project' ? `GitHub: ${p.githubLink || 'No link provided'}` : ''}
+                    ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle || 'No title'}, Issued: ${p.issueDate || 'No date'}` : ''}
+                  `).join('\n\n');
 
-                console.log('Sending content to AI:', content); // Debug log
+                  console.log('Sending content to AI:', content); // Debug log
 
-                const enhanceResponse = await fetch(`${getApiBaseUrl()}/api/ai/enhance-resume`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({ content }),
-                });
+                  const enhanceResponse = await fetch(`${getApiBaseUrl()}/api/ai/enhance-resume`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ content }),
+                  });
 
-                if (!enhanceResponse.ok) {
-                  const errorText = await enhanceResponse.text();
-                  console.error('AI Enhancement failed:', errorText);
-                  throw new Error(`Failed to enhance resume: ${errorText}`);
-                }
+                  if (!enhanceResponse.ok) {
+                    const errorText = await enhanceResponse.text();
+                    console.error('AI Enhancement failed:', errorText);
+                    throw new Error(`Failed to enhance resume: ${errorText}`);
+                  }
 
-                const enhancedData = await enhanceResponse.json();
-                console.log('Received enhanced content:', enhancedData); // Debug log
-                
-                // Validate enhanced content
-                if (!enhancedData || !enhancedData.enhancedContent) {
-                  throw new Error('AI enhancement failed - no enhanced content received');
+                  const enhancedData = await enhanceResponse.json();
+                  console.log('Received enhanced content:', enhancedData); // Debug log
+                  
+                  // Validate enhanced content
+                  if (!enhancedData || !enhancedData.enhancedContent) {
+                    throw new Error('AI enhancement failed - no enhanced content received');
+                  }
+                  
+                  // Now generate the enhanced PDF
+                  const response = await fetch(`${getApiBaseUrl()}/api/portfolios/generate-resume/${userId}?enhanced=true`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ enhancedContent: (enhancedData.enhancedContent || '').trim() }),
+                  });
+                  
+                  if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Resume generation failed:', errorText);
+                    throw new Error(`Failed to generate resume: ${errorText}`);
+                  }
+                  
+                  const blob = await response.blob();
+                  
+                  // Check if we actually got a PDF
+                  if (blob.size === 0) {
+                    throw new Error('Generated PDF is empty');
+                  }
+                  
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'enhanced-portfolio-resume.pdf';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                  
+                  showNotification({ message: 'AI-enhanced resume generated successfully!', type: 'success' });
+                } catch (error) {
+                  console.error('Error:', error);
+                  showNotification({ message: 'Failed to generate enhanced resume', type: 'error' });
                 }
-                
-                // Now generate the enhanced PDF
-                const response = await fetch(`${getApiBaseUrl()}/api/portfolios/generate-resume/${userId}?enhanced=true`, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ enhancedContent: (enhancedData.enhancedContent || '').trim() }),
-                });
-                
-                if (!response.ok) {
-                  const errorText = await response.text();
-                  console.error('Resume generation failed:', errorText);
-                  throw new Error(`Failed to generate resume: ${errorText}`);
-                }
-                
-                const blob = await response.blob();
-                
-                // Check if we actually got a PDF
-                if (blob.size === 0) {
-                  throw new Error('Generated PDF is empty');
-                }
-                
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'enhanced-portfolio-resume.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                
-                showNotification({ message: 'AI-enhanced resume generated successfully!', type: 'success' });
-              } catch (error) {
-                console.error('Error:', error);
-                showNotification({ message: 'Failed to generate enhanced resume', type: 'error' });
-              }
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white rounded-xl shadow-sm hover:shadow-md transition-all"
-          >
-            <Wand2 size={16} />
-            Generate AI-Enhanced Resume
-          </button>
+              }}
+              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
+            >
+              <Wand2 size={20} />
+              <span>Generate AI Resume</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="mb-8">
-        <div className="relative max-w-xl">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+      {/* Enhanced Search Bar */}
+      <div className="mb-10">
+        <div className="relative max-w-2xl mx-auto">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-[#800000] dark:text-[#D4AF37]" />
           </div>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search portfolios by title, description, or content..."
-            className="block w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
+            className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-md focus:ring-4 focus:ring-[#800000]/20 focus:border-[#800000] dark:focus:border-[#D4AF37] bg-white dark:bg-gray-900 dark:text-white transition-all duration-300"
           />
           {searchTerm && (
             <button
@@ -566,17 +573,19 @@ export default function MyPortfolio() {
                   Add New Project
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {groupedPortfolios.projects.map((portfolio) => (
                   <div key={portfolio.portfolioID} 
-                    className="group bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
+                    className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg border-2 border-gray-100 dark:border-gray-800 hover:border-[#D4AF37] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                   >
-                    <div className="p-4">
-                      <div className="flex items-start gap-3 mb-3">
-                        <FileText className="w-5 h-5 text-[#800000] mt-1" />
+                    <div className="p-6">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="p-2 bg-gradient-to-br from-[#800000] to-[#600000] rounded-xl shadow-md">
+                          <FileText className="w-5 h-5 text-[#D4AF37]" />
+                        </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-800 dark:text-white tracking-tight">{portfolio.portfolioTitle}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-2 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white tracking-tight mb-2">{portfolio.portfolioTitle}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 break-words whitespace-pre-line leading-relaxed">{portfolio.portfolioDescription}</p>
                           {portfolio.validatedByFaculty && (
                             <span className="inline-block mt-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">
                               Validated by {portfolio.validatedByName}
@@ -595,34 +604,34 @@ export default function MyPortfolio() {
                             View on GitHub
                           </a>
                         )}
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <button
                             onClick={() => setViewPortfolio(portfolio)}
-                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all hover:scale-110"
                             title="View details"
                           >
-                            <Eye size={16} />
+                            <Eye size={18} />
                           </button>
                           <button
                             onClick={() => handleEdit(portfolio)}
-                            className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md"
+                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-all hover:scale-110"
                           >
-                            <Edit size={16} />
+                            <Edit size={18} />
                           </button>
                           <button
                             onClick={() => requestDelete(portfolio.portfolioID)}
-                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md"
+                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </div>
                       {portfolio.skills && portfolio.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
+                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                           {portfolio.skills.map((skill, idx) => (
                             <span
                               key={idx}
-                              className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-0.5 rounded-full text-xs font-semibold shadow-sm"
+                              className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all"
                             >
                               {skill.skillName || skill}
                             </span>
@@ -679,22 +688,24 @@ export default function MyPortfolio() {
                   Add New Microcredential
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {groupedPortfolios.microcredentials.map((portfolio) => (
                   <div key={portfolio.portfolioID} 
-                    className="group bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
+                    className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg border-2 border-gray-100 dark:border-gray-800 hover:border-[#D4AF37] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                   >
-                    <div className="p-4">
-                      <div className="flex items-start gap-3 mb-3">
-                        <FileText className="w-5 h-5 text-[#800000] mt-1" />
+                    <div className="p-6">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="p-2 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-xl shadow-md">
+                          <FileText className="w-5 h-5 text-white" />
+                        </div>
                         <div className="flex-1">
-                          <h3 className="font-medium text-gray-800 dark:text-white">{portfolio.portfolioTitle}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1 break-words whitespace-pre-line">{portfolio.portfolioDescription}</p>
+                          <h3 className="font-bold text-lg text-gray-900 dark:text-white tracking-tight mb-2">{portfolio.portfolioTitle}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 break-words whitespace-pre-line leading-relaxed">{portfolio.portfolioDescription}</p>
                         </div>
                       </div>
-                      <div className="space-y-2 mb-3">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{portfolio.certTitle}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
+                      <div className="space-y-3 mb-4">
+                        <p className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37]">{portfolio.certTitle}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
                         {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 ? (
                           <div className="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-2">
                             <div className="flex items-center gap-1 mb-1">
@@ -712,33 +723,33 @@ export default function MyPortfolio() {
                           </div>
                         )}
                       </div>
-                      <div className="flex justify-end">
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <button
                             onClick={() => setViewPortfolio(portfolio)}
-                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md"
+                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all hover:scale-110"
                             title="View details"
                           >
-                            <Eye size={16} />
+                            <Eye size={18} />
                           </button>
                           <button
                             onClick={() => handleEdit(portfolio)}
-                            className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md"
+                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-all hover:scale-110"
                           >
-                            <Edit size={16} />
+                            <Edit size={18} />
                           </button>
                           <button
                             onClick={() => requestDelete(portfolio.portfolioID)}
-                            className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md"
+                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </div>
                       {portfolio.skills && portfolio.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
+                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                           {portfolio.skills.map((skill, idx) => (
-                            <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-0.5 rounded-full text-xs font-semibold shadow-sm">{skill.skillName || skill}</span>
+                            <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all">{skill.skillName || skill}</span>
                           ))}
                         </div>
                       )}
