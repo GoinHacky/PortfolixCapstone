@@ -381,6 +381,16 @@ function DashboardContent() {
       color: `${goldText} dark:text-[#D4AF37]`,
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
+    },
+    { 
+      icon: Zap, 
+      label: 'Skills', 
+      value: dashboardData.skills.length,
+      change: 'Unique skills', 
+      color: 'text-[#D4AF37] dark:text-[#D4AF37]',
+      bgColor: 'bg-gradient-to-br from-[#D4AF37]/20 to-[#800000]/10 dark:from-[#D4AF37]/30 dark:to-[#800000]/20',
+      trend: 'up',
+      isSkills: true
     }
   ];
 
@@ -389,8 +399,8 @@ function DashboardContent() {
       <div className="p-8 space-y-8">
         <div className="animate-pulse">
           <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-2xl mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
             ))}
           </div>
@@ -406,27 +416,47 @@ function DashboardContent() {
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
       {/* Enhanced Welcome Section */}
-      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-3xl p-8 text-white overflow-hidden shadow-2xl">
+      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-3xl p-10 text-white overflow-hidden shadow-2xl border border-[#D4AF37]/20">
         {/* Animated Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-r from-white/5 to-transparent rounded-full blur-2xl"></div>
-        <div className="absolute top-4 right-4">
-          <Sparkles className="w-6 h-6 text-[#D4AF37] animate-pulse" />
+        <div className="absolute top-6 right-6 animate-bounce">
+          <Sparkles className="w-8 h-8 text-[#D4AF37]" />
+        </div>
+        <div className="absolute bottom-6 left-6 opacity-20">
+          <Star className="w-12 h-12 text-[#D4AF37] animate-spin" style={{animationDuration: '20s'}} />
         </div>
         
         <div className="relative z-10">
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between mb-8">
             <div>
-              <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                Welcome back, {firstName}! 
-                <span className="inline-block ml-2 animate-bounce">👋</span>
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed mb-2">
-                You have <span className="font-semibold text-[#D4AF37]">{dashboardData.totalPortfolios} portfolio items</span>: 
-                <span className="font-medium"> {dashboardData.projects.length} projects</span> and 
-                <span className="font-medium"> {dashboardData.microcredentials.length} microcredentials</span>.
-              </p>
-              <p className="text-white/70 text-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-5xl font-black bg-gradient-to-r from-white via-[#D4AF37] to-white bg-clip-text text-transparent">
+                  Welcome back, {firstName}!
+                </h2>
+                <span className="text-4xl animate-bounce">👋</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 mb-4 border border-white/20">
+                <p className="text-white text-lg leading-relaxed">
+                  You have <span className="font-black text-[#D4AF37] text-2xl">{dashboardData.totalPortfolios}</span> <span className="font-semibold">portfolio items</span>
+                </p>
+                <div className="flex items-center gap-6 mt-3 text-white/90">
+                  <div className="flex items-center gap-2">
+                    <Code className="w-5 h-5 text-[#D4AF37]" />
+                    <span className="font-medium">{dashboardData.projects.length} Projects</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-[#D4AF37]" />
+                    <span className="font-medium">{dashboardData.microcredentials.length} Microcredentials</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-[#D4AF37]" />
+                    <span className="font-medium">{dashboardData.skills.length} Skills</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-white/80 text-sm flex items-center gap-2">
+                <Target className="w-4 h-4 text-[#D4AF37]" />
                 Keep building your digital presence and showcase your achievements
               </p>
             </div>
@@ -435,19 +465,21 @@ function DashboardContent() {
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => navigate('/dashboard/portfolio')}
-              className={`${goldBgSolid} text-[#800000] px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center space-x-2`}
+              className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-[#800000] px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
             >
-              <FolderKanban className="w-5 h-5" />
-              <span>View Portfolio</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              <FolderKanban className="w-6 h-6 relative z-10" />
+              <span className="relative z-10">View Portfolio</span>
+              <ArrowUpRight className="w-5 h-5 relative z-10 group-hover:rotate-45 transition-transform duration-300" />
             </button>
             <button 
               onClick={() => navigate('/dashboard/share')}
-              className="border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 hover:border-white/50 transition-all duration-300 hover:scale-105 flex items-center space-x-2 backdrop-blur-sm"
+              className="group border-2 border-white/40 text-white px-8 py-4 rounded-2xl font-black hover:bg-white/20 hover:border-white/60 transition-all duration-300 hover:scale-110 flex items-center space-x-3 backdrop-blur-sm relative overflow-hidden"
             >
-              <Share2 className="w-5 h-5" />
-              <span>Share Portfolio</span>
-              <ExternalLink className="w-4 h-4" />
+              <div className="absolute inset-0 bg-[#D4AF37]/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              <Share2 className="w-6 h-6 relative z-10" />
+              <span className="relative z-10">Share Portfolio</span>
+              <ExternalLink className="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
             </button>
           </div>
         </div>
@@ -458,27 +490,41 @@ function DashboardContent() {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className={`${stat.bgColor} rounded-2xl p-6 shadow-lg border border-white/20 dark:border-gray-700/50 hover:shadow-xl hover:scale-105 transition-all duration-300 backdrop-blur-sm`}>
+            <div key={index} className={`group ${stat.bgColor} rounded-2xl p-6 shadow-lg border border-white/20 dark:border-gray-700/50 hover:shadow-2xl hover:scale-110 transition-all duration-300 backdrop-blur-sm cursor-pointer ${stat.isSkills ? 'ring-2 ring-[#D4AF37]/50 animate-pulse' : ''}`} style={{animationDuration: stat.isSkills ? '3s' : 'none'}}>
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-4 rounded-2xl bg-white/80 dark:bg-gray-800/80 ${stat.color} shadow-lg`}>
-                  <Icon className="w-6 h-6" />
+                <div className={`p-4 rounded-2xl ${stat.isSkills ? 'bg-gradient-to-br from-[#D4AF37] to-[#B8860B] shadow-xl' : 'bg-white/80 dark:bg-gray-800/80'} ${stat.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className={`w-6 h-6 ${stat.isSkills ? 'text-white animate-pulse' : ''}`} />
                 </div>
                 <div className="flex items-center space-x-1">
                   {stat.trend === 'up' ? (
-                    <TrendingUp className="w-4 h-4 text-[#800000]" />
+                    <TrendingUp className={`w-4 h-4 ${stat.isSkills ? 'text-[#D4AF37]' : 'text-[#800000]'}`} />
                   ) : (
                     <TrendingDown className="w-4 h-4 text-[#800000]" />
                   )}
                 </div>
               </div>
               <div>
-                <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-1 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                <h3 className={`text-4xl font-black mb-1 group-hover:scale-110 transition-transform duration-300 ${stat.isSkills ? 'text-[#D4AF37] dark:text-[#D4AF37]' : 'text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent'}`}>
                   {stat.value}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">{stat.label}</p>
-                <p className="text-[#800000] dark:text-[#D4AF37] text-xs font-medium flex items-center space-x-1">
+                <p className={`text-xs font-medium flex items-center space-x-1 ${stat.isSkills ? 'text-[#D4AF37] dark:text-[#D4AF37]' : 'text-[#800000] dark:text-[#D4AF37]'}`}>
                   <span>{stat.change}</span>
                 </p>
+                {stat.isSkills && dashboardData.skills.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {dashboardData.skills.slice(0, 3).map((skill, idx) => (
+                      <span key={idx} className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
+                        {skill}
+                      </span>
+                    ))}
+                    {dashboardData.skills.length > 3 && (
+                      <span className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
+                        +{dashboardData.skills.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );
