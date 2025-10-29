@@ -779,6 +779,116 @@ public class PortfolioController {
         }
     }
 
+    @PatchMapping("/{id}/witness")
+    public ResponseEntity<?> witnessMicrocredential(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity faculty = userService.findByUsername(username);
+            if (faculty == null || faculty.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
+                return ResponseEntity.status(403).body("Only faculty can witness microcredentials");
+            }
+            Optional<PortfolioEntity> portfolioOpt = service.getById(id);
+            if (portfolioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Portfolio not found");
+            }
+            PortfolioEntity portfolio = portfolioOpt.get();
+            if (!"microcredentials".equalsIgnoreCase(portfolio.getCategory())) {
+                return ResponseEntity.badRequest().body("Only microcredentials can be witnessed");
+            }
+            
+            String witnessIds = portfolio.getWitnessedByIds() != null ? portfolio.getWitnessedByIds() : "";
+            String witnessNames = portfolio.getWitnessedByNames() != null ? portfolio.getWitnessedByNames() : "";
+            
+            // Check if already witnessed by this faculty
+            if (witnessIds.contains(faculty.getUserID().toString())) {
+                return ResponseEntity.badRequest().body("You have already witnessed this microcredential");
+            }
+            
+            // Add witness
+            if (!witnessIds.isEmpty()) {
+                witnessIds += "," + faculty.getUserID();
+                witnessNames += "," + faculty.getFname() + " " + faculty.getLname();
+            } else {
+                witnessIds = faculty.getUserID().toString();
+                witnessNames = faculty.getFname() + " " + faculty.getLname();
+            }
+            
+            portfolio.setWitnessedByIds(witnessIds);
+            portfolio.setWitnessedByNames(witnessNames);
+            service.save(portfolio);
+            
+            return ResponseEntity.ok(Map.of(
+                "portfolioID", portfolio.getPortfolioID(),
+                "witnessedByIds", portfolio.getWitnessedByIds(),
+                "witnessedByNames", portfolio.getWitnessedByNames()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error witnessing microcredential: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}/unwitness")
+    public ResponseEntity<?> unwitnessMicrocredential(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+            UserEntity faculty = userService.findByUsername(username);
+            if (faculty == null || faculty.getRole() != cit.edu.portfolioX.Entity.Role.FACULTY) {
+                return ResponseEntity.status(403).body("Only faculty can unwitness microcredentials");
+            }
+            Optional<PortfolioEntity> portfolioOpt = service.getById(id);
+            if (portfolioOpt.isEmpty()) {
+                return ResponseEntity.status(404).body("Portfolio not found");
+            }
+            PortfolioEntity portfolio = portfolioOpt.get();
+            
+            String witnessIds = portfolio.getWitnessedByIds() != null ? portfolio.getWitnessedByIds() : "";
+            String witnessNames = portfolio.getWitnessedByNames() != null ? portfolio.getWitnessedByNames() : "";
+            
+            if (witnessIds.isEmpty()) {
+                return ResponseEntity.badRequest().body("No witnesses found");
+            }
+            
+            // Remove this faculty's witness
+            String[] idArray = witnessIds.split(",");
+            String[] nameArray = witnessNames.split(",");
+            List<String> newIds = new java.util.ArrayList<>();
+            List<String> newNames = new java.util.ArrayList<>();
+            
+            for (int i = 0; i < idArray.length; i++) {
+                if (!idArray[i].equals(faculty.getUserID().toString())) {
+                    newIds.add(idArray[i]);
+                    if (i < nameArray.length) {
+                        newNames.add(nameArray[i]);
+                    }
+                }
+            }
+            
+            portfolio.setWitnessedByIds(String.join(",", newIds));
+            portfolio.setWitnessedByNames(String.join(",", newNames));
+            service.save(portfolio);
+            
+            return ResponseEntity.ok(Map.of(
+                "portfolioID", portfolio.getPortfolioID(),
+                "witnessedByIds", portfolio.getWitnessedByIds(),
+                "witnessedByNames", portfolio.getWitnessedByNames()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error unwitnessing microcredential: " + e.getMessage());
+        }
+    }
+
     private List<String> extractSkillNames(String skillsJson) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(skillsJson);

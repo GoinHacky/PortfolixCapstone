@@ -73,6 +73,12 @@ public class PortfolioEntity {
     private String validatedByName;
     private Long validatedById;
 
+    // For microcredentials - witnessed by faculty (comma-separated IDs and names)
+    @Column(columnDefinition = "TEXT")
+    private String witnessedByIds; // e.g., "1,5,12"
+    @Column(columnDefinition = "TEXT")
+    private String witnessedByNames; // e.g., "Dr. Smith,Prof. Johnson,Dr. Lee"
+
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
 
@@ -245,5 +251,21 @@ public class PortfolioEntity {
 
     public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getWitnessedByIds() {
+        return witnessedByIds;
+    }
+
+    public void setWitnessedByIds(String witnessedByIds) {
+        this.witnessedByIds = witnessedByIds;
+    }
+
+    public String getWitnessedByNames() {
+        return witnessedByNames;
+    }
+
+    public void setWitnessedByNames(String witnessedByNames) {
+        this.witnessedByNames = witnessedByNames;
     }
 }
