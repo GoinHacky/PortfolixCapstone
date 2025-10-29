@@ -64,7 +64,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/portfolios/**").hasAnyRole("USER", "STUDENT", "FACULTY", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/faculty/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/faculty").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/users/students").hasAnyRole("FACULTY", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/users/students/**").hasAnyRole("FACULTY", "ADMIN")
                 .anyRequest().authenticated()
             )
@@ -74,15 +73,6 @@ public class SecurityConfig {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Unauthorized\"}");
-                    } else {
-                        response.sendRedirect(frontendUrl + "/auth/login");
-                    }
-                })
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    if (request.getRequestURI().startsWith("/api/")) {
-                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                        response.setContentType("application/json");
-                        response.getWriter().write("{\"error\":\"Forbidden\"}");
                     } else {
                         response.sendRedirect(frontendUrl + "/auth/login");
                     }
