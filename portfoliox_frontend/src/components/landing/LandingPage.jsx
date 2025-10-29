@@ -365,55 +365,54 @@ export default function LandingPage() {
                   <span className="text-sm font-medium text-[#800000] dark:text-[#D4AF37]">🚀 New: AI Portfolio Builder</span>
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
-                  Your Academic
-                  <span className="block bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">
+                <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
+                  <span className="block">Your Academic</span>
+                  <span className="block bg-gradient-to-r from-[#800000] via-[#D4AF37] to-[#800000] bg-clip-text text-transparent animate-pulse" style={{animationDuration: '3s'}}>
                     Excellence
                   </span>
                   <span className="block">Showcased</span>
                 </h1>
                 
-                <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-lg text-center sm:text-left">
-                  Create academic portfolios that land internships, jobs, and admissions. 
-                  
+                <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl text-center sm:text-left font-medium">
+                  Create <span className="text-[#800000] dark:text-[#D4AF37] font-bold">stunning academic portfolios</span> that land internships, jobs, and admissions. 
+                  <span className="block mt-2 text-lg text-gray-600 dark:text-gray-400">Showcase your projects, skills, and achievements with AI-powered tools.</span>
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 sm:justify-start justify-center">
+                <div className="flex flex-col sm:flex-row gap-5 sm:justify-start justify-center">
                   <button 
                     onClick={handleStartFree}
-                    className="px-8 py-4 gradient-shift text-white rounded-xl hover:shadow-2xl transition-all duration-300 text-lg font-semibold flex items-center justify-center gap-3 hover-lift group"
+                    className="group relative px-10 py-5 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-xl font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
                   >
-                    Start Creating
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <span className="relative z-10">Start Creating Free</span>
+                    <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-2 transition-transform" />
                   </button>
                   <button 
                     onClick={handleWatchDemo}
-                    className="px-8 py-4 glass-morphism text-gray-700 dark:text-gray-300 rounded-xl hover:shadow-lg transition-all duration-300 text-lg font-semibold flex items-center justify-center gap-3 border border-gray-200/50 dark:border-gray-700/50"
+                    className="group px-10 py-5 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-xl font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
                   >
-                    <Play className="w-5 h-5" />
+                    <Play className="w-6 h-6 text-[#800000] dark:text-[#D4AF37]" />
                     Watch Demo
                   </button>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-8 text-center sm:text-left">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <img
-                        key={i}
-                        src={`https://i.pravatar.cc/40?img=${i}`}
-                        alt={`Student ${i}`}
-                        className="w-10 h-10 rounded-full border-3 border-white dark:border-gray-900 shadow-lg"
-                      />
-                    ))}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1 text-[#D4AF37]">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star key={i} className="w-4 h-4 fill-current" />
-                      ))}
+                <div className="flex flex-wrap items-center gap-8 pt-8 justify-center sm:justify-start">
+                  <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 rounded-2xl border border-[#800000]/20 dark:border-[#D4AF37]/20">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#800000] to-[#D4AF37] flex items-center justify-center shadow-lg">
+                      <Star className="w-6 h-6 text-white fill-current" />
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <span className="font-semibold text-gray-900 dark:text-white">4.9/5</span> from 25K+ students
+                    <div>
+                      <p className="text-2xl font-black text-[#800000] dark:text-[#D4AF37]">Free Forever</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">No credit card required</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37]/10 to-[#800000]/10 rounded-2xl border border-[#D4AF37]/20 dark:border-[#800000]/20">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center shadow-lg">
+                      <Star className="w-6 h-6 text-white fill-current" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-black text-[#800000] dark:text-[#D4AF37]">AI-Powered</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Smart portfolio builder</p>
                     </div>
                   </div>
                 </div>
@@ -434,35 +433,45 @@ export default function LandingPage() {
                       <img
                         src="https://i.postimg.cc/FsKpy6Pp/image-2025-05-24-221727498.png"
                         alt="PortfolioX Dashboard Preview"
-                        className="w-full h-auto rounded-2xl shadow-2xl transform transition-all duration-700 group-hover:scale-[1.02] card-hover"
+                        className="w-full h-auto rounded-3xl shadow-2xl transform transition-all duration-700 group-hover:scale-[1.02] card-hover border-4 border-[#D4AF37]/20"
                         style={{
                           transform: `translateY(${scrollY * 0.1}px)`,
                         }}
                       />
                       
                       {/* Floating UI elements */}
-                      <div className="absolute top-4 right-4 glass-morphism rounded-lg p-3 animate-float">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Eye className="w-4 h-4 text-[#D4AF37]" />
-                          <span className="text-gray-700 dark:text-gray-300 font-medium">1.2k views</span>
+                      <div className="absolute top-6 right-6 glass-morphism rounded-2xl p-4 animate-float shadow-xl border border-[#D4AF37]/30">
+                        <div className="flex items-center gap-3 text-base">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#800000] to-[#D4AF37] flex items-center justify-center">
+                            <Eye className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 dark:text-white font-black text-lg">1.2k</p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs font-medium">views</p>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="absolute bottom-4 left-4 glass-morphism rounded-lg p-3 animate-float-reverse">
+                      <div className="absolute bottom-6 left-6 glass-morphism rounded-2xl p-4 animate-float-reverse shadow-xl border border-[#D4AF37]/30">
                         <button 
                           onClick={handleLike}
-                          className="flex items-center gap-2 text-sm hover:scale-110 transition-all duration-200 group"
+                          className="flex items-center gap-3 text-base hover:scale-110 transition-all duration-200 group"
                         >
-                          <Heart 
-                            className={`w-4 h-4 transition-all duration-200 ${
-                              isLiked 
-                                ? 'text-red-500 fill-current animate-pulse' 
-                                : 'text-gray-500 hover:text-red-500 group-hover:fill-current'
-                            }`} 
-                          />
-                          <span className="text-gray-700 dark:text-gray-300 font-medium group-hover:text-red-500 transition-colors">
-                            {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                          </span>
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                            isLiked 
+                              ? 'bg-gradient-to-br from-red-500 to-pink-500' 
+                              : 'bg-gradient-to-br from-gray-400 to-gray-500 group-hover:from-red-500 group-hover:to-pink-500'
+                          }`}>
+                            <Heart 
+                              className="w-5 h-5 text-white fill-current" 
+                            />
+                          </div>
+                          <div>
+                            <p className="text-gray-900 dark:text-white font-black text-lg group-hover:text-red-500 transition-colors">
+                              {likeCount}
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-400 text-xs font-medium">likes</p>
+                          </div>
                         </button>
                       </div>
                     </div>
