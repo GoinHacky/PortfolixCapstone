@@ -332,7 +332,7 @@ export default function FacultyStudents() {
           witnessedByNames: data.witnessedByNames
         }));
         await refreshPortfolioData();
-        showNotification('Microcredential witnessed successfully!', 'success');
+        showNotification('Microcredential verified and witnessed successfully!', 'success');
       } else {
         const errorText = await response.text();
         showNotification(errorText || 'Failed to witness microcredential', 'error');
@@ -690,32 +690,52 @@ export default function FacultyStudents() {
                 <span className="ml-2 text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
               </div>
             )}
-            {viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 && (
-              <div className="mb-4">
-                <span className="font-semibold text-green-700 uppercase tracking-wide text-xs">Witnessed by:</span>
-                <div className="ml-2 text-gray-800 text-sm mt-1">{viewPortfolio.witnessedByNames}</div>
-              </div>
-            )}
             {viewPortfolio.category === 'microcredentials' && (
-              <div className="flex gap-2 mt-4">
-                {viewPortfolio.witnessedByIds && viewPortfolio.witnessedByIds.split(',').includes(localStorage.getItem('userId')) ? (
-                  <button
-                    onClick={() => handleUnwitnessMicrocredential(viewPortfolio.portfolioID)}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Remove Witness
-                  </button>
+              <>
+                {viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 ? (
+                  <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lock className="w-4 h-4 text-green-700 dark:text-green-400" />
+                      <span className="font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide text-xs">Verified & Witnessed By Faculty</span>
+                    </div>
+                    <div className="text-gray-800 dark:text-gray-300 text-sm">
+                      {viewPortfolio.witnessedByNames.split(',').map((name, idx) => (
+                        <div key={idx} className="flex items-center gap-2 py-1">
+                          <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                          <span>{name.trim()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ) : (
-                  <button
-                    onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID)}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    Witness Microcredential
-                  </button>
+                  <div className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <Unlock className="w-4 h-4 text-yellow-700 dark:text-yellow-400" />
+                      <span className="font-semibold text-yellow-700 dark:text-yellow-400 uppercase tracking-wide text-xs">Pending Faculty Witness</span>
+                    </div>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-300 mt-1">This microcredential needs faculty verification.</p>
+                  </div>
                 )}
-              </div>
+                <div className="flex gap-2 mt-4">
+                  {viewPortfolio.witnessedByIds && viewPortfolio.witnessedByIds.split(',').includes(localStorage.getItem('userId')) ? (
+                    <button
+                      onClick={() => handleUnwitnessMicrocredential(viewPortfolio.portfolioID)}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center gap-2"
+                    >
+                      <X className="w-4 h-4" />
+                      Remove My Witness
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID)}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Witness & Verify
+                    </button>
+                  )}
+                </div>
+              </>
             )}
             <div className="flex justify-end mt-6">
               <button

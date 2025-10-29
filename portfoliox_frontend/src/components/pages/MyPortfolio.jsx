@@ -695,10 +695,20 @@ export default function MyPortfolio() {
                       <div className="space-y-2 mb-3">
                         <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{portfolio.certTitle}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
-                        {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 && (
-                          <div className="mt-2">
-                            <p className="text-xs font-semibold text-green-700 dark:text-green-400">Witnessed by:</p>
+                        {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 ? (
+                          <div className="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-2">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Lock className="w-3 h-3 text-green-700 dark:text-green-400" />
+                              <p className="text-xs font-semibold text-green-700 dark:text-green-400">Verified & Witnessed</p>
+                            </div>
                             <p className="text-xs text-green-600 dark:text-green-300">{portfolio.witnessedByNames}</p>
+                          </div>
+                        ) : (
+                          <div className="mt-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-2">
+                            <div className="flex items-center gap-1">
+                              <Unlock className="w-3 h-3 text-yellow-700 dark:text-yellow-400" />
+                              <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">Pending Faculty Witness</p>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1224,16 +1234,39 @@ export default function MyPortfolio() {
                 </div>
               )}
               {viewPortfolio.validatedByFaculty && (
-                <div className="mb-2">
-                  <span className="font-semibold text-green-700">Validated by:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.validatedByName}</span>
+                <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Lock className="w-4 h-4 text-green-700 dark:text-green-400" />
+                    <span className="font-semibold text-green-700 dark:text-green-400">Validated by Faculty</span>
+                  </div>
+                  <span className="text-gray-800 dark:text-gray-300 text-sm">{viewPortfolio.validatedByName}</span>
                 </div>
               )}
-              {viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 && (
-                <div className="mb-2">
-                  <span className="font-semibold text-green-700">Witnessed by:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.witnessedByNames}</span>
-                </div>
+              {viewPortfolio.category === 'microcredentials' && (
+                viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 ? (
+                  <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Lock className="w-4 h-4 text-green-700 dark:text-green-400" />
+                      <span className="font-semibold text-green-700 dark:text-green-400">Verified & Witnessed by Faculty</span>
+                    </div>
+                    <div className="text-gray-800 dark:text-gray-300 text-sm">
+                      {viewPortfolio.witnessedByNames.split(',').map((name, idx) => (
+                        <div key={idx} className="flex items-center gap-2 py-1">
+                          <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                          <span>{name.trim()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <Unlock className="w-4 h-4 text-yellow-700 dark:text-yellow-400" />
+                      <span className="font-semibold text-yellow-700 dark:text-yellow-400">Pending Faculty Witness</span>
+                    </div>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-300 mt-1">This microcredential is awaiting verification from faculty members.</p>
+                  </div>
+                )
               )}
               <div className="flex justify-end mt-6">
                 <button
