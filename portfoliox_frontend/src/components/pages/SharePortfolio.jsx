@@ -191,64 +191,76 @@ export default function SharePortfolio() {
 
   return (
     <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
+      {/* Enhanced Header */}
       <div className="mb-10">
-        <h1 className="text-3xl font-black bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent mb-4">Share Portfolio</h1>
-        <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div className="bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10">
+            <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Share Portfolio</h1>
+            <p className="text-[#D4AF37] text-sm font-medium">Generate and manage public links for your portfolios</p>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Paste a portfolio token or ID to preview..."
+          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
+          value={publicLinkInput}
+          onChange={e => setPublicLinkInput(e.target.value)}
+        />
+        <button
+          onClick={handleOpenPublicLink}
+          className="px-5 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium shadow-sm hover:shadow-md transition-all"
+        >
+          Preview Portfolio
+        </button>
+      </div>
+      
+      {/* Search and Filter */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex-1">
           <input
             type="text"
-            placeholder="Paste a portfolio token or ID to preview..."
-            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
-            value={publicLinkInput}
-            onChange={e => setPublicLinkInput(e.target.value)}
+            placeholder="Search portfolios..."
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-md focus:outline-none focus:ring-4 focus:ring-[#800000]/20 focus:border-[#800000] dark:focus:border-[#D4AF37] bg-white dark:bg-gray-900 dark:text-white transition-all duration-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button
-            onClick={handleOpenPublicLink}
-            className="px-5 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium shadow-sm hover:shadow-md transition-all"
-          >
-            Preview Portfolio
-          </button>
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search portfolios..."
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <select
-            className="px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent bg-white/95 dark:bg-gray-900/80 dark:text-white"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            <option value="project">Projects</option>
-            <option value="microcredentials">Microcredentials</option>
-          </select>
-        </div>
+        <select
+          className="px-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-md focus:outline-none focus:ring-4 focus:ring-[#800000]/20 focus:border-[#800000] dark:focus:border-[#D4AF37] bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 font-medium"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="all">All Categories</option>
+          <option value="project">Projects</option>
+          <option value="microcredentials">Microcredentials</option>
+        </select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPortfolios.map((portfolio) => (
           <div
             key={portfolio.portfolioID}
-            className="bg-white/95 dark:bg-gray-900/80 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-200"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-[#D4AF37] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white tracking-tight">{portfolio.portfolioTitle || 'Untitled Portfolio'}</h3>
-                <span className="inline-flex items-center px-2 py-0.5 mt-1 text-xs font-medium bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] rounded-full capitalize">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight mb-2">{portfolio.portfolioTitle || 'Untitled Portfolio'}</h3>
+                <span className="inline-flex items-center px-3 py-1 text-xs font-bold bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-lg capitalize shadow-md">
                   {portfolio.category || 'No Category'}
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Link2 className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <div className="p-2 bg-gradient-to-br from-[#D4AF37]/20 to-[#800000]/10 rounded-xl">
+                <Link2 className="w-5 h-5 text-[#D4AF37]" />
               </div>
             </div>
             
-            <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{portfolio.portfolioDescription || 'No description available'}</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-5 line-clamp-3 leading-relaxed">{portfolio.portfolioDescription || 'No description available'}</p>
             
             {portfolio.link ? (
               <div className="space-y-3">
@@ -305,7 +317,7 @@ export default function SharePortfolio() {
               <button
                 onClick={() => generateLink(portfolio.portfolioID)}
                 disabled={!!actionLoading[portfolio.portfolioID]}
-                className="w-full px-4 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-medium shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {!!actionLoading[portfolio.portfolioID] ? 'Generating...' : 'Generate Sharing Link'}
               </button>
