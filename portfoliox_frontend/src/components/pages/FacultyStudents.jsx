@@ -246,7 +246,17 @@ export default function FacultyStudents() {
         showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} has been removed from ${selectedCourse}.`, 'success');
         return;
       } else if (response.status === 404) {
-        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} is not enrolled in ${selectedCourse}.`, 'error');
+        // Treat as already removed and sync UI state
+        const updatedEnrollments = { ...courseEnrollments };
+        if (Array.isArray(updatedEnrollments[selectedCourse])) {
+          updatedEnrollments[selectedCourse] = updatedEnrollments[selectedCourse].filter((id) => id !== studentToRemove.userID);
+        }
+        setCourseEnrollments(updatedEnrollments);
+        await refreshPortfolioData();
+        setShowRemoveModal(false);
+        setStudentToRemove(null);
+        setSelectedCourse('');
+        showNotification(`Student ${studentToRemove.fname} ${studentToRemove.lname} is already removed from ${selectedCourse}.`, 'success');
         return;
       } else if (response.status === 401) {
         localStorage.clear();
@@ -744,11 +754,7 @@ export default function FacultyStudents() {
                           <button
                             onClick={openConfirmationDialog}
                             disabled={!selectedCourse}
-                            className={`px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 ${
-                              modalAction === 'remove'
-                                ? 'bg-red-600 hover:bg-red-700'
-                                : 'bg-green-600 hover:bg-green-700'
-                            }`}
+                            className="px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 bg-[#800000] hover:bg-[#5e0000]"
                           >
                             {modalAction === 'remove' ? (
                               <>
@@ -782,7 +788,7 @@ export default function FacultyStudents() {
               </button>
               <button
                 onClick={handleConfirmAction}
-                className={`px-4 py-2 rounded-lg text-white ${confirmationDialog.action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                className="px-4 py-2 rounded-lg text-white bg-[#800000] hover:bg-[#5e0000]"
               >
                 {confirmationDialog.action === 'add' ? 'Confirm Add' : 'Confirm Remove'}
               </button>
@@ -796,10 +802,10 @@ export default function FacultyStudents() {
         <div className={`fixed bottom-6 right-6 z-[120] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
           notification.type === 'error'
             ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
-            : 'border-emerald-200 text-emerald-700 dark:border-emerald-500/40 dark:text-emerald-300'
+            : 'border-[#800000]/40 text-[#800000] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
         }`}>
           <div className="flex items-start gap-3">
-            <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
+            <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-[#800000]'}`}></div>
             <div className="flex-1">
               <h4 className="font-semibold mb-1">{notification.type === 'error' ? 'Action Required' : 'Success'}</h4>
               <p className="text-sm leading-relaxed">{notification.message}</p>
