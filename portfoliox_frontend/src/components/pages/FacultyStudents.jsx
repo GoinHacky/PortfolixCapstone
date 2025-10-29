@@ -994,7 +994,11 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
             <div className="text-center text-gray-500">No projects found.</div>
           ) : (
             groupedPortfolios.projects.map((project) => (
-              <div key={project.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+              <div 
+                key={project.portfolioID} 
+                onClick={() => setViewPortfolio(project)}
+                className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+              >
                 <div className="flex items-center gap-3 mb-2">
                   <FileText className="w-6 h-6 text-[#800000]" />
                   <div className="flex-1">
@@ -1010,7 +1014,7 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
                 </div>
                 <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
                 <div className="flex gap-2 flex-wrap">
-                  {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
+                  {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
                   {/* Add more buttons as needed */}
                 </div>
               </div>
@@ -1024,7 +1028,11 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
             <div className="text-center text-gray-500">No micro-credentials found.</div>
           ) : (
             groupedPortfolios.microcredentials.map((cred) => (
-              <div key={cred.portfolioID} className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm">
+              <div 
+                key={cred.portfolioID} 
+                onClick={() => setViewPortfolio(cred)}
+                className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+              >
                 <div className="flex items-center gap-3 mb-2">
                   <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
                   <div className="flex-1">
@@ -1033,7 +1041,17 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
                   </div>
                 </div>
                 <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
-                {/* Add more info/buttons as needed */}
+                {cred.witnessedByNames && cred.witnessedByNames.length > 0 ? (
+                  <div className="mt-2 flex items-center gap-2 text-xs text-green-700">
+                    <Lock className="w-3 h-3" />
+                    <span>Verified by {cred.witnessedByNames.split(',').length} faculty</span>
+                  </div>
+                ) : (
+                  <div className="mt-2 flex items-center gap-2 text-xs text-yellow-700">
+                    <Unlock className="w-3 h-3" />
+                    <span>Pending witness</span>
+                  </div>
+                )}
               </div>
             ))
           )}
