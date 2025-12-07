@@ -44,7 +44,9 @@ public class AIService {
             return "";
         }
         
-        return content
+        logger.info("Original AI content before cleaning: {}", content);
+        
+        String cleaned = content
             // Remove AI instruction tags
             .replaceAll("\\[/?B_INST\\]", "")
             .replaceAll("\\[/?INST\\]", "")
@@ -62,6 +64,9 @@ public class AIService {
             .replaceAll("\\n\\s*\\n", "\n")
             .replaceAll("\\s+", " ")
             .trim();
+            
+        logger.info("Cleaned AI content: {}", cleaned);
+        return cleaned;
     }
 
     public String enhanceDescription(String title, String description, String category, String githubLink) {
@@ -100,6 +105,7 @@ public class AIService {
 
             ResponseEntity<String> response = restTemplate.postForEntity(OPENROUTER_API_URL, request, String.class);
             JsonNode responseJson = objectMapper.readTree(response.getBody());
+            logger.info("Full AI response: {}", responseJson.toString());
             String enhanced = responseJson.path("choices").path(0).path("message").path("content").asText();
             logger.info("AI enhanced description output: {}", enhanced);
             if (enhanced == null || enhanced.isEmpty()) {
@@ -145,6 +151,7 @@ public class AIService {
 
             ResponseEntity<String> response = restTemplate.postForEntity(OPENROUTER_API_URL, request, String.class);
             JsonNode responseJson = objectMapper.readTree(response.getBody());
+            logger.info("Full AI resume response: {}", responseJson.toString());
             String enhanced = responseJson.path("choices").path(0).path("message").path("content").asText();
             logger.info("AI enhanced resume output: {}", enhanced);
             if (enhanced == null || enhanced.isEmpty()) {
