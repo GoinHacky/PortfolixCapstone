@@ -16,6 +16,7 @@ export default function FacultyStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentPortfolios, setStudentPortfolios] = useState([]);
   const [allStudentPortfolios, setAllStudentPortfolios] = useState({}); // Store portfolios for all students
+  const [portfolioStats, setPortfolioStats] = useState({}); // Store just portfolio counts for all students
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const [expandedFolders, setExpandedFolders] = useState({
@@ -68,8 +69,8 @@ export default function FacultyStudents() {
       console.log('Fetched students:', data);
       setStudents(data);
       
-      // Fetch portfolios for all students
-      await fetchAllStudentPortfolios(data);
+      // Fetch portfolio stats for all students (lightweight)
+      await fetchAllStudentPortfolioStats(data);
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to fetch students');
@@ -122,6 +123,93 @@ export default function FacultyStudents() {
       }
     }
     setCourseEnrollments(enrollmentMap);
+  };
+
+  const fetchAllStudentPortfolioStats = async (studentsList) => {
+    try {
+      const statsMap = {};
+      
+      // For deployed systems without stats endpoint, fetch minimal data or use cached data
+      // Option 1: Fetch only first few portfolios to get counts (faster than all)
+      // Option 2: Use a batch approach with delays to avoid overwhelming the server
+      
+      for (let i = 0; i < studentsList.length; i++) {
+        const student = studentsList[i];
+        try {
+          // For deployed systems, we'll use a lightweight approach
+          // Just set default values initially and update as needed
+          statsMap[student.userID] = { 
+            total: 0, 
+            projects: 0, 
+            microcredentials: 0, 
+            lastUpdate: null,
+            loading: true // Mark as loading
+          };
+          
+          // Set the stats immediately to show the table
+          setPortfolioStats(prev => ({...prev, [student.userID]: statsMap[student.userID]}));
+          
+          // Then fetch actual data with a small delay to prevent server overload
+          setTimeout(async () => {
+            try {
+              const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${student.userID}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+
+              if (response.ok) {
+                const portfolios = await response.json();
+                const projects = portfolios.filter(p => p.category?.toLowerCase() === 'project');
+                const microcredentials = portfolios.filter(p => p.category?.toLowerCase() === 'microcredentials');
+                const actualStats = {
+                  total: portfolios.length,
+                  projects: projects.length,
+                  microcredentials: microcredentials.length,
+                  lastUpdate: portfolios.length > 0 ? Math.max(...portfolios.map(p => new Date(p.lastUpdated || p.createdAt))) : null,
+                  loading: false
+                };
+                
+                // Update the stats for this student
+                setPortfolioStats(prev => ({...prev, [student.userID]: actualStats}));
+              } else {
+                // Set error state
+                setPortfolioStats(prev => ({
+                  ...prev, 
+                  [student.userID]: { 
+                    total: 0, 
+                    projects: 0, 
+                    microcredentials: 0, 
+                    lastUpdate: null, 
+                    loading: false,
+                    error: true
+                  }
+                }));
+              }
+            } catch (error) {
+              console.error(`Error fetching portfolio stats for student ${student.userID}:`, error);
+              setPortfolioStats(prev => ({
+                ...prev, 
+                [student.userID]: { 
+                  total: 0, 
+                  projects: 0, 
+                  microcredentials: 0, 
+                  lastUpdate: null, 
+                  loading: false,
+                  error: true
+                }
+              }));
+            }
+          }, i * 100); // Stagger requests by 100ms to prevent server overload
+          
+        } catch (error) {
+          console.error(`Error setting up portfolio stats for student ${student.userID}:`, error);
+          statsMap[student.userID] = { total: 0, projects: 0, microcredentials: 0, lastUpdate: null, loading: false, error: true };
+        }
+      }
+    } catch (error) {
+      console.error('Error setting up student portfolio stats:', error);
+    }
   };
 
   const fetchAllStudentPortfolios = async (studentsList) => {
@@ -188,14 +276,8 @@ export default function FacultyStudents() {
 
   const handleStudentClick = (studentId) => {
     console.log('Student clicked:', studentId);
-    // Use pre-fetched data if available, otherwise fetch
-    if (allStudentPortfolios[studentId]) {
-      setStudentPortfolios(allStudentPortfolios[studentId]);
-      const student = students.find(s => s.userID === studentId);
-      setSelectedStudent(student);
-    } else {
-      fetchStudentPortfolios(studentId);
-    }
+    // Always fetch fresh data when clicking view to ensure we have the latest
+    fetchStudentPortfolios(studentId);
   };
 
   const toggleFolder = (folder) => {
@@ -540,26 +622,33 @@ export default function FacultyStudents() {
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               {filteredStudents.map((student) => {
-                // Calculate portfolio stats for this student using pre-fetched data
-                const portfolios = allStudentPortfolios[student.userID] || [];
-                const projects = portfolios.filter(p => p.category?.toLowerCase() === 'project');
-                const microcredentials = portfolios.filter(p => p.category?.toLowerCase() === 'microcredentials');
+                // Get portfolio stats for this student using lightweight stats
+                const stats = portfolioStats[student.userID] || { total: 0, projects: 0, microcredentials: 0, lastUpdate: null, loading: false };
+                
+                // Show loading state or actual data
+                const portfolioDisplay = stats.loading ? (
+                  <span className="text-gray-400 text-xs">Loading...</span>
+                ) : stats.error ? (
+                  <span className="text-red-400 text-xs">Error</span>
+                ) : (
+                  `${stats.total} (${stats.projects}/${stats.microcredentials})`
+                );
+                
                 // Status logic (green if updated in last 7 days, yellow if 7-30, red otherwise)
-                let statusColor = 'bg-red-500';
-                let lastUpdate = '';
-                if (portfolios.length > 0) {
-                  const last = portfolios.reduce((a, b) => new Date(a.lastUpdated || a.createdAt) > new Date(b.lastUpdated || b.createdAt) ? a : b);
-                  lastUpdate = new Date(last.lastUpdated || last.createdAt).toLocaleDateString();
-                  const days = (Date.now() - new Date(last.lastUpdated || last.createdAt)) / (1000 * 60 * 60 * 24);
+                let statusColor = 'bg-gray-300'; // Default gray for loading/error states
+                if (!stats.loading && !stats.error && stats.lastUpdate) {
+                  const days = (Date.now() - stats.lastUpdate) / (1000 * 60 * 60 * 24);
                   if (days <= 7) statusColor = 'bg-green-500';
                   else if (days <= 30) statusColor = 'bg-yellow-400';
+                  else statusColor = 'bg-red-500';
                 }
+                
                 return (
                   <tr key={student.userID} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">{student.fname} {student.lname}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{student.username}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{student.programMajor || '-'}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{projects.length + microcredentials.length} ({projects.length}/{microcredentials.length})</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 dark:text-gray-300">{portfolioDisplay}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`inline-block w-4 h-4 rounded-full ${statusColor}`}></span>
                     </td>
@@ -609,13 +698,16 @@ export default function FacultyStudents() {
         </div>
       </div>
 
-      {/* Selected Student's Profile & Portfolio Tabs (Full Width) */}
+      {/* Student Profile Modal */}
       {selectedStudent && (
-        <StudentProfileTabs
+        <StudentProfileModal
           student={selectedStudent}
           portfolios={studentPortfolios}
           groupedPortfolios={groupedPortfolios}
-          onClose={() => setSelectedStudent(null)}
+          onClose={() => {
+            setSelectedStudent(null);
+            setStudentPortfolios([]);
+          }}
           onViewPortfolio={setViewPortfolio}
           token={token}
           setStudentPortfolios={setStudentPortfolios}
@@ -912,7 +1004,7 @@ export default function FacultyStudents() {
   );
 }
 
-function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, onViewPortfolio, token, setStudentPortfolios }) {
+function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, onViewPortfolio, token, setStudentPortfolios }) {
   const [activeTab, setActiveTab] = React.useState('Projects');
 
   // Calculate summary data
@@ -943,183 +1035,190 @@ function StudentProfileTabs({ student, portfolios, groupedPortfolios, onClose, o
     .slice(0, 5);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 mb-8 p-8">
-      {/* Profile Header */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
-        <img
-          src={student.profilePic ? (student.profilePic.startsWith('http') ? student.profilePic : `${getApiBaseUrl()}${student.profilePic}`) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.fname + ' ' + student.lname)}
-          alt={student.fname + ' ' + student.lname}
-          className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow-lg bg-white"
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{student.fname} {student.lname}</h1>
-              <div className="text-lg text-gray-600 dark:text-gray-300 font-medium mb-1">{student.programMajor || '—'}{student.studentNumber ? ` • ${student.studentNumber}` : ''}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">{student.userEmail}</div>
-            </div>
-            <div className="flex gap-4">
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-xl px-6 py-3 text-center">
-                <div className="text-xs text-gray-500">Portfolio Items</div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalItems}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden relative">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full self-start"
+          className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full z-10"
         >
           <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         </button>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
-        {['Micro-credentials', 'Projects', 'Activity Timeline', 'Skills Summary'].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto max-h-[90vh] p-8">
+          {/* Profile Header */}
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
+            <img
+              src={student.profilePic ? (student.profilePic.startsWith('http') ? student.profilePic : `${getApiBaseUrl()}${student.profilePic}`) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.fname + ' ' + student.lname)}
+              alt={student.fname + ' ' + student.lname}
+              className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow-lg bg-white"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-1">{student.fname} {student.lname}</h1>
+                  <div className="text-lg text-gray-600 dark:text-gray-300 font-medium mb-1">{student.programMajor || '—'}{student.studentNumber ? ` • ${student.studentNumber}` : ''}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{student.userEmail}</div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-xl px-6 py-3 text-center">
+                    <div className="text-xs text-gray-500">Portfolio Items</div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalItems}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Tab Content */}
-      {activeTab === 'Projects' && (
-        <div className="space-y-6">
-          {groupedPortfolios.projects.length === 0 ? (
-            <div className="text-center text-gray-500">No projects found.</div>
-          ) : (
-            groupedPortfolios.projects.map((project) => (
-              <div 
-                key={project.portfolioID} 
-                onClick={() => onViewPortfolio(project)}
-                className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+          {/* Tabs */}
+          <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
+            {['Micro-credentials', 'Projects', 'Activity Timeline', 'Skills Summary'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <FileText className="w-6 h-6 text-[#800000]" />
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
-                    <div className="text-sm text-gray-500">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
-                  </div>
-                  {/* Skill tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {project.skills && project.skills.map((skill, idx) => (
-                      <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold" style={{background: '#e0e7ff', color: '#3730a3'}}>{skill.skillName || skill}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
-                <div className="flex gap-2 flex-wrap">
-                  {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
-                  {/* Add more buttons as needed */}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-      {activeTab === 'Micro-credentials' && (
-        <div className="space-y-6">
-          {groupedPortfolios.microcredentials.length === 0 ? (
-            <div className="text-center text-gray-500">No micro-credentials found.</div>
-          ) : (
-            groupedPortfolios.microcredentials.map((cred) => (
-              <div 
-                key={cred.portfolioID} 
-                onClick={() => onViewPortfolio(cred)}
-                className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cred.certTitle || cred.portfolioTitle}</h2>
-                    <div className="text-sm text-gray-500">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
-                  </div>
-                </div>
-                <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
-                {cred.witnessedByNames && cred.witnessedByNames.length > 0 ? (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-green-700">
-                    <Lock className="w-3 h-3" />
-                    <span>Verified by {cred.witnessedByNames.split(',').length} faculty</span>
-                  </div>
-                ) : (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-yellow-700">
-                    <Unlock className="w-3 h-3" />
-                    <span>Pending witness</span>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-      )}
-      {activeTab === 'Activity Timeline' && (
-        <div className="space-y-6">
-          {recentActivity.length === 0 ? (
-            <div className="text-center text-gray-500">No recent activity.</div>
-          ) : (
-            recentActivity.map((item, idx) => (
-              <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#800000]" />
-                  <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
-                  <span className="text-xs text-gray-500">{formatActivityDate(item)}</span>
-                </div>
-                <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-      {activeTab === 'Skills Summary' && (
-        <div className="py-8 text-center">
-          {(() => {
-            const langCounts = {};
-            portfolios.forEach(p => {
-              if (p.skills) {
-                p.skills.forEach(skill => {
-                  const lang = typeof skill === 'string' ? skill : (skill && skill.skillName ? skill.skillName : null);
-                  if (lang) langCounts[lang] = (langCounts[lang] || 0) + 1;
-                });
-              }
-            });
-            const total = Object.values(langCounts).reduce((a, b) => a + b, 0);
-            const chartData = Object.entries(langCounts).map(([lang, count]) => ({
-              lang,
-              count,
-              percent: total ? Math.round((count / total) * 100) : 0
-            })).sort((a, b) => b.count - a.count);
-            if (chartData.length === 0) {
-              return <div className="text-gray-400 italic">No programming languages found.</div>;
-            }
-            return (
-              <div className="max-w-xl mx-auto">
-                <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
-                <ResponsiveContainer width="100%" height={50 * chartData.length}>
-                  <BarChart
-                    layout="vertical"
-                    data={chartData}
-                    margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
-                    barCategoryGap={20}
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'Projects' && (
+            <div className="space-y-6">
+              {groupedPortfolios.projects.length === 0 ? (
+                <div className="text-center text-gray-500">No projects found.</div>
+              ) : (
+                groupedPortfolios.projects.map((project) => (
+                  <div 
+                    key={project.portfolioID} 
+                    onClick={() => onViewPortfolio(project)}
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
                   >
-                    <XAxis type="number" hide domain={[0, Math.max(...chartData.map(d => d.count), 1)]} />
-                    <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18 }} width={100} />
-                    <Bar dataKey="count" fill="#FFD700" radius={20} barSize={30}>
-                      <LabelList dataKey="percent" position="insideRight" formatter={v => `${v}%`} style={{ fill: '#333', fontWeight: 'bold', fontSize: 16 }} />
-                      <LabelList dataKey="count" position="right" formatter={v => v} style={{ fill: '#800000', fontWeight: 'bold', fontSize: 28 }} />
-                    </Bar>
-                    <Tooltip formatter={(value, name, props) => [`${value} projects`, 'Count']} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            );
-          })()}
+                    <div className="flex items-center gap-3 mb-2">
+                      <FileText className="w-6 h-6 text-[#800000]" />
+                      <div className="flex-1">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
+                        <div className="text-sm text-gray-500">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
+                      </div>
+                      {/* Skill tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {project.skills && project.skills.map((skill, idx) => (
+                          <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold" style={{background: '#e0e7ff', color: '#3730a3'}}>{skill.skillName || skill}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
+                      {/* Add more buttons as needed */}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+          {activeTab === 'Micro-credentials' && (
+            <div className="space-y-6">
+              {groupedPortfolios.microcredentials.length === 0 ? (
+                <div className="text-center text-gray-500">No micro-credentials found.</div>
+              ) : (
+                groupedPortfolios.microcredentials.map((cred) => (
+                  <div 
+                    key={cred.portfolioID} 
+                    onClick={() => onViewPortfolio(cred)}
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
+                      <div className="flex-1">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cred.certTitle || cred.portfolioTitle}</h2>
+                        <div className="text-sm text-gray-500">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
+                      </div>
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
+                    {cred.witnessedByNames && cred.witnessedByNames.length > 0 ? (
+                      <div className="mt-2 flex items-center gap-2 text-xs text-green-700">
+                        <Lock className="w-3 h-3" />
+                        <span>Verified by {cred.witnessedByNames.split(',').length} faculty</span>
+                      </div>
+                    ) : (
+                      <div className="mt-2 flex items-center gap-2 text-xs text-yellow-700">
+                        <Unlock className="w-3 h-3" />
+                        <span>Pending witness</span>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+          {activeTab === 'Activity Timeline' && (
+            <div className="space-y-6">
+              {recentActivity.length === 0 ? (
+                <div className="text-center text-gray-500">No recent activity.</div>
+              ) : (
+                recentActivity.map((item, idx) => (
+                  <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-[#800000]" />
+                      <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
+                      <span className="text-xs text-gray-500">{formatActivityDate(item)}</span>
+                    </div>
+                    <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+          {activeTab === 'Skills Summary' && (
+            <div className="py-8 text-center">
+              {(() => {
+                const langCounts = {};
+                portfolios.forEach(p => {
+                  if (p.skills) {
+                    p.skills.forEach(skill => {
+                      const lang = typeof skill === 'string' ? skill : (skill && skill.skillName ? skill.skillName : null);
+                      if (lang) langCounts[lang] = (langCounts[lang] || 0) + 1;
+                    });
+                  }
+                });
+                const total = Object.values(langCounts).reduce((a, b) => a + b, 0);
+                const chartData = Object.entries(langCounts).map(([lang, count]) => ({
+                  lang,
+                  count,
+                  percent: total ? Math.round((count / total) * 100) : 0
+                })).sort((a, b) => b.count - a.count);
+                if (chartData.length === 0) {
+                  return <div className="text-gray-400 italic">No programming languages found.</div>;
+                }
+                return (
+                  <div className="max-w-xl mx-auto">
+                    <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
+                    <ResponsiveContainer width="100%" height={50 * chartData.length}>
+                      <BarChart
+                        layout="vertical"
+                        data={chartData}
+                        margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
+                        barCategoryGap={20}
+                      >
+                        <XAxis type="number" hide domain={[0, Math.max(...chartData.map(d => d.count), 1)]} />
+                        <YAxis type="category" dataKey="lang" tick={{ fontWeight: 'bold', fontSize: 18 }} width={100} />
+                        <Bar dataKey="count" fill="#FFD700" radius={20} barSize={30}>
+                          <LabelList dataKey="percent" position="insideRight" formatter={v => `${v}%`} style={{ fill: '#333', fontWeight: 'bold', fontSize: 16 }} />
+                          <LabelList dataKey="count" position="right" formatter={v => v} style={{ fill: '#800000', fontWeight: 'bold', fontSize: 28 }} />
+                        </Bar>
+                        <Tooltip formatter={(value, name, props) => [`${value} projects`, 'Count']} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
