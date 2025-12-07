@@ -533,8 +533,8 @@ function DashboardContent() {
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Enhanced Welcome Section */}
-      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-3xl p-10 text-white overflow-hidden shadow-2xl border border-[#D4AF37]/20">
+      {/* Enhanced Welcome Section - Compact */}
+      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-2xl p-6 text-white overflow-hidden shadow-xl border border-[#D4AF37]/20">
         {/* Animated Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-r from-white/5 to-transparent rounded-full blur-2xl"></div>
