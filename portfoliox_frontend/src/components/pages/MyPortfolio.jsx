@@ -421,10 +421,25 @@ export default function MyPortfolio() {
                     throw new Error('No portfolios found. Please add some projects or microcredentials first.');
                   }
 
+                  // Clean portfolio descriptions before sending to AI
+                  const cleanPortfolioDescription = (description) => {
+                    if (!description) return '';
+                    return description
+                      .replace(/\[\/?B_INST\]/g, '')
+                      .replace(/\[\/?INST\]/g, '')
+                      .replace(/<[^>]*>/g, '')
+                      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+                      .replace(/\*\*(.*?)\*\*/g, '$1')
+                      .replace(/\*(.*?)\*/g, '$1')
+                      .replace(/\*/g, '')
+                      .replace(/\s+/g, ' ')
+                      .trim();
+                  };
+
                   // Create a simple text version of the portfolio content
                   const content = portfolios.map(p => `
                     ${p.portfolioTitle || 'Untitled'}
-                    ${p.portfolioDescription || 'No description'}
+                    ${cleanPortfolioDescription(p.portfolioDescription) || 'No description'}
                     ${p.category === 'project' ? `GitHub: ${p.githubLink || 'No link provided'}` : ''}
                     ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle || 'No title'}, Issued: ${p.issueDate || 'No date'}` : ''}
                   `).join('\n\n');
