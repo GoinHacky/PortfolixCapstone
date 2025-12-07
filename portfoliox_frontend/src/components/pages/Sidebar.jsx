@@ -191,9 +191,9 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
             {isCollapsed && (
               <button 
                 onClick={() => handleItemClick({ id: 'Dashboard' })}
-                className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-xl flex items-center justify-center hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-lg"
+                className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-xl flex items-center justify-center hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-lg overflow-hidden"
               >
-                <Sparkles className="w-6 h-6 text-white animate-pulse" />
+                <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-6 h-6 object-contain" />
               </button>
             )}
 
@@ -273,14 +273,14 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item)}
-                  className={`w-full group relative flex items-center px-4 py-3 rounded-2xl transition-all duration-300 ${
+                  className={`w-full group relative ${isCollapsed ? 'flex justify-center' : 'flex items-center'} px-4 py-3 rounded-2xl transition-all duration-300 ${
                     isActive
                       ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-white shadow-xl shadow-[#D4AF37]/50 transform scale-105 ring-2 ring-white/20'
                       : 'text-white/80 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
                 >
                   {/* Active Indicator */}
-                  {isActive && (
+                  {isActive && !isCollapsed && (
                     <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-1.5 h-10 bg-gradient-to-b from-white via-[#D4AF37] to-white rounded-r-full shadow-lg"></div>
                   )}
                   
