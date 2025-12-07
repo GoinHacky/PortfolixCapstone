@@ -21,6 +21,7 @@ import cit.edu.portfolioX.Service.UserService;
 import cit.edu.portfolioX.Entity.UserEntity;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,6 +86,10 @@ public class JwtFilter extends OncePerRequestFilter {
                                 response.getWriter().write("User not found");
                                 return;
                             }
+
+                            // Update last login time
+                            user.setLastLogin(LocalDateTime.now());
+                            userService.save(user);
 
                             // Create granted authorities from user role
                             List<SimpleGrantedAuthority> authorities = Collections.singletonList(
