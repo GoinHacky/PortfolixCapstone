@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cit.edu.portfolioX.Entity.CourseEntity;
 import cit.edu.portfolioX.Entity.PortfolioEntity;
+import cit.edu.portfolioX.Entity.UserEntity;
 import cit.edu.portfolioX.Security.JwtUtil;
-import cit.edu.portfolioX.Service.CourseService;
 import cit.edu.portfolioX.Service.CourseEnrollmentService;
+import cit.edu.portfolioX.Service.CourseService;
+import cit.edu.portfolioX.Service.NotificationService;
 import cit.edu.portfolioX.Service.PortfolioService;
 import cit.edu.portfolioX.Service.UserService;
 
@@ -38,6 +40,8 @@ public class CourseController {
     private JwtUtil jwtUtil;
     @Autowired
     private CourseEnrollmentService enrollmentService;
+    @Autowired
+    private NotificationService notificationService;
 
     // Create a course (faculty only)
     @PostMapping
@@ -258,8 +262,14 @@ public class CourseController {
             enrollment.setStudentId(studentId);
             enrollmentService.save(enrollment);
 
+            try {
+                notificationService.notifyCourseEnrollment(student.get(), course.getCourseName());
+            } catch (Exception notifyEx) {
+                // Log but don't fail the enrollment if notification fails
+                System.err.println("Failed to send course enrollment notification: " + notifyEx.getMessage());
+            }
+
             return ResponseEntity.ok("Student enrolled in course successfully");
-            
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error adding student to course: " + e.getMessage());
         }

@@ -11,6 +11,10 @@ public class NotificationEntity {
         FACULTY_APPROVED,     // Faculty account approved notification
         FACULTY_REJECTED,     // Faculty account rejected notification
         PROJECT_SUBMISSION,   // Student submitted a project
+        PROJECT_VALIDATED,    // Student's project was validated by faculty
+        PROJECT_UNVALIDATED,  // Student's project validation was removed
+        MICROCREDENTIAL_WITNESSED,  // Student's microcredential was witnessed by faculty
+        MICROCREDENTIAL_UNWITNESSED, // Faculty removed witness from microcredential
         COURSE_ENROLLMENT,    // Student enrolled in a course
         GRADE_POSTED,         // Teacher posted a grade
         PORTFOLIO_VIEWED,     // Someone viewed student's portfolio

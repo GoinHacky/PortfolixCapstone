@@ -780,6 +780,15 @@ public class PortfolioController {
             portfolio.setValidatedByName(null);
             portfolio.setValidatedById(null);
             service.save(portfolio);
+
+            try {
+                if (portfolio.getUser() != null) {
+                    notificationService.notifyProjectUnvalidated(portfolio.getUser(), faculty, portfolio.getPortfolioID());
+                }
+            } catch (Exception notifyEx) {
+                logger.warn("Failed to notify student about project unvalidation: {}", notifyEx.getMessage());
+            }
+
             return ResponseEntity.ok(Map.of(
                 "portfolioID", portfolio.getPortfolioID(),
                 "validatedByFaculty", false
@@ -832,6 +841,14 @@ public class PortfolioController {
             portfolio.setWitnessedByIds(witnessIds);
             portfolio.setWitnessedByNames(witnessNames);
             service.save(portfolio);
+
+            try {
+                if (portfolio.getUser() != null) {
+                    notificationService.notifyMicrocredentialWitnessed(portfolio.getUser(), faculty, portfolio.getPortfolioID());
+                }
+            } catch (Exception notifyEx) {
+                logger.warn("Failed to notify student about microcredential witness: {}", notifyEx.getMessage());
+            }
             
             return ResponseEntity.ok(Map.of(
                 "portfolioID", portfolio.getPortfolioID(),
@@ -888,6 +905,14 @@ public class PortfolioController {
             portfolio.setWitnessedByIds(String.join(",", newIds));
             portfolio.setWitnessedByNames(String.join(",", newNames));
             service.save(portfolio);
+
+            try {
+                if (portfolio.getUser() != null) {
+                    notificationService.notifyMicrocredentialUnwitnessed(portfolio.getUser(), faculty, portfolio.getPortfolioID());
+                }
+            } catch (Exception notifyEx) {
+                logger.warn("Failed to notify student about microcredential unwitness: {}", notifyEx.getMessage());
+            }
             
             return ResponseEntity.ok(Map.of(
                 "portfolioID", portfolio.getPortfolioID(),

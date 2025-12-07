@@ -36,6 +36,24 @@ public class AIService {
         logger.info("OpenRouter API Key loaded: {}", openRouterApiKey != null && !openRouterApiKey.isEmpty() ? "PRESENT" : "MISSING");
     }
 
+    /**
+     * Cleans AI-generated content by removing unwanted markdown symbols like **, *, etc.
+     */
+    private String cleanAIContent(String content) {
+        if (content == null) {
+            return "";
+        }
+        
+        return content
+            // Remove bold markdown (**text**)
+            .replaceAll("\\*\\*(.*?)\\*\\*", "$1")
+            // Remove italic markdown (*text*)
+            .replaceAll("\\*(.*?)\\*", "$1")
+            // Remove any remaining asterisks
+            .replaceAll("\\*", "")
+            .trim();
+    }
+
     public String enhanceDescription(String title, String description, String category, String githubLink) {
         try {
             StringBuilder userPrompt = new StringBuilder();
@@ -77,7 +95,10 @@ public class AIService {
             if (enhanced == null || enhanced.isEmpty()) {
                 throw new RuntimeException("No content returned from OpenRouter");
             }
-            return enhanced;
+            // Clean up unwanted markdown symbols like asterisks
+            String cleanedEnhanced = cleanAIContent(enhanced);
+            logger.info("Cleaned enhanced content: {}", cleanedEnhanced);
+            return cleanedEnhanced;
         } catch (Exception e) {
             logger.error("Error enhancing description: {}", e.getMessage());
             throw new RuntimeException("Failed to enhance description: " + e.getMessage());
@@ -119,7 +140,10 @@ public class AIService {
             if (enhanced == null || enhanced.isEmpty()) {
                 throw new RuntimeException("No content returned from OpenRouter");
             }
-            return enhanced;
+            // Clean up unwanted markdown symbols like asterisks
+            String cleanedEnhanced = cleanAIContent(enhanced);
+            logger.info("Cleaned enhanced content: {}", cleanedEnhanced);
+            return cleanedEnhanced;
         } catch (Exception e) {
             logger.error("Error enhancing resume: {}", e.getMessage());
             throw new RuntimeException("Failed to enhance resume: " + e.getMessage());

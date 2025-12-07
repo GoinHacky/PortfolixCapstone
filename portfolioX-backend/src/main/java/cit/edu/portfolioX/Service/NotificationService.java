@@ -175,7 +175,7 @@ public class NotificationService {
 
             createNotification(
                 student,
-                NotificationType.PROJECT_SUBMISSION,
+                NotificationType.PROJECT_VALIDATED,
                 title,
                 message,
                 faculty.getUserID(),
@@ -205,6 +205,75 @@ public class NotificationService {
             logger.info("Course enrollment notification sent to: {}", student.getUsername());
         } catch (Exception e) {
             logger.error("Error notifying course enrollment: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Notify student that their project validation was removed
+     */
+    public void notifyProjectUnvalidated(UserEntity student, UserEntity faculty, Long projectId) {
+        try {
+            String title = "Project Validation Removed";
+            String message = faculty.getFname() + " " + faculty.getLname() + " removed validation from your project.";
+
+            createNotification(
+                student,
+                NotificationType.PROJECT_UNVALIDATED,
+                title,
+                message,
+                faculty.getUserID(),
+                projectId,
+                "PROJECT"
+            );
+            logger.info("Project unvalidation notification sent to: {}", student.getUsername());
+        } catch (Exception e) {
+            logger.error("Error notifying project unvalidation: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Notify student that their microcredential was witnessed by faculty
+     */
+    public void notifyMicrocredentialWitnessed(UserEntity student, UserEntity faculty, Long microcredentialId) {
+        try {
+            String title = "Microcredential Witnessed";
+            String message = faculty.getFname() + " " + faculty.getLname() + " witnessed your microcredential.";
+
+            createNotification(
+                student,
+                NotificationType.MICROCREDENTIAL_WITNESSED,
+                title,
+                message,
+                faculty.getUserID(),
+                microcredentialId,
+                "MICROCREDENTIAL"
+            );
+            logger.info("Microcredential witness notification sent to: {}", student.getUsername());
+        } catch (Exception e) {
+            logger.error("Error notifying microcredential witness: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Notify student that faculty removed witness from their microcredential
+     */
+    public void notifyMicrocredentialUnwitnessed(UserEntity student, UserEntity faculty, Long microcredentialId) {
+        try {
+            String title = "Microcredential Witness Removed";
+            String message = faculty.getFname() + " " + faculty.getLname() + " removed their witness from your microcredential.";
+
+            createNotification(
+                student,
+                NotificationType.MICROCREDENTIAL_UNWITNESSED,
+                title,
+                message,
+                faculty.getUserID(),
+                microcredentialId,
+                "MICROCREDENTIAL"
+            );
+            logger.info("Microcredential unwitness notification sent to: {}", student.getUsername());
+        } catch (Exception e) {
+            logger.error("Error notifying microcredential unwitness: {}", e.getMessage());
         }
     }
 
