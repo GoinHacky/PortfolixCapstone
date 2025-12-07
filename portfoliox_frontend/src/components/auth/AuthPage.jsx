@@ -53,9 +53,6 @@ export default function AuthPage({ mode = "login" }) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setMessage({ type: "error", text: "Google OAuth not implemented yet" });
-  };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -229,10 +226,6 @@ export default function AuthPage({ mode = "login" }) {
             <div className="p-8">
               {/* Social Login Buttons */}
               <div className="space-y-3 mb-6">
-                <button className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-[#D4AF37] dark:hover:border-[#800000] hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 font-semibold text-gray-700 dark:text-white">
-                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">G</div>
-                  <span>Continue with Google</span>
-                </button>
                 <button 
                   onClick={handleGitHubLogin}
                   className="w-full flex items-center justify-center space-x-3 py-3 px-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-300 font-semibold"
