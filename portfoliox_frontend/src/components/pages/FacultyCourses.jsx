@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, CheckCircle, XCircle, Loader2, FileText, AlertTriangle, X } from 'lucide-react';
+import { Plus, CheckCircle, XCircle, Loader2, FileText, AlertTriangle, X, Users, UserPlus, FolderOpen, FolderX } from 'lucide-react';
 import { ConfirmDialog } from '../Notification';
 
 import { getApiBaseUrl } from '../../api/apiConfig';
@@ -34,6 +34,7 @@ export default function FacultyCourses() {
   const [showStudentProjectsModal, setShowStudentProjectsModal] = useState(false);
   const [notification, setNotification] = useState(null);
   const [validationConfirmation, setValidationConfirmation] = useState(null);
+  const [enrollmentConfirmation, setEnrollmentConfirmation] = useState(null);
 
   const token = localStorage.getItem('token');
   const facultyId = localStorage.getItem('userId');
@@ -184,11 +185,24 @@ export default function FacultyCourses() {
     }
   };
 
-  const handleAddStudentToCourse = async () => {
+  const handleAddStudentToCourse = () => {
+    if (!selectedCourse || !addStudentUserId) return;
+    
+    // Find student name
+    const student = allStudents.find(s => s.userID === addStudentUserId);
+    const studentName = student ? `${student.fname || ''} ${student.lname || ''}`.trim() || student.username : addStudentUserId;
+    
+    setEnrollmentConfirmation({
+      courseCode: selectedCourse.courseCode,
+      courseName: selectedCourse.courseName,
+      studentId: addStudentUserId,
+      studentName
+    });
+  };
+
+  const performAddStudentToCourse = async () => {
     if (!selectedCourse || !addStudentUserId) return;
     setAddingStudent(true);
-    setError(null);
-    setSuccess(null);
     try {
       const res = await fetch(`${getApiBaseUrl()}/api/courses/${selectedCourse.courseCode}/add-student/${addStudentUserId}`, {
         method: 'POST',
@@ -198,7 +212,7 @@ export default function FacultyCourses() {
         const msg = await res.text();
         throw new Error(msg || 'Failed to add student to course');
       }
-      setSuccess('Student added to course');
+      showNotification('Student added to course successfully!', 'success');
       setAddStudentUserId('');
       // refresh enrolled list
       if (selectedCourse) {
@@ -212,7 +226,7 @@ export default function FacultyCourses() {
         } catch {}
       }
     } catch (err) {
-      setError(err.message);
+      showNotification(err.message || 'Failed to add student to course', 'error');
     } finally {
       setAddingStudent(false);
     }
@@ -478,24 +492,44 @@ export default function FacultyCourses() {
 
       {/* Enrolled Students */}
       <div className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="font-semibold text-gray-800 dark:text-white mb-3">Enrolled Students</div>
+        <div className="font-semibold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+          <Users className="w-5 h-5" /> Enrolled Students
+        </div>
         {enrolledStudents.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-gray-400">No students enrolled yet.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center py-4">
+            <FolderX className="w-8 h-8 mb-2 text-gray-400" />
+            No students enrolled yet
+          </div>
         ) : (
-          <div className="space-y-2">
-            {enrolledStudents.map(s => (
-              <button
-                key={s.userID}
-                onClick={() => handleStudentProjectsClick(s)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedEnrolledStudent?.userID === s.userID ? 'ring-2 ring-[#800000]' : ''}`}
-              >
-                <div className="text-left">
-                  <div className="font-medium text-gray-800 dark:text-gray-100">{`${s.fname || ''} ${s.lname || ''}`.trim() || s.username}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{s.userEmail} • ID: {s.userID}</div>
-                </div>
-                <div className="text-xs text-[#800000]">View Projects</div>
-              </button>
-            ))}
+          <div className="max-h-60 overflow-y-auto pr-2 -mr-2">
+            <div className="space-y-2 pr-2">
+              {enrolledStudents.map(s => (
+                <button
+                  key={s.userID}
+                  onClick={() => handleStudentProjectsClick(s)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                    selectedEnrolledStudent?.userID === s.userID ? 'ring-2 ring-[#800000]' : ''
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="font-medium text-gray-800 dark:text-gray-100">
+                      {`${s.fname || ''} ${s.lname || ''}`.trim() || s.username}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {s.userEmail}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
+                      ID: {s.userID}
+                    </span>
+                    <div className="p-1.5 rounded-full bg-[#800000]/10 text-[#800000] hover:bg-[#800000]/20 transition-colors">
+                      <FolderOpen className="w-4 h-4" />
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -1031,12 +1065,14 @@ export default function FacultyCourses() {
               </button>
               <button
                 onClick={async () => {
+                  // Close dialog immediately
+                  setValidationConfirmation(null);
+                  
                   if (validationConfirmation.action === 'validate') {
                     await performValidateProject(validationConfirmation.projectId);
                   } else {
                     await performUnvalidateProject(validationConfirmation.projectId);
                   }
-                  setValidationConfirmation(null);
                 }}
                 className={`px-4 py-2 rounded-lg text-white ${
                   validationConfirmation.action === 'validate' 
@@ -1072,6 +1108,43 @@ export default function FacultyCourses() {
             >
               <X className="w-4 h-4" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Enrollment Confirmation Dialog */}
+      {enrollmentConfirmation && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Confirm Enrollment
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Are you sure you want to enroll <span className="font-semibold">{enrollmentConfirmation.studentName}</span> in{" "}
+              <span className="font-semibold">{enrollmentConfirmation.courseName}</span>?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setEnrollmentConfirmation(null)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setEnrollmentConfirmation(null);
+                  await performAddStudentToCourse();
+                }}
+                className="px-4 py-2 rounded-lg bg-[#800000] text-white hover:bg-[#600000] flex items-center gap-2"
+              >
+                <UserPlus size={18} /> Enroll Student
+              </button>
+            </div>
           </div>
         </div>
       )}
