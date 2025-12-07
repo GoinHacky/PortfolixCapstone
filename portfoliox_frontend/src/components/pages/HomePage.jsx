@@ -51,6 +51,7 @@ const goldText = "text-[#D4AF37]";
 export default function HomePage() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [addNewOpen, setAddNewOpen] = useState(false);
   const getActiveItemFromPath = (pathname) => {
     if (pathname.startsWith("/dashboard/portfolio")) return "Portfolio";
     if (pathname.startsWith("/dashboard/courses")) return "Courses";
@@ -250,30 +251,59 @@ export default function HomePage() {
             </div>
             
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Mobile Search Icon */}
-              <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              </button>
-              
-              {/* Enhanced Search Bar */}
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Search projects, achievements..."
-                  className="pl-10 pr-4 py-2.5 w-48 lg:w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
-                />
-              </div>
-              
               {/* Enhanced Notifications */}
               <NotificationPanel />
               
-              {/* Enhanced Add New Button */}
-              <button className={`${goldBg} text-white px-3 sm:px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add New</span>
-                <Sparkles className="w-4 h-4 opacity-70" />
-              </button>
+              {/* Enhanced Add New Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setAddNewOpen(!addNewOpen)}
+                  className={`${goldBg} text-white px-3 sm:px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Add New</span>
+                  <Sparkles className="w-4 h-4 opacity-70" />
+                </button>
+                
+                {addNewOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                    <button
+                      onClick={() => {
+                        setAddNewOpen(false);
+                        setActiveItem('My Portfolio');
+                        // Trigger add project form
+                        setTimeout(() => {
+                          const portfolioComponent = document.querySelector('[data-portfolio-form]');
+                          if (portfolioComponent) {
+                            portfolioComponent.dispatchEvent(new CustomEvent('openForm', { detail: { type: 'project' } }));
+                          }
+                        }, 100);
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3 transition-colors rounded-t-xl"
+                    >
+                      <FileText className="w-4 h-4 text-[#800000]" />
+                      <span className="text-gray-900 dark:text-white">Project</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAddNewOpen(false);
+                        setActiveItem('My Portfolio');
+                        // Trigger add microcredential form
+                        setTimeout(() => {
+                          const portfolioComponent = document.querySelector('[data-portfolio-form]');
+                          if (portfolioComponent) {
+                            portfolioComponent.dispatchEvent(new CustomEvent('openForm', { detail: { type: 'microcredentials' } }));
+                          }
+                        }, 100);
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3 transition-colors rounded-b-xl"
+                    >
+                      <Trophy className="w-4 h-4 text-[#D4AF37]" />
+                      <span className="text-gray-900 dark:text-white">Microcredential</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
