@@ -435,8 +435,10 @@ export default function FacultyStudents() {
             witnessedByNames: data.witnessedByNames
           } : p
         ));
-        await refreshPortfolioData();
+        // Show success immediately
         showNotification('Witness successfully removed!', 'success');
+        // Refresh data in background
+        refreshPortfolioData();
       } else {
         const errorText = await response.text();
         showNotification(errorText || 'Failed to remove witness', 'error');
@@ -471,8 +473,10 @@ export default function FacultyStudents() {
             witnessedByNames: data.witnessedByNames
           } : p
         ));
-        await refreshPortfolioData();
+        // Show success immediately
         showNotification('Successfully witnessed microcredential!', 'success');
+        // Refresh data in background
+        refreshPortfolioData();
       } else {
         const errorText = await response.text();
         showNotification(errorText || 'Failed to witness microcredential', 'error');
@@ -1032,13 +1036,14 @@ export default function FacultyStudents() {
               </button>
               <button
                 onClick={async () => {
+                  // Close dialog immediately
+                  setWitnessConfirmation(null);
+                  
                   if (witnessAction === 'add') {
                     await performWitnessMicrocredential(witnessConfirmation.portfolioId);
                   } else {
                     await performUnwitnessMicrocredential(witnessConfirmation.portfolioId);
                   }
-                  // Close dialog after a small delay to ensure notification is visible
-                  setTimeout(() => setWitnessConfirmation(null), 100);
                 }}
                 className={`px-4 py-2 rounded-lg text-white ${
                   witnessAction === 'add' 
