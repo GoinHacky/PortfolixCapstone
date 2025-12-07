@@ -45,9 +45,9 @@ const goldText = "text-[#D4AF37]";
 export default function FacultyHomePage() {
   const location = useLocation();
   const getActiveItemFromPath = (pathname) => {
-    if (pathname.startsWith("/faculty/students")) return "Students";
-    if (pathname.startsWith("/faculty/courses")) return "Courses";
-    if (pathname.startsWith("/faculty/profile")) return "Profile";
+    if (pathname.startsWith("/faculty/dashboard/students")) return "Students";
+    if (pathname.startsWith("/faculty/dashboard/courses")) return "Courses";
+    if (pathname.startsWith("/faculty/dashboard/profile")) return "Profile";
     return "Dashboard";
   };
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
@@ -161,16 +161,16 @@ export default function FacultyHomePage() {
     // Navigate to the corresponding URL
     switch (itemId) {
       case 'Students':
-        navigate('/faculty/students');
+        navigate('/faculty/dashboard/students');
         break;
       case 'Courses':
-        navigate('/faculty/courses');
+        navigate('/faculty/dashboard/courses');
         break;
       case 'Profile':
-        navigate('/faculty/profile');
+        navigate('/faculty/dashboard/profile');
         break;
       default:
-        navigate('/faculty');
+        navigate('/faculty/dashboard');
     }
   };
 
