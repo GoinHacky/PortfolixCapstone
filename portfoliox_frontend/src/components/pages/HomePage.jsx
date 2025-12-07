@@ -68,8 +68,8 @@ export default function HomePage() {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    const role = localStorage.getItem('role');
     if (!token) {
-      const role = localStorage.getItem('role');
       if (!token || role !== 'STUDENT') {
         navigate('/auth/login');
         return;
@@ -111,11 +111,29 @@ export default function HomePage() {
 
       const data = await response.json();
       
+      // Process and categorize data
+      const projects = data.filter(item => item.category === 'project') || [];
+      const microcredentials = data.filter(item => item.category === 'microcredentials') || [];
+      
+      // Sort by last updated for recently updated
+      const recentlyUpdated = [...data]
+        .sort((a, b) => new Date(b.updatedAt || b.lastUpdated || b.createdAt || 0) - 
+                    new Date(a.updatedAt || a.lastUpdated || a.createdAt || 0))
+        .slice(0, 5);
+      
+      // Store data for other components that might need it
+      localStorage.setItem('portfolioData', JSON.stringify({
+        projects,
+        microcredentials,
+        recentlyUpdated,
+        totalPortfolios: data.length
+      }));
+
       setPortfolioStats({
         totalPortfolios: data.length,
-        projects: data,
-        microcredentials: data,
-        recentlyUpdated: data
+        projects: projects,
+        microcredentials: microcredentials,
+        recentlyUpdated: recentlyUpdated
       });
     } catch (error) {
       console.error('Error fetching portfolio data:', error);
