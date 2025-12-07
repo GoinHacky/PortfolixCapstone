@@ -29,7 +29,9 @@ import {
   Trophy,
   MapPin,
   ArrowUpRight,
-  TrendingDown
+  TrendingDown,
+  Menu,
+  X
 } from "lucide-react";
 import MyPortfolio from './MyPortfolio';
 import MyCourse from './MyCourse';
@@ -48,35 +50,30 @@ const goldText = "text-[#D4AF37]";
 
 export default function HomePage() {
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const getActiveItemFromPath = (pathname) => {
-    if (pathname.startsWith("/dashboard/portfolio")) return "My Portfolio";
-    if (pathname.startsWith("/dashboard/share")) return "Share Portfolio";
+    if (pathname.startsWith("/dashboard/portfolio")) return "Portfolio";
+    if (pathname.startsWith("/dashboard/courses")) return "Courses";
+    if (pathname.startsWith("/dashboard/share")) return "Share";
     if (pathname.startsWith("/dashboard/profile")) return "Profile";
-    if (pathname.startsWith("/dashboard/mycourse")) return "My Course";
     return "Dashboard";
   };
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
-  const [userData, setUserData] = useState({
-    firstName: '',
-    role: '',
-  });
-  const navigate = useNavigate();
-  const [portfolioStats, setPortfolioStats] = useState({
-    totalPortfolios: 0,
-    projects: [],
-    microcredentials: [],
-    recentlyUpdated: []
-  });
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { darkMode } = useTheme();
 
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    // Check if user is authenticated and is a student
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    if (!token || role !== 'STUDENT') {
-      navigate('/auth/login');
-      return;
+    if (!token) {
+      const role = localStorage.getItem('role');
+      if (!token || role !== 'STUDENT') {
+        navigate('/auth/login');
+        return;
+      }
     }
 
     // Get user data from localStorage
@@ -89,7 +86,7 @@ export default function HomePage() {
     });
 
     fetchPortfolioData();
-  }, [navigate]);
+  }, [navigate, token]);
 
   useEffect(() => {
     setActiveItem(getActiveItemFromPath(location.pathname));
@@ -189,21 +186,46 @@ export default function HomePage() {
 
   return (
     <div className={`flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden`}>
-      {/* Sidebar */}
-      <SideBar 
-        activeItem={activeItem} 
-        onItemSelect={handleMenuItemSelect} 
-      />
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar - Hidden on mobile, shown on desktop */}
+      <div className={`fixed lg:relative lg:flex lg:flex-shrink-0 z-50 lg:z-auto transform transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <SideBar 
+          activeItem={activeItem} 
+          onItemSelect={(item) => {
+            handleMenuItemSelect(item);
+            setMobileMenuOpen(false);
+          }} 
+        />
+      </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         {/* Enhanced Top Navigation Bar */}
-        <header className="relative z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-8 py-4 shadow-sm">
+        <header className="relative z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-700/80 px-4 sm:px-6 lg:px-8 py-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
+              
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-8 bg-gradient-to-b from-[#800000] to-[#D4AF37] rounded-full"></div>
-                <h1 className={`text-2xl font-black ${maroonText} dark:text-white`}>
+                <h1 className={`text-xl sm:text-2xl font-black ${maroonText} dark:text-white`}>
                   {activeItem}
                 </h1>
               </div>
@@ -214,14 +236,19 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Mobile Search Icon */}
+              <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+              
               {/* Enhanced Search Bar */}
               <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search projects, achievements..."
-                  className="pl-10 pr-4 py-2.5 w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
+                  className="pl-10 pr-4 py-2.5 w-48 lg:w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
                 />
               </div>
               
@@ -229,7 +256,7 @@ export default function HomePage() {
               <NotificationPanel />
               
               {/* Enhanced Add New Button */}
-              <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
+              <button className={`${goldBg} text-white px-3 sm:px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Add New</span>
                 <Sparkles className="w-4 h-4 opacity-70" />
@@ -532,9 +559,9 @@ function DashboardContent() {
   }
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
       {/* Enhanced Welcome Section - Compact */}
-      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-2xl p-6 text-white overflow-hidden shadow-xl border border-[#D4AF37]/20">
+      <div className="relative bg-gradient-to-r from-[#800000] via-[#900000] to-[#800000] dark:from-[#800000]/95 dark:via-[#900000]/95 dark:to-[#800000]/95 rounded-2xl p-4 sm:p-6 text-white overflow-hidden shadow-xl border border-[#D4AF37]/20">
         {/* Animated Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-[#D4AF37]/30 via-[#D4AF37]/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-gradient-to-r from-white/5 to-transparent rounded-full blur-2xl"></div>
