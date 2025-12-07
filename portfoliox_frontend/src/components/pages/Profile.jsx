@@ -273,6 +273,7 @@ export default function Profile() {
       } catch (error) {
         console.error('Error compressing image:', error);
         showNotification('Error processing image', 'error');
+      } finally {
         setUploadingProfilePic(false);
       }
     }
@@ -364,8 +365,6 @@ export default function Profile() {
       console.error('Error:', error);
       showNotification(error.message || 'Failed to update account', 'error');
       setLoading(false);
-    } finally {
-      setUploadingProfilePic(false);
     }
   };
 
