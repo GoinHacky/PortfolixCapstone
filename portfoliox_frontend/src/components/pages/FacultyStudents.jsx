@@ -1048,7 +1048,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
             <img
               src={student.profilePic ? (student.profilePic.startsWith('http') ? student.profilePic : `${getApiBaseUrl()}${student.profilePic}`) : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(student.fname + ' ' + student.lname)}
               alt={student.fname + ' ' + student.lname}
-              className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow-lg bg-white"
+              className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 dark:border-gray-600 shadow-lg bg-white dark:bg-gray-700"
             />
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -1059,7 +1059,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                 </div>
                 <div className="flex gap-4">
                   <div className="bg-gray-100 dark:bg-gray-800 rounded-xl px-6 py-3 text-center">
-                    <div className="text-xs text-gray-500">Portfolio Items</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Portfolio Items</div>
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalItems}</div>
                   </div>
                 </div>
@@ -1084,7 +1084,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
           {activeTab === 'Projects' && (
             <div className="space-y-6">
               {groupedPortfolios.projects.length === 0 ? (
-                <div className="text-center text-gray-500">No projects found.</div>
+                <div className="text-center text-gray-500 dark:text-gray-400">No projects found.</div>
               ) : (
                 groupedPortfolios.projects.map((project) => (
                   <div 
@@ -1096,18 +1096,18 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                       <FileText className="w-6 h-6 text-[#800000]" />
                       <div className="flex-1">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
-                        <div className="text-sm text-gray-500">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
                       </div>
                       {/* Skill tags */}
                       <div className="flex flex-wrap gap-2">
                         {project.skills && project.skills.map((skill, idx) => (
-                          <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold" style={{background: '#e0e7ff', color: '#3730a3'}}>{skill.skillName || skill}</span>
+                          <span key={idx} className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-200">{skill.skillName || skill}</span>
                         ))}
                       </div>
                     </div>
                     <div className="text-gray-700 dark:text-gray-300 mb-2">{project.portfolioDescription}</div>
                     <div className="flex gap-2 flex-wrap">
-                      {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="px-4 py-2 bg-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-300">GitHub</a>}
+                      {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white">GitHub</a>}
                       {/* Add more buttons as needed */}
                     </div>
                   </div>
@@ -1118,7 +1118,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
           {activeTab === 'Micro-credentials' && (
             <div className="space-y-6">
               {groupedPortfolios.microcredentials.length === 0 ? (
-                <div className="text-center text-gray-500">No micro-credentials found.</div>
+                <div className="text-center text-gray-500 dark:text-gray-400">No micro-credentials found.</div>
               ) : (
                 groupedPortfolios.microcredentials.map((cred) => (
                   <div 
@@ -1130,17 +1130,17 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                       <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
                       <div className="flex-1">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cred.certTitle || cred.portfolioTitle}</h2>
-                        <div className="text-sm text-gray-500">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">Issued: {cred.issueDate ? new Date(cred.issueDate).toLocaleDateString() : '—'}</div>
                       </div>
                     </div>
                     <div className="text-gray-700 dark:text-gray-300 mb-2">{cred.portfolioDescription}</div>
                     {cred.witnessedByNames && cred.witnessedByNames.length > 0 ? (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-green-700">
+                      <div className="mt-2 flex items-center gap-2 text-xs text-green-700 dark:text-green-400">
                         <Lock className="w-3 h-3" />
                         <span>Verified by {cred.witnessedByNames.split(',').length} faculty</span>
                       </div>
                     ) : (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-yellow-700">
+                      <div className="mt-2 flex items-center gap-2 text-xs text-yellow-700 dark:text-yellow-400">
                         <Unlock className="w-3 h-3" />
                         <span>Pending witness</span>
                       </div>
@@ -1153,16 +1153,16 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
           {activeTab === 'Activity Timeline' && (
             <div className="space-y-6">
               {recentActivity.length === 0 ? (
-                <div className="text-center text-gray-500">No recent activity.</div>
+                <div className="text-center text-gray-500 dark:text-gray-400">No recent activity.</div>
               ) : (
                 recentActivity.map((item, idx) => (
                   <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-[#800000]" />
                       <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
-                      <span className="text-xs text-gray-500">{formatActivityDate(item)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{formatActivityDate(item)}</span>
                     </div>
-                    <div className="text-gray-600 text-sm">{item.portfolioDescription}</div>
+                    <div className="text-gray-600 dark:text-gray-300 text-sm">{item.portfolioDescription}</div>
                   </div>
                 ))
               )}
@@ -1187,7 +1187,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                   percent: total ? Math.round((count / total) * 100) : 0
                 })).sort((a, b) => b.count - a.count);
                 if (chartData.length === 0) {
-                  return <div className="text-gray-400 italic">No programming languages found.</div>;
+                  return <div className="text-gray-400 dark:text-gray-500 italic">No programming languages found.</div>;
                 }
                 return (
                   <div className="max-w-xl mx-auto">
