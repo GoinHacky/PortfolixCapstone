@@ -35,6 +35,7 @@ export default function FacultyStudents() {
   const [notification, setNotification] = useState(null);
   const [confirmationDialog, setConfirmationDialog] = useState(null);
   const [witnessConfirmation, setWitnessConfirmation] = useState(null);
+  const [witnessAction, setWitnessAction] = useState(null); // 'add' or 'remove'
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -392,36 +393,17 @@ export default function FacultyStudents() {
       return !enrolledStudents.includes(studentId);
     });
 
-  const handleWitnessMicrocredential = async (portfolioId) => {
-    try {
-      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/witness`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setViewPortfolio(prev => ({
-          ...prev,
-          witnessedByIds: data.witnessedByIds,
-          witnessedByNames: data.witnessedByNames
-        }));
-        await refreshPortfolioData();
-        showNotification('Microcredential verified and witnessed successfully!', 'success');
-      } else {
-        const errorText = await response.text();
-        showNotification(errorText || 'Failed to witness microcredential', 'error');
-      }
-    } catch (error) {
-      console.error('Error witnessing microcredential:', error);
-      showNotification('Failed to witness microcredential. Please try again.', 'error');
-    }
+  const handleWitnessMicrocredential = (portfolioId, portfolioTitle) => {
+    setWitnessAction('add');
+    setWitnessConfirmation({
+      portfolioId,
+      title: 'Witness Microcredential',
+      description: `Are you sure you want to witness "${portfolioTitle}"? This will verify the authenticity of this microcredential.`
+    });
   };
 
   const handleUnwitnessMicrocredential = (portfolioId, portfolioTitle) => {
+    setWitnessAction('remove');
     setWitnessConfirmation({
       portfolioId,
       title: 'Remove Witness Confirmation',
@@ -454,7 +436,7 @@ export default function FacultyStudents() {
           } : p
         ));
         await refreshPortfolioData();
-        showNotification('Witness removed successfully!', 'success');
+        showNotification('Witness successfully removed!', 'success');
       } else {
         const errorText = await response.text();
         showNotification(errorText || 'Failed to remove witness', 'error');
@@ -462,6 +444,42 @@ export default function FacultyStudents() {
     } catch (error) {
       console.error('Error removing witness:', error);
       showNotification('Failed to remove witness. Please try again.', 'error');
+    }
+  };
+
+  const performWitnessMicrocredential = async (portfolioId) => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/witness`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setViewPortfolio(prev => ({
+          ...prev,
+          witnessedByIds: data.witnessedByIds,
+          witnessedByNames: data.witnessedByNames
+        }));
+        setStudentPortfolios(prev => prev.map(p => 
+          p.portfolioID === portfolioId ? {
+            ...p,
+            witnessedByIds: data.witnessedByIds,
+            witnessedByNames: data.witnessedByNames
+          } : p
+        ));
+        await refreshPortfolioData();
+        showNotification('Successfully witnessed microcredential!', 'success');
+      } else {
+        const errorText = await response.text();
+        showNotification(errorText || 'Failed to witness microcredential', 'error');
+      }
+    } catch (error) {
+      console.error('Error witnessing microcredential:', error);
+      showNotification('Failed to witness microcredential. Please try again.', 'error');
     }
   };
 
@@ -831,7 +849,7 @@ export default function FacultyStudents() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID)}
+                      onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID, viewPortfolio.portfolioTitle)}
                       className="flex-1 px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000] flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" />
@@ -995,8 +1013,12 @@ export default function FacultyStudents() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/20">
-                <AlertTriangle className="w-5 h-5 text-[#D4AF37]" />
+              <div className={`p-2 rounded-full ${witnessAction === 'add' ? 'bg-green-100 dark:bg-green-900/20' : 'bg-amber-100 dark:bg-amber-900/20'}`}>
+                {witnessAction === 'add' ? (
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-[#D4AF37]" />
+                )}
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">{witnessConfirmation.title}</h3>
             </div>
@@ -1010,12 +1032,20 @@ export default function FacultyStudents() {
               </button>
               <button
                 onClick={async () => {
-                  await performUnwitnessMicrocredential(witnessConfirmation.portfolioId);
+                  if (witnessAction === 'add') {
+                    await performWitnessMicrocredential(witnessConfirmation.portfolioId);
+                  } else {
+                    await performUnwitnessMicrocredential(witnessConfirmation.portfolioId);
+                  }
                   setWitnessConfirmation(null);
                 }}
-                className="px-4 py-2 rounded-lg text-white bg-[#D4AF37] hover:bg-[#B8860B]"
+                className={`px-4 py-2 rounded-lg text-white ${
+                  witnessAction === 'add' 
+                    ? 'bg-[#800000] hover:bg-[#600000]' 
+                    : 'bg-[#D4AF37] hover:bg-[#B8860B]'
+                }`}
               >
-                Remove Witness
+                {witnessAction === 'add' ? 'Witness Microcredential' : 'Remove Witness'}
               </button>
             </div>
           </div>
