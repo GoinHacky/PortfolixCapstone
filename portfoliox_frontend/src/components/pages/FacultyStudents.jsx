@@ -1041,12 +1041,14 @@ export default function FacultyStudents() {
               </button>
               <button
                 onClick={async () => {
+                  console.log('Confirm button clicked, action:', witnessAction);
                   if (witnessAction === 'add') {
                     await performWitnessMicrocredential(witnessConfirmation.portfolioId);
                   } else {
                     await performUnwitnessMicrocredential(witnessConfirmation.portfolioId);
                   }
-                  setWitnessConfirmation(null);
+                  // Close dialog after a small delay to ensure notification is visible
+                  setTimeout(() => setWitnessConfirmation(null), 100);
                 }}
                 className={`px-4 py-2 rounded-lg text-white ${
                   witnessAction === 'add' 
