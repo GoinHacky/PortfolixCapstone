@@ -114,20 +114,11 @@ export default function HomePage() {
 
       const data = await response.json();
       
-      // Process the data
-      const projects = data.filter(p => p.category?.toLowerCase() === 'project');
-      const microcredentials = data.filter(p => p.category?.toLowerCase() === 'microcredentials');
-      
-      // Sort by last updated (assuming there's a lastUpdated field, if not we'll use what's available)
-      const recentlyUpdated = [...data].sort((a, b) => {
-        return new Date(b.lastUpdated || b.createdAt) - new Date(a.lastUpdated || a.createdAt);
-      }).slice(0, 5); // Get top 5 most recent
-
       setPortfolioStats({
         totalPortfolios: data.length,
-        projects,
-        microcredentials,
-        recentlyUpdated
+        projects: data,
+        microcredentials: data,
+        recentlyUpdated: data
       });
     } catch (error) {
       console.error('Error fetching portfolio data:', error);
@@ -278,6 +269,37 @@ function DashboardContent() {
     fetchDashboardData();
   }, []);
 
+  // Optimized data processing using useMemo
+  const processedDashboardData = React.useMemo(() => {
+    if (!dashboardData.projects || dashboardData.projects.length === 0) {
+      return {
+        skills: [],
+        skillCounts: {}
+      };
+    }
+
+    // Extract unique skills from projects
+    const allSkills = new Set();
+    const skillCounts = {};
+    
+    dashboardData.projects.forEach(project => {
+      if (project.skills) {
+        project.skills.forEach(skill => {
+          const skillName = typeof skill === 'string' ? skill : (skill && skill.skillName ? skill.skillName : null);
+          if (skillName) {
+            allSkills.add(skillName);
+            skillCounts[skillName] = (skillCounts[skillName] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    return {
+      skills: Array.from(allSkills),
+      skillCounts
+    };
+  }, [dashboardData.projects]);
+
   const getActivityDate = (item) => {
     if (!item) return null;
     const raw = item.updatedAt || item.lastUpdated || item.createdAt || item.issueDate;
@@ -316,36 +338,13 @@ function DashboardContent() {
 
       const data = await response.json();
       
-      // Process the data
-      const projects = data.filter(p => p.category?.toLowerCase() === 'project');
-      const microcredentials = data.filter(p => p.category?.toLowerCase() === 'microcredentials');
-      
-      // Sort by last updated
-      const recentlyUpdated = [...data]
-        .sort((a, b) => getActivityTimestamp(b) - getActivityTimestamp(a))
-        .slice(0, 4); // Get top 4 most recent
-
-      // Extract unique skills from projects
-      const allSkills = new Set();
-      projects.forEach(project => {
-        if (project.skills) {
-          project.skills.forEach(skill => {
-            if (typeof skill === 'string') {
-              allSkills.add(skill);
-            } else if (skill && skill.skillName) {
-              allSkills.add(skill.skillName);
-            }
-          });
-        }
-      });
-
       setDashboardData({
-        projects,
-        microcredentials,
-        recentlyUpdated,
+        projects: data,
+        microcredentials: data,
+        recentlyUpdated: data,
         totalPortfolios: data.length,
         profileViews: Math.floor(Math.random() * 100), // This would ideally come from analytics
-        skills: Array.from(allSkills)
+        skills: [] // Will be processed by useMemo
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
