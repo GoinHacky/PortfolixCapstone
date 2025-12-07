@@ -409,17 +409,23 @@ export default function MyPortfolio() {
                       'Authorization': `Bearer ${token}`,
                     },
                   });
-                  
                   if (!portfoliosResponse.ok) {
                     throw new Error('Failed to fetch portfolios');
                   }
-                  
+
                   const portfolios = await portfoliosResponse.json();
                   
                   // Check if user has any portfolios
                   if (!portfolios || portfolios.length === 0) {
                     throw new Error('No portfolios found. Please add some projects or microcredentials first.');
                   }
+
+                  // Remove duplicate portfolios to avoid confusing the AI
+                  const uniquePortfolios = portfolios.filter((p, index, self) => 
+                    index === self.findIndex((t) => t.portfolioTitle === p.portfolioTitle && t.portfolioDescription === p.portfolioDescription)
+                  );
+
+                  console.log(`Original portfolios: ${portfolios.length}, Unique portfolios: ${uniquePortfolios.length}`);
 
                   // Clean portfolio descriptions before sending to AI
                   const cleanPortfolioDescription = (description) => {
@@ -449,7 +455,7 @@ export default function MyPortfolio() {
                   };
 
                   // Create a simple text version of the portfolio content
-                  const content = portfolios.map(p => {
+                  const content = uniquePortfolios.map(p => {
                     const cleanedDesc = cleanPortfolioDescription(p.portfolioDescription) || 'No description';
                     console.log('Original description:', p.portfolioDescription);
                     console.log('Cleaned description:', cleanedDesc);
