@@ -254,44 +254,25 @@ export default function LandingPage() {
         </div>
 
         {/* Enhanced Navigation */}
-        <nav className="relative z-50 w-full py-4 glass-morphism sticky top-0 border-b border-white/20 dark:border-gray-800/50 backdrop-blur-lg">
-          <div className="container mx-auto flex items-center justify-between px-4 sm:px-6">
+        <nav className="relative z-50 w-full py-3 sm:py-4 glass-morphism sticky top-0 border-b border-white/20 dark:border-gray-800/50 backdrop-blur-lg">
+          <div className="container mx-auto flex items-center justify-between px-3 sm:px-4 md:px-6">
             <div className="flex items-center">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
-                  <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-10 h-10 object-contain" />
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow overflow-hidden bg-transparent">
+                  <img src={PortfolioLogo} alt="PortfolioX Logo" className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 object-contain" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-black tracking-tight text-white drop-shadow-[2px_2px_0px_#800000] w-full" style={{ fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif', letterSpacing: '-0.03em', position: 'relative', display: 'inline-block' }}>
                     PortfolioX
                   </h1>
-                  <span className="text-sm font-semibold text-gray-500 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
+                  <span className="text-xs sm:text-sm font-semibold text-gray-500 mt-0.5" style={{fontFamily: 'Arial Rounded MT Bold, Arial, sans-serif'}}>Student Portfolio Tracker</span>
                 </div>
               </div>
             </div>
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-all duration-300 font-medium relative group">
-                Features
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#800000] to-[#D4AF37] transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a href="#testimonials" className="text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-all duration-300 font-medium relative group">
-                Success Stories
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#800000] to-[#D4AF37] transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a href="#pricing" className="text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-all duration-300 font-medium relative group">
-                Pricing
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#800000] to-[#D4AF37] transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              
-              <div className="flex items-center space-x-4 ml-8">
-                <button
-                  onClick={toggleDarkMode}
-                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </button>
+              <div className="flex items-center space-x-4 ml-auto">
                 <button 
                   onClick={handleSignIn}
                   className="px-6 py-2 text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] font-semibold transition-all duration-300 relative group"
@@ -305,14 +286,26 @@ export default function LandingPage() {
                 >
                   <span className="relative z-10">Start Free</span>
                 </button>
+                <button
+                  onClick={toggleDarkMode}
+                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center gap-3">
+            <div className="md:hidden flex items-center gap-2">
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-all duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
               <button
                 onClick={handleSignIn}
-                className="px-4 py-2 text-sm font-semibold rounded-lg shadow-sm bg-white/80 dark:bg-gray-900/60 text-[#800000] dark:text-[#D4AF37] border border-[#800000]/20 dark:border-[#D4AF37]/30"
+                className="px-3 py-1.5 text-sm font-semibold rounded-lg shadow-sm bg-white/80 dark:bg-gray-900/60 text-[#800000] dark:text-[#D4AF37] border border-[#800000]/20 dark:border-[#D4AF37]/30"
               >
                 Sign In
               </button>
@@ -321,7 +314,7 @@ export default function LandingPage() {
                 className="p-2 text-gray-700 dark:text-gray-300 border border-transparent rounded-md hover:bg-white/30 dark:hover:bg-gray-800/60 transition"
                 aria-label="Toggle navigation"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
@@ -329,20 +322,17 @@ export default function LandingPage() {
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
             <div className="md:hidden absolute top-full left-0 w-full glass-morphism border-t border-white/20 dark:border-gray-800/50 backdrop-blur-xl">
-              <div className="px-6 py-4 space-y-4">
-                <a href="#features" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Features</a>
-                <a href="#testimonials" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Success Stories</a>
-                <a href="#pricing" className="block text-gray-700 dark:text-gray-300 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors">Pricing</a>
+              <div className="px-4 py-3 space-y-3">
                 <button
                   onClick={handleSignIn}
-                  className="w-full px-6 py-3 text-[#800000] dark:text-[#D4AF37] font-semibold border border-[#800000]/30 dark:border-[#D4AF37]/40 rounded-xl bg-white/80 dark:bg-gray-900/40"
+                  className="w-full px-4 py-2 text-[#800000] dark:text-[#D4AF37] font-semibold border border-[#800000]/30 dark:border-[#D4AF37]/40 rounded-xl bg-white/80 dark:bg-gray-900/40"
                 >
                   Sign In
                 </button>
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                   <button 
                     onClick={handleStartFree}
-                    className="w-full px-6 py-3 gradient-shift text-white font-semibold rounded-xl"
+                    className="w-full px-4 py-2 gradient-shift text-white font-semibold rounded-xl"
                   >
                     Start Free
                   </button>
@@ -353,8 +343,8 @@ export default function LandingPage() {
         </nav>
 
         {/* Enhanced Hero Section */}
-        <section className="relative z-10 min-h-screen flex items-center py-20">
-          <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <section className="relative z-10 min-h-screen flex items-center py-12 sm:py-16 lg:py-20">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6 py-12 sm:py-16 lg:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
               {/* Left Content */}
               <div className={`space-y-8 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'} transition-all duration-1000`}>
@@ -365,7 +355,7 @@ export default function LandingPage() {
                   <span className="text-sm font-medium text-[#800000] dark:text-[#D4AF37]">🚀 New: AI Portfolio Builder</span>
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 dark:text-white leading-tight text-shadow text-center sm:text-left">
                   <span className="block">Your Academic</span>
                   <span className="block bg-gradient-to-r from-[#800000] via-[#D4AF37] to-[#800000] bg-clip-text text-transparent animate-pulse" style={{animationDuration: '3s'}}>
                     Excellence
@@ -373,25 +363,25 @@ export default function LandingPage() {
                   <span className="block">Showcased</span>
                 </h1>
                 
-                <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl text-center sm:text-left font-medium">
+                <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl text-center sm:text-left font-medium">
                   Create <span className="text-[#800000] dark:text-[#D4AF37] font-bold">stunning academic portfolios</span> that land internships, jobs, and admissions. 
-                  <span className="block mt-2 text-base sm:text-lg text-gray-600 dark:text-gray-400">Showcase your projects, skills, and achievements with AI-powered tools.</span>
+                  <span className="block mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">Showcase your projects, skills, and achievements with AI-powered tools.</span>
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 sm:justify-start justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-start justify-center">
                   <button 
                     onClick={handleStartFree}
-                    className="group relative px-8 py-4 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-lg font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
+                    className="group relative px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-base sm:text-lg font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     <span className="relative z-10">Start Creating Free</span>
-                    <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
                   </button>
                   <button 
                     onClick={handleWatchDemo}
-                    className="group px-8 py-4 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-lg font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
+                    className="group px-6 py-3 sm:px-8 sm:py-4 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-base sm:text-lg font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
                   >
-                    <Play className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
+                    <Play className="w-4 h-4 sm:w-5 sm:h-5 text-[#800000] dark:text-[#D4AF37]" />
                     Watch Demo
                   </button>
                 </div>
