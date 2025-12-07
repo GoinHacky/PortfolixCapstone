@@ -53,9 +53,9 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [addNewOpen, setAddNewOpen] = useState(false);
   const getActiveItemFromPath = (pathname) => {
-    if (pathname.startsWith("/dashboard/portfolio")) return "Portfolio";
-    if (pathname.startsWith("/dashboard/courses")) return "Courses";
-    if (pathname.startsWith("/dashboard/share")) return "Share";
+    if (pathname.startsWith("/dashboard/portfolio")) return "My Portfolio";
+    if (pathname.startsWith("/dashboard/courses")) return "My Course";
+    if (pathname.startsWith("/dashboard/share")) return "Share Portfolio";
     if (pathname.startsWith("/dashboard/profile")) return "Profile";
     return "Dashboard";
   };
@@ -609,7 +609,10 @@ function DashboardContent() {
           
           <div className="flex flex-wrap gap-4">
             <button 
-              onClick={() => navigate('/dashboard/portfolio')}
+              onClick={() => {
+                setActiveItem('My Portfolio');
+                navigate('/dashboard/portfolio');
+              }}
               className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-[#800000] px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
@@ -618,7 +621,10 @@ function DashboardContent() {
               <ArrowUpRight className="w-5 h-5 relative z-10 group-hover:rotate-45 transition-transform duration-300" />
             </button>
             <button 
-              onClick={() => navigate('/dashboard/share')}
+              onClick={() => {
+                setActiveItem('Share Portfolio');
+                navigate('/dashboard/share');
+              }}
               className="group border-2 border-white/40 text-white px-8 py-4 rounded-2xl font-black hover:bg-white/20 hover:border-white/60 transition-all duration-300 hover:scale-110 flex items-center space-x-3 backdrop-blur-sm relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-[#D4AF37]/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
@@ -774,7 +780,10 @@ function DashboardContent() {
           </div>
           <div className="space-y-4">
             <button 
-              onClick={() => navigate('/dashboard/portfolio')}
+              onClick={() => {
+                setActiveItem('My Portfolio');
+                navigate('/dashboard/portfolio');
+              }}
               className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
               <div className="flex items-center space-x-4">
@@ -789,7 +798,10 @@ function DashboardContent() {
               </div>
             </button>
             <button 
-              onClick={() => navigate('/dashboard/portfolio')}
+              onClick={() => {
+                setActiveItem('My Portfolio');
+                navigate('/dashboard/portfolio');
+              }}
               className="w-full group relative bg-gradient-to-r from-[#D4AF37]/10 via-[#800000]/10 to-[#D4AF37]/10 dark:from-[#D4AF37]/20 dark:via-[#800000]/20 dark:to-[#D4AF37]/20 hover:from-[#D4AF37]/20 hover:via-[#800000]/20 hover:to-[#D4AF37]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#D4AF37]/20 dark:border-[#800000]/20"
             >
               <div className="flex items-center space-x-4">
@@ -804,7 +816,10 @@ function DashboardContent() {
               </div>
             </button>
             <button 
-              onClick={() => navigate('/dashboard/share')}
+              onClick={() => {
+                setActiveItem('Share Portfolio');
+                navigate('/dashboard/share');
+              }}
               className="w-full group relative bg-gradient-to-r from-[#800000]/10 via-[#D4AF37]/10 to-[#800000]/10 dark:from-[#800000]/20 dark:via-[#D4AF37]/20 dark:to-[#800000]/20 hover:from-[#800000]/20 hover:via-[#D4AF37]/20 hover:to-[#800000]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#800000]/20 dark:border-[#D4AF37]/20"
             >
               <div className="flex items-center space-x-4">
