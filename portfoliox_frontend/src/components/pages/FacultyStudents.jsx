@@ -775,7 +775,7 @@ export default function FacultyStudents() {
             {viewPortfolio.skills && viewPortfolio.skills.length > 0 && (
               <div className="mb-2">
                 <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Skills:</span>
-                <span className="ml-2 text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
+                <span className="ml-2 text-gray-800 dark:text-gray-200 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
               </div>
             )}
             {viewPortfolio.category === 'microcredentials' && (
@@ -1090,7 +1090,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                   <div 
                     key={project.portfolioID} 
                     onClick={() => onViewPortfolio(project)}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+                    className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <FileText className="w-6 h-6 text-[#800000]" />
@@ -1124,7 +1124,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                   <div 
                     key={cred.portfolioID} 
                     onClick={() => onViewPortfolio(cred)}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
+                    className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
@@ -1156,7 +1156,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                 <div className="text-center text-gray-500 dark:text-gray-400">No recent activity.</div>
               ) : (
                 recentActivity.map((item, idx) => (
-                  <div key={item.portfolioID || idx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
+                  <div key={item.portfolioID || idx} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-[#800000]" />
                       <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
