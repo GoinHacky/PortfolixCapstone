@@ -52,6 +52,9 @@ export default function NotificationPanel() {
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {
+    const token = authInfo.token || localStorage.getItem('token');
+    if (!token) return;
+    
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/notifications/${notificationId}/read`, {
         method: 'PUT',
@@ -78,6 +81,9 @@ export default function NotificationPanel() {
 
   // Mark all as read
   const markAllAsRead = async () => {
+    const token = authInfo.token || localStorage.getItem('token');
+    if (!token) return;
+    
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/notifications/mark-all-read`, {
         method: 'PUT',
@@ -104,6 +110,9 @@ export default function NotificationPanel() {
 
   // Delete notification
   const deleteNotification = async (notificationId) => {
+    const token = authInfo.token || localStorage.getItem('token');
+    if (!token) return;
+    
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/notifications/${notificationId}`, {
         method: 'DELETE',
