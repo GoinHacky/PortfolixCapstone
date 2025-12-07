@@ -253,7 +253,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
         )}
 
         {/* Navigation Menu */}
-        <div className="flex-1 py-4 overflow-y-auto">
+        <div className="flex-1 py-4">
           <nav className="space-y-2 px-4">
             {menuItems.map((item) => {
               const Icon = item.icon;
