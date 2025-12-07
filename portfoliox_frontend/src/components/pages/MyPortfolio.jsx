@@ -432,6 +432,13 @@ export default function MyPortfolio() {
                       .replace(/\*\*(.*?)\*\*/g, '$1')
                       .replace(/\*(.*?)\*/g, '$1')
                       .replace(/\*/g, '')
+                      // Remove AI-generated prefixes and common phrases
+                      .replace(/Here['']s\s+(a\s+)?(refined|polished|more\s+impactful)\s+version\s+of\s+your\s+portfolio\s+description[:\s]*|This\s+version\s+(emphasizes|highlights|is)\s+[^.]*\./gi, '')
+                      // Remove "Project:" and "Category:" prefixes
+                      .replace(/Project:\s*/gi, '')
+                      .replace(/Category:\s*/gi, '')
+                      // Remove "GitHub Link:" prefixes
+                      .replace(/GitHub\s+Link[:\s]*/gi, '')
                       .replace(/\s+/g, ' ')
                       .trim();
                   };
