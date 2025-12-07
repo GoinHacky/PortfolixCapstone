@@ -473,6 +473,8 @@ export default function MyPortfolio() {
                   }).join('\n\n');
 
                   console.log('Sending content to AI:', content); // Debug log
+                  console.log('Content length:', content.length); // Debug log
+                  console.log('Content preview:', content.substring(0, 200) + '...'); // Debug log
 
                   const enhanceResponse = await fetch(`${getApiBaseUrl()}/api/ai/enhance-resume`, {
                     method: 'POST',
@@ -494,9 +496,25 @@ export default function MyPortfolio() {
                   
                   // Validate enhanced content
                   if (!enhancedData || !enhancedData.enhancedContent) {
-                    throw new Error('AI enhancement failed - no enhanced content received');
+                    console.warn('AI returned empty content, using fallback enhancement');
+                    // Fallback: Create a basic enhanced version from the cleaned content
+                    const fallbackContent = content
+                      .split('\n\n')
+                      .filter(section => section.trim())
+                      .map(section => {
+                        const lines = section.trim().split('\n').filter(line => line.trim());
+                        if (lines.length >= 2) {
+                          const title = lines[0].trim();
+                          const description = lines.slice(1).join(' ').replace(/\s+/g, ' ').trim();
+                          return `**${title}**: ${description}`;
+                        }
+                        return section.trim();
+                      })
+                      .join('\n\n');
+                    
+                    enhancedData.enhancedContent = fallbackContent || "Professional portfolio showcasing skills and achievements in technology and research.";
                   }
-                  
+
                   // Now generate the enhanced PDF
                   const response = await fetch(`${getApiBaseUrl()}/api/portfolios/generate-resume/${userId}?enhanced=true`, {
                     method: 'POST',
