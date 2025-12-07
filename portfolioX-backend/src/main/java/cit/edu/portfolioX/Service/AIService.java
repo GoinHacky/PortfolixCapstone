@@ -50,22 +50,32 @@ public class AIService {
             // Remove AI instruction tags
             .replaceAll("\\[/?B_INST\\]", "")
             .replaceAll("\\[/?INST\\]", "")
-            // Remove HTML-like tags
+            // Remove HTML-like tags but be careful not to remove content
             .replaceAll("<[^>]*>", "")
-            // Remove bold markdown (**text**)
+            // Remove bold markdown (**text**) but keep the text
             .replaceAll("\\*\\*(.*?)\\*\\*", "$1")
-            // Remove italic markdown (*text*)
+            // Remove italic markdown (*text*) but keep the text
             .replaceAll("\\*(.*?)\\*", "$1")
             // Remove square brackets used for links [text](url) -> keep text only
             .replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1")
-            // Remove any remaining asterisks
-            .replaceAll("\\*", "")
-            // Remove multiple newlines and clean up spacing
-            .replaceAll("\\n\\s*\\n", "\n")
+            // Only remove asterisks that are clearly formatting (not part of words)
+            .replaceAll("\\s*\\*\\s*", " ")
+            // Clean up multiple spaces but preserve single spaces
             .replaceAll("\\s+", " ")
             .trim();
             
         logger.info("Cleaned AI content: {}", cleaned);
+        
+        // If cleaning results in empty content, return original with minimal cleaning
+        if (cleaned.isEmpty() && !content.trim().isEmpty()) {
+            logger.warn("Cleaning resulted in empty content, returning minimally cleaned version");
+            return content
+                .replaceAll("\\[/?B_INST\\]", "")
+                .replaceAll("\\[/?INST\\]", "")
+                .replaceAll("<[^>]*>", "")
+                .trim();
+        }
+        
         return cleaned;
     }
 
