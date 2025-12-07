@@ -145,7 +145,7 @@ export default function HomePage() {
   const renderContent = () => {
     switch (activeItem) {
       case 'Dashboard':
-        return <DashboardContent />;
+        return <DashboardContent setActiveItem={setActiveItem} navigate={navigate} />;
       case 'My Course':
         return <MyCourse />;
       case 'My Portfolio':
@@ -155,7 +155,7 @@ export default function HomePage() {
       case 'Profile':
         return <Profile />;
       default:
-        return <DashboardContent />;
+        return <DashboardContent setActiveItem={setActiveItem} navigate={navigate} />;
     }
   };
 
@@ -318,7 +318,7 @@ export default function HomePage() {
 }
 
 // Enhanced Dashboard Content Component
-function DashboardContent() {
+function DashboardContent({ setActiveItem, navigate }) {
   const [dashboardData, setDashboardData] = useState({
     projects: [],
     microcredentials: [],
