@@ -336,7 +336,6 @@ function DashboardContent({ setActiveItem, navigate }) {
   });
   const [loading, setLoading] = useState(true);
   const [detailedLoading, setDetailedLoading] = useState(false);
-  const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
