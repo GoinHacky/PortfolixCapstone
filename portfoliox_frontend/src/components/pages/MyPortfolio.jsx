@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock, Loader2, Sparkles, Brain } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ConfirmDialog } from '../Notification';
+import AILoadingOverlay from '../AILoadingOverlay';
 import { getApiBaseUrl } from '../../api/apiConfig';
 
 export default function MyPortfolio() {
@@ -17,6 +18,9 @@ export default function MyPortfolio() {
     microcredentials: true
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [enhancingResume, setEnhancingResume] = useState(false);
+  const [enhancingDescriptions, setEnhancingDescriptions] = useState({});
+  const [enhancingFormDescription, setEnhancingFormDescription] = useState(false);
   const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -326,6 +330,52 @@ export default function MyPortfolio() {
     setShowForm(true);
   };
 
+  const enhancePortfolioDescription = async (portfolioId) => {
+    setEnhancingDescriptions(prev => ({ ...prev, [portfolioId]: true }));
+    try {
+      const portfolio = portfolios.find(p => p.portfolioID === portfolioId);
+      if (!portfolio) return;
+
+      const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: portfolio.portfolioTitle,
+          description: portfolio.portfolioDescription,
+          category: portfolio.category,
+          githubLink: portfolio.githubLink,
+          certTitle: portfolio.certTitle,
+          issueDate: portfolio.issueDate
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to enhance description');
+      }
+
+      const data = await response.json();
+      const enhancedDescription = data.enhancedDescription;
+
+      // Update the portfolio with enhanced description
+      const updatedPortfolios = portfolios.map(p => 
+        p.portfolioID === portfolioId 
+          ? { ...p, portfolioDescription: enhancedDescription }
+          : p
+      );
+      setPortfolios(updatedPortfolios);
+      
+      showNotification({ message: 'Description enhanced successfully!', type: 'success' });
+    } catch (error) {
+      console.error('Error enhancing description:', error);
+      showNotification({ message: 'Failed to enhance description', type: 'error' });
+    } finally {
+      setEnhancingDescriptions(prev => ({ ...prev, [portfolioId]: false }));
+    }
+  };
+
   const togglePublicStatus = async (portfolioId, currentStatus) => {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/public-status?isPublic=${!currentStatus}`, {
@@ -402,6 +452,7 @@ export default function MyPortfolio() {
             </div>
             <button
               onClick={async () => {
+                setEnhancingResume(true);
                 try {
                   // First, get the current resume content
                   const portfoliosResponse = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
@@ -551,12 +602,33 @@ export default function MyPortfolio() {
                 } catch (error) {
                   console.error('Error:', error);
                   showNotification({ message: 'Failed to generate enhanced resume', type: 'error' });
+                } finally {
+                  setEnhancingResume(false);
                 }
               }}
               className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
             >
-              <Wand2 size={20} />
-              <span>Generate AI Resume</span>
+              {enhancingResume ? (
+                <>
+                  <div className="relative">
+                    <Loader2 className="animate-spin" size={20} />
+                    <Sparkles className="absolute inset-0 animate-pulse text-[#D4AF37]" size={20} />
+                  </div>
+                  <span className="flex items-center gap-2">
+                    <span className="animate-pulse">Generating Resume...</span>
+                    <div className="flex gap-1">
+                      <div className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Wand2 size={20} />
+                  <span>Generate AI Resume</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -680,6 +752,21 @@ export default function MyPortfolio() {
                             <Edit size={18} />
                           </button>
                           <button
+                            onClick={() => enhancePortfolioDescription(portfolio.portfolioID)}
+                            className="p-2 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Enhance description with AI"
+                            disabled={enhancingDescriptions[portfolio.portfolioID]}
+                          >
+                            {enhancingDescriptions[portfolio.portfolioID] ? (
+                              <div className="relative">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Brain className="absolute inset-0 w-4 h-4 animate-pulse text-[#D4AF37]" />
+                              </div>
+                            ) : (
+                              <Wand2 size={18} />
+                            )}
+                          </button>
+                          <button
                             onClick={() => requestDelete(portfolio.portfolioID)}
                             className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
                           >
@@ -800,6 +887,21 @@ export default function MyPortfolio() {
                             <Edit size={18} />
                           </button>
                           <button
+                            onClick={() => enhancePortfolioDescription(portfolio.portfolioID)}
+                            className="p-2 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Enhance description with AI"
+                            disabled={enhancingDescriptions[portfolio.portfolioID]}
+                          >
+                            {enhancingDescriptions[portfolio.portfolioID] ? (
+                              <div className="relative">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Brain className="absolute inset-0 w-4 h-4 animate-pulse text-[#D4AF37]" />
+                              </div>
+                            ) : (
+                              <Wand2 size={18} />
+                            )}
+                          </button>
+                          <button
                             onClick={() => requestDelete(portfolio.portfolioID)}
                             className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
                           >
@@ -856,6 +958,7 @@ export default function MyPortfolio() {
                     <button
                       type="button"
                       onClick={async () => {
+                        setEnhancingFormDescription(true);
                         try {
                           const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
                             method: 'POST',
@@ -883,12 +986,34 @@ export default function MyPortfolio() {
                         } catch (error) {
                           console.error('Error getting AI suggestions:', error);
                           showNotification({ message: 'Failed to get AI suggestions', type: 'error' });
+                        } finally {
+                          setEnhancingFormDescription(false);
                         }
                       }}
-                      className="flex items-center gap-2 text-sm text-[#800000] dark:text-[#D4AF37] hover:text-[#600000] dark:hover:text-[#B8860B]"
+                      className="flex items-center gap-2 text-sm text-[#800000] dark:text-[#D4AF37] hover:text-[#600000] dark:hover:text-[#B8860B] disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={enhancingFormDescription}
                     >
-                      <Wand2 className="w-4 h-4" />
-                      Enhance with AI
+                      {enhancingFormDescription ? (
+                        <>
+                          <div className="relative">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <Brain className="absolute inset-0 w-4 h-4 animate-pulse text-[#D4AF37]" />
+                          </div>
+                          <span className="flex items-center gap-1">
+                            <span className="animate-pulse">Enhancing...</span>
+                            <div className="flex gap-0.5">
+                              <div className="w-0.5 h-0.5 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                              <div className="w-0.5 h-0.5 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '100ms' }}></div>
+                              <div className="w-0.5 h-0.5 bg-[#D4AF37] rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                            </div>
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-4 h-4" />
+                          Enhance with AI
+                        </>
+                      )}
                     </button>
                   </div>
                   <textarea
@@ -1378,6 +1503,11 @@ export default function MyPortfolio() {
         message="Are you sure you want to delete this portfolio? This action cannot be undone."
         onConfirm={handleDelete}
         onCancel={() => { setShowDeleteConfirm(false); setPortfolioToDelete(null); }}
+      />
+
+      <AILoadingOverlay 
+        isVisible={enhancingResume} 
+        message="Generating your AI-enhanced resume..."
       />
     </div>
   );
