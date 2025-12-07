@@ -636,18 +636,18 @@ export default function FacultyStudents() {
           </button>
         </div>
 
-        <div className="rounded-xl bg-white dark:bg-gray-900 shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
-          {loading && (
+        <div className="overflow-x-auto rounded-xl bg-white dark:bg-gray-900 shadow border border-gray-200 dark:border-gray-700">
+          <div className="max-h-[70vh] overflow-y-auto">
+            {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#800000]"></div>
               <span className="ml-2 text-gray-600 dark:text-gray-400">Loading students and portfolios...</span>
             </div>
           )}
           {!loading && (
-            <div className="relative max-h-[calc(100vh-300px)] overflow-y-auto hide-scrollbar">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
-                  <tr>
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Student Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Username</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Program/Major</th>
@@ -730,6 +730,7 @@ export default function FacultyStudents() {
               </tbody>
             </table>
           )}
+          </div>
         </div>
       </div>
 
