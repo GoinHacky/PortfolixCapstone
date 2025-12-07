@@ -444,12 +444,17 @@ export default function MyPortfolio() {
                   };
 
                   // Create a simple text version of the portfolio content
-                  const content = portfolios.map(p => `
+                  const content = portfolios.map(p => {
+                    const cleanedDesc = cleanPortfolioDescription(p.portfolioDescription) || 'No description';
+                    console.log('Original description:', p.portfolioDescription);
+                    console.log('Cleaned description:', cleanedDesc);
+                    return `
                     ${p.portfolioTitle || 'Untitled'}
-                    ${cleanPortfolioDescription(p.portfolioDescription) || 'No description'}
+                    ${cleanedDesc}
                     ${p.category === 'project' ? `GitHub: ${p.githubLink || 'No link provided'}` : ''}
                     ${p.category === 'microcredentials' ? `Certificate: ${p.certTitle || 'No title'}, Issued: ${p.issueDate || 'No date'}` : ''}
-                  `).join('\n\n');
+                  `;
+                  }).join('\n\n');
 
                   console.log('Sending content to AI:', content); // Debug log
 
