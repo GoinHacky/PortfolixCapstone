@@ -216,6 +216,8 @@ export default function FacultySideBar({ activeItem = 'Dashboard', onItemSelect 
                       e.target.onerror = null;
                       localStorage.removeItem('profilePic');
                       setProfilePic(null);
+                      // Set a fallback avatar
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(localStorage.getItem('username') || 'Faculty')}&background=800000&color=D4AF37&size=56`;
                     }}
                   />
                 ) : (

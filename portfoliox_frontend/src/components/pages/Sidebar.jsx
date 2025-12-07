@@ -225,6 +225,8 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
                       e.target.onerror = null; // Prevent infinite loop
                       localStorage.removeItem('profilePic');
                       setProfilePic(null);
+                      // Set a fallback avatar
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || localStorage.getItem('username') || 'User')}&background=800000&color=D4AF37&size=56`;
                     }}
                   />
                 ) : (
