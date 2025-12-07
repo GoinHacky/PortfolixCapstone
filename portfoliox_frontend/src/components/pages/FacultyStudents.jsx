@@ -660,7 +660,7 @@ export default function FacultyStudents() {
                                         <>
                                           <button
                                             onClick={() => handleAddStudent(student)}
-                                            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-1 bg-[#D4AF37] text-white rounded hover:bg-[#B8860B] text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                                             title="Add to Course"
                                             disabled={getAvailableCoursesForStudent(student.userID).length === 0}
                                           >
@@ -976,7 +976,7 @@ export default function FacultyStudents() {
 
       {/* Toast Notification */}
       {notification && (
-        <div className={`fixed bottom-6 right-6 z-[120] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
+        <div className={`fixed bottom-6 right-6 z-[9999] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
           notification.type === 'error'
             ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
             : 'border-[#800000]/40 text-[#800000] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
