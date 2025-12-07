@@ -257,7 +257,15 @@ function DashboardContent() {
     profileViews: 0,
     skills: []
   });
+  const [portfolioStats, setPortfolioStats] = useState({
+    total: 0,
+    projects: 0,
+    microcredentials: 0,
+    loading: true,
+    error: null
+  });
   const [loading, setLoading] = useState(true);
+  const [detailedLoading, setDetailedLoading] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
@@ -266,8 +274,146 @@ function DashboardContent() {
   const { darkMode } = useTheme();
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchPortfolioStats();
   }, []);
+
+  // Fetch lightweight stats first
+  const fetchPortfolioStats = async () => {
+    try {
+      setPortfolioStats(prev => ({ ...prev, loading: true, error: null }));
+      
+      // Fetch just the count stats (lightweight)
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          localStorage.clear();
+          navigate('/auth/login');
+          return;
+        }
+        // If stats endpoint doesn't exist, fall back to full fetch
+        await fetchFullDashboardData();
+        return;
+      }
+
+      const stats = await response.json();
+      setPortfolioStats({
+        total: stats.total || 0,
+        projects: stats.projects || 0,
+        microcredentials: stats.microcredentials || 0,
+        loading: false,
+        error: null
+      });
+      
+      setLoading(false);
+      
+      // Then fetch detailed data in background
+      fetchDetailedData();
+    } catch (error) {
+      console.error('Error fetching portfolio stats:', error);
+      // Fall back to full fetch
+      await fetchFullDashboardData();
+    }
+  };
+
+  // Fetch detailed data in background
+  const fetchDetailedData = async () => {
+    try {
+      setDetailedLoading(true);
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch portfolio data');
+      }
+
+      const data = await response.json();
+      
+      // Process and categorize data
+      const projects = data.filter(item => item.category === 'project') || [];
+      const microcredentials = data.filter(item => item.category === 'microcredentials') || [];
+      
+      // Sort by last updated for recently updated
+      const recentlyUpdated = [...data]
+        .sort((a, b) => new Date(b.updatedAt || b.lastUpdated || b.createdAt || 0) - 
+                    new Date(a.updatedAt || a.lastUpdated || a.createdAt || 0))
+        .slice(0, 5);
+      
+      setDashboardData({
+        projects,
+        microcredentials,
+        recentlyUpdated,
+        totalPortfolios: data.length,
+        profileViews: Math.floor(Math.random() * 100), // This would ideally come from analytics
+        skills: [] // Will be processed by useMemo
+      });
+    } catch (error) {
+      console.error('Error fetching detailed data:', error);
+    } finally {
+      setDetailedLoading(false);
+    }
+  };
+
+  // Fallback to full fetch (original method)
+  const fetchFullDashboardData = async () => {
+    try {
+      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          localStorage.clear();
+          navigate('/auth/login');
+          return;
+        }
+        throw new Error('Failed to fetch portfolio data');
+      }
+
+      const data = await response.json();
+      
+      // Process and categorize data
+      const projects = data.filter(item => item.category === 'project') || [];
+      const microcredentials = data.filter(item => item.category === 'microcredentials') || [];
+      
+      // Sort by last updated for recently updated
+      const recentlyUpdated = [...data]
+        .sort((a, b) => new Date(b.updatedAt || b.lastUpdated || b.createdAt || 0) - 
+                    new Date(a.updatedAt || a.lastUpdated || a.createdAt || 0))
+        .slice(0, 5);
+      
+      setDashboardData({
+        projects,
+        microcredentials,
+        recentlyUpdated,
+        totalPortfolios: data.length,
+        profileViews: Math.floor(Math.random() * 100),
+        skills: []
+      });
+      
+      setPortfolioStats({
+        total: data.length,
+        projects: projects.length,
+        microcredentials: microcredentials.length,
+        loading: false,
+        error: null
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setPortfolioStats(prev => ({ ...prev, loading: false, error: 'Failed to load data' }));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Optimized data processing using useMemo
   const processedDashboardData = React.useMemo(() => {
@@ -300,6 +446,14 @@ function DashboardContent() {
     };
   }, [dashboardData.projects]);
 
+  // Update dashboardData with processed skills
+  React.useEffect(() => {
+    if (dashboardData.projects && dashboardData.projects.length > 0) {
+      const { skills } = processedDashboardData;
+      setDashboardData(prev => ({ ...prev, skills }));
+    }
+  }, [processedDashboardData.skills]);
+
   const getActivityDate = (item) => {
     if (!item) return null;
     const raw = item.updatedAt || item.lastUpdated || item.createdAt || item.issueDate;
@@ -318,47 +472,12 @@ function DashboardContent() {
     return date ? date.toLocaleDateString() : '—';
   };
 
-  const fetchDashboardData = async () => {
-    try {
-      // Fetch portfolio data
-      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          localStorage.clear();
-          navigate('/auth/login');
-          return;
-        }
-        throw new Error('Failed to fetch portfolio data');
-      }
-
-      const data = await response.json();
-      
-      setDashboardData({
-        projects: data,
-        microcredentials: data,
-        recentlyUpdated: data,
-        totalPortfolios: data.length,
-        profileViews: Math.floor(Math.random() * 100), // This would ideally come from analytics
-        skills: [] // Will be processed by useMemo
-      });
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const stats = [
     { 
       icon: Code, 
       label: 'Projects', 
-      value: dashboardData.projects.length,
-      change: `${dashboardData.projects.length > 0 ? '+1' : '0'} this month`, 
+      value: portfolioStats.loading ? '...' : portfolioStats.projects,
+      change: portfolioStats.loading ? 'Loading...' : `${portfolioStats.projects > 0 ? '+1' : '0'} this month`, 
       color: 'text-[#800000] dark:text-[#D4AF37]',
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
@@ -366,8 +485,8 @@ function DashboardContent() {
     { 
       icon: Trophy, 
       label: 'Microcredentials', 
-      value: dashboardData.microcredentials.length,
-      change: `${dashboardData.microcredentials.length > 0 ? '+1' : '0'} this week`, 
+      value: portfolioStats.loading ? '...' : portfolioStats.microcredentials,
+      change: portfolioStats.loading ? 'Loading...' : `${portfolioStats.microcredentials > 0 ? '+1' : '0'} this week`, 
       color: 'text-[#800000] dark:text-[#D4AF37]',
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
@@ -375,8 +494,8 @@ function DashboardContent() {
     { 
       icon: FolderKanban, 
       label: 'Total Items', 
-      value: dashboardData.totalPortfolios,
-      change: 'All portfolios', 
+      value: portfolioStats.loading ? '...' : portfolioStats.total,
+      change: portfolioStats.loading ? 'Loading...' : 'All portfolios', 
       color: `${goldText} dark:text-[#D4AF37]`,
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
@@ -384,7 +503,7 @@ function DashboardContent() {
     { 
       icon: Zap, 
       label: 'Skills', 
-      value: dashboardData.skills.length,
+      value: dashboardData.skills.length || 0,
       change: 'Unique skills', 
       color: 'text-[#D4AF37] dark:text-[#D4AF37]',
       bgColor: 'bg-gradient-to-br from-[#D4AF37]/20 to-[#800000]/10 dark:from-[#D4AF37]/30 dark:to-[#800000]/20',
@@ -437,20 +556,20 @@ function DashboardContent() {
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 mb-4 border border-white/20">
                 <p className="text-white text-lg leading-relaxed">
-                  You have <span className="font-black text-[#D4AF37] text-2xl">{dashboardData.totalPortfolios}</span> <span className="font-semibold">portfolio items</span>
+                  You have <span className="font-black text-[#D4AF37] text-2xl">{portfolioStats.loading ? '...' : portfolioStats.total}</span> <span className="font-semibold">portfolio items</span>
                 </p>
                 <div className="flex items-center gap-6 mt-3 text-white/90">
                   <div className="flex items-center gap-2">
                     <Code className="w-5 h-5 text-[#D4AF37]" />
-                    <span className="font-medium">{dashboardData.projects.length} Projects</span>
+                    <span className="font-medium">{portfolioStats.loading ? '...' : portfolioStats.projects} Projects</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-[#D4AF37]" />
-                    <span className="font-medium">{dashboardData.microcredentials.length} Microcredentials</span>
+                    <span className="font-medium">{portfolioStats.loading ? '...' : portfolioStats.microcredentials} Microcredentials</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Zap className="w-5 h-5 text-[#D4AF37]" />
-                    <span className="font-medium">{dashboardData.skills.length} Skills</span>
+                    <span className="font-medium">{dashboardData.skills.length || 0} Skills</span>
                   </div>
                 </div>
               </div>
