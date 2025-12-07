@@ -420,12 +420,17 @@ export default function MyPortfolio() {
                     throw new Error('No portfolios found. Please add some projects or microcredentials first.');
                   }
 
-                  // Remove duplicate portfolios to avoid confusing the AI
+                  // Remove duplicate portfolios and filter out low-quality entries
                   const uniquePortfolios = portfolios.filter((p, index, self) => 
                     index === self.findIndex((t) => t.portfolioTitle === p.portfolioTitle && t.portfolioDescription === p.portfolioDescription)
-                  );
+                  ).filter(p => {
+                    // Filter out entries with very short titles or descriptions
+                    const title = (p.portfolioTitle || '').trim();
+                    const description = (p.portfolioDescription || '').trim();
+                    return title.length > 1 && description.length > 10;
+                  });
 
-                  console.log(`Original portfolios: ${portfolios.length}, Unique portfolios: ${uniquePortfolios.length}`);
+                  console.log(`Original portfolios: ${portfolios.length}, After dedup: ${portfolios.filter((p, index, self) => index === self.findIndex((t) => t.portfolioTitle === p.portfolioTitle && t.portfolioDescription === p.portfolioDescription)).length}, After quality filter: ${uniquePortfolios.length}`);
 
                   // Clean portfolio descriptions before sending to AI
                   const cleanPortfolioDescription = (description) => {
