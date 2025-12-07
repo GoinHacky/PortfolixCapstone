@@ -66,7 +66,6 @@ export default function FacultyStudents() {
       }
 
       const data = await response.json();
-      console.log('Fetched students:', data);
       setStudents(data);
       
       // Fetch portfolio stats for all students (lightweight)
@@ -245,7 +244,6 @@ export default function FacultyStudents() {
 
   const fetchStudentPortfolios = async (studentId) => {
     try {
-      console.log('Fetching portfolios for student:', studentId);
       const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${studentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -262,11 +260,9 @@ export default function FacultyStudents() {
       }
 
       const data = await response.json();
-      console.log('Fetched portfolios:', data);
       setStudentPortfolios(data);
       // Update selected student
       const student = students.find(s => s.userID === studentId);
-      console.log('Setting selected student:', student);
       setSelectedStudent(student);
     } catch (error) {
       console.error('Error:', error);
@@ -275,7 +271,6 @@ export default function FacultyStudents() {
   };
 
   const handleStudentClick = (studentId) => {
-    console.log('Student clicked:', studentId);
     // Always fetch fresh data when clicking view to ensure we have the latest
     fetchStudentPortfolios(studentId);
   };
@@ -558,25 +553,27 @@ export default function FacultyStudents() {
     student.userEmail.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Group portfolios by category
-  const groupedPortfolios = studentPortfolios.reduce((acc, portfolio) => {
-    console.log('Processing portfolio:', portfolio);
-    const category = (portfolio.category || '').toLowerCase();
-    console.log('Portfolio category:', category);
-
-    if (!acc.projects) acc.projects = [];
-    if (!acc.microcredentials) acc.microcredentials = [];
-
-    if (category === 'project') {
-      acc.projects.push(portfolio);
-    } else if (category === 'microcredentials') {
-      acc.microcredentials.push(portfolio);
+  // Group portfolios by category - only calculate when there's data
+  const groupedPortfolios = React.useMemo(() => {
+    if (!studentPortfolios || studentPortfolios.length === 0) {
+      return { projects: [], microcredentials: [] };
     }
+    
+    return studentPortfolios.reduce((acc, portfolio) => {
+      const category = (portfolio.category || '').toLowerCase();
 
-    return acc;
-  }, { projects: [], microcredentials: [] });
+      if (!acc.projects) acc.projects = [];
+      if (!acc.microcredentials) acc.microcredentials = [];
 
-  console.log('Grouped portfolios:', groupedPortfolios);
+      if (category === 'project') {
+        acc.projects.push(portfolio);
+      } else if (category === 'microcredentials') {
+        acc.microcredentials.push(portfolio);
+      }
+
+      return acc;
+    }, { projects: [], microcredentials: [] });
+  }, [studentPortfolios]);
 
   return (
     <div className="container mx-auto p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
