@@ -291,8 +291,9 @@ export default function FacultyStudents() {
   };
 
   const showNotification = (message, type = 'success') => {
+    console.log('Showing notification:', message, type);
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 4000);
+    setTimeout(() => setNotification(null), 6000); // Increased from 4000 to 6000ms
   };
 
   const handleRemoveStudent = (student) => {
@@ -412,6 +413,7 @@ export default function FacultyStudents() {
   };
 
   const performUnwitnessMicrocredential = async (portfolioId) => {
+    console.log('Performing unwitness for portfolio:', portfolioId);
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/unwitness`, {
         method: 'PATCH',
@@ -423,6 +425,7 @@ export default function FacultyStudents() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Unwitness response data:', data);
         setViewPortfolio(prev => ({
           ...prev,
           witnessedByIds: data.witnessedByIds,
@@ -436,9 +439,11 @@ export default function FacultyStudents() {
           } : p
         ));
         await refreshPortfolioData();
+        console.log('About to show remove success notification');
         showNotification('Witness successfully removed!', 'success');
       } else {
         const errorText = await response.text();
+        console.log('Unwitness error:', errorText);
         showNotification(errorText || 'Failed to remove witness', 'error');
       }
     } catch (error) {
@@ -448,6 +453,7 @@ export default function FacultyStudents() {
   };
 
   const performWitnessMicrocredential = async (portfolioId) => {
+    console.log('Performing witness for portfolio:', portfolioId);
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/witness`, {
         method: 'PATCH',
@@ -459,6 +465,7 @@ export default function FacultyStudents() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Witness response data:', data);
         setViewPortfolio(prev => ({
           ...prev,
           witnessedByIds: data.witnessedByIds,
@@ -472,9 +479,11 @@ export default function FacultyStudents() {
           } : p
         ));
         await refreshPortfolioData();
+        console.log('About to show success notification');
         showNotification('Successfully witnessed microcredential!', 'success');
       } else {
         const errorText = await response.text();
+        console.log('Witness error:', errorText);
         showNotification(errorText || 'Failed to witness microcredential', 'error');
       }
     } catch (error) {
