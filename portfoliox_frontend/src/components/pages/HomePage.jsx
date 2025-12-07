@@ -129,12 +129,7 @@ export default function HomePage() {
         totalPortfolios: data.length
       }));
 
-      setPortfolioStats({
-        totalPortfolios: data.length,
-        projects: projects,
-        microcredentials: microcredentials,
-        recentlyUpdated: recentlyUpdated
-      });
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching portfolio data:', error);
     } finally {
