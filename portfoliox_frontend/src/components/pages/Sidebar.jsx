@@ -170,7 +170,7 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
         
         {/* Header */}
         <div className="p-6 border-b border-white/10 bg-white/5 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
+          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!isCollapsed && (
               <button 
                 onClick={() => handleItemClick({ id: 'Dashboard' })}
@@ -191,23 +191,33 @@ export default function SideBar({ activeItem = 'Dashboard', onItemSelect }) {
             {isCollapsed && (
               <button 
                 onClick={() => handleItemClick({ id: 'Dashboard' })}
-                className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-xl flex items-center justify-center mx-auto hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-lg"
+                className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-xl flex items-center justify-center hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-lg"
               >
                 <Sparkles className="w-6 h-6 text-white animate-pulse" />
               </button>
             )}
 
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 text-white/80 hover:text-white hover:scale-110 bg-white/10"
-            >
-              {isCollapsed ? (
-                <ChevronRight className="w-5 h-5" />
-              ) : (
+            {!isCollapsed && (
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 text-white/80 hover:text-white hover:scale-110 bg-white/10"
+              >
                 <ChevronLeft className="w-5 h-5" />
-              )}
-            </button>
+              </button>
+            )}
           </div>
+          
+          {/* Collapsed minimize button */}
+          {isCollapsed && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 text-white/80 hover:text-white hover:scale-110 bg-white/10"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* User Info */}
