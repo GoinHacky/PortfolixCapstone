@@ -15,8 +15,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Loader2,
-  Search,
-  Plus,
   Sparkles,
   Code,
   Trophy,
@@ -190,25 +188,8 @@ export default function FacultyHomePage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* Enhanced Search Bar */}
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Search students, projects..."
-                  className="pl-10 pr-4 py-2.5 w-64 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
-                />
-              </div>
-              
               {/* Enhanced Notifications */}
               <NotificationPanel />
-              
-              {/* Enhanced Add New Button */}
-              <button className={`${goldBg} text-white px-6 py-2.5 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg hover:scale-105 transition-all duration-200`}>
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add New</span>
-                <Sparkles className="w-4 h-4 opacity-70" />
-              </button>
             </div>
           </div>
         </header>

@@ -567,6 +567,8 @@ export default function Profile() {
                         setProfilePicError(true);
                         setPreviewUrl(null);
                         localStorage.removeItem('profilePic');
+                        // Set a fallback avatar
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'User')}&background=800000&color=D4AF37&size=200`;
                       }}
                       onLoad={() => {
                         console.log('Profile picture loaded successfully:', previewUrl);
