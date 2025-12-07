@@ -314,51 +314,8 @@ function DashboardContent() {
   const { darkMode } = useTheme();
 
   useEffect(() => {
-    fetchPortfolioStats();
+    fetchFullDashboardData();
   }, []);
-
-  // Fetch lightweight stats first
-  const fetchPortfolioStats = async () => {
-    try {
-      setPortfolioStats(prev => ({ ...prev, loading: true, error: null }));
-      
-      // Fetch just the count stats (lightweight)
-      const response = await fetch(`${getApiBaseUrl()}/api/portfolios/student/${userId}/stats`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          localStorage.clear();
-          navigate('/auth/login');
-          return;
-        }
-        // If stats endpoint doesn't exist, fall back to full fetch
-        await fetchFullDashboardData();
-        return;
-      }
-
-      const stats = await response.json();
-      setPortfolioStats({
-        total: stats.total || 0,
-        projects: stats.projects || 0,
-        microcredentials: stats.microcredentials || 0,
-        loading: false,
-        error: null
-      });
-      
-      setLoading(false);
-      
-      // Then fetch detailed data in background
-      fetchDetailedData();
-    } catch (error) {
-      console.error('Error fetching portfolio stats:', error);
-      // Fall back to full fetch
-      await fetchFullDashboardData();
-    }
-  };
 
   // Fetch detailed data in background
   const fetchDetailedData = async () => {
