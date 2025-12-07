@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, CheckCircle, XCircle, Loader2, FileText } from 'lucide-react';
+import { Plus, CheckCircle, XCircle, Loader2, FileText, AlertTriangle, X } from 'lucide-react';
 import { ConfirmDialog } from '../Notification';
 
 import { getApiBaseUrl } from '../../api/apiConfig';
@@ -31,9 +31,17 @@ export default function FacultyCourses() {
   const [selectedEnrolledStudent, setSelectedEnrolledStudent] = useState(null);
   const [studentProjects, setStudentProjects] = useState([]);
   const [studentProjectsLoading, setStudentProjectsLoading] = useState(false);
+  const [showStudentProjectsModal, setShowStudentProjectsModal] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [validationConfirmation, setValidationConfirmation] = useState(null);
 
   const token = localStorage.getItem('token');
   const facultyId = localStorage.getItem('userId');
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 6000);
+  };
 
   useEffect(() => {
     fetchCourses();
@@ -210,22 +218,16 @@ export default function FacultyCourses() {
     }
   };
 
-  const handleValidateProject = async (projectId) => {
-    setConfirmDialog({
-      open: true,
+  const handleValidateProject = (projectId, projectTitle) => {
+    setValidationConfirmation({
+      action: 'validate',
+      projectId,
       title: 'Validate Project',
-      message: 'Are you sure you want to validate this project? This action will mark the project as approved by faculty.',
-      confirmText: 'Yes, Validate',
-      onConfirm: () => {
-        setConfirmDialog({ open: false, title: '', message: '', onConfirm: null, confirmText: 'Yes, Continue' });
-        performValidateProject(projectId);
-      }
+      description: `Are you sure you want to validate "${projectTitle}"? This will mark the project as approved by faculty.`
     });
   };
 
   const performValidateProject = async (projectId) => {
-    setError(null);
-    setSuccess(null);
     try {
       const res = await fetch(`${getApiBaseUrl()}/api/portfolios/${projectId}/validate`, {
         method: 'PATCH',
@@ -233,28 +235,22 @@ export default function FacultyCourses() {
       });
       if (!res.ok) {
         const errorText = await res.text();
-        console.error('Validate error response:', errorText);
         throw new Error(errorText || `Failed to validate project (${res.status})`);
       }
-      setSuccess('Project validated!');
+      showNotification('Project validated successfully!', 'success');
       // Refresh project list
       if (selectedCourse) handleSelectCourse(selectedCourse);
     } catch (err) {
-      console.error('Validate error:', err);
-      setError(err.message);
+      showNotification(err.message || 'Failed to validate project', 'error');
     }
   };
 
-  const handleUnvalidateProject = async (projectId) => {
-    setConfirmDialog({
-      open: true,
+  const handleUnvalidateProject = (projectId, projectTitle) => {
+    setValidationConfirmation({
+      action: 'unvalidate',
+      projectId,
       title: 'Unvalidate Project',
-      message: 'Are you sure you want to unvalidate this project? This action will remove the faculty approval status.',
-      confirmText: 'Yes, Unvalidate',
-      onConfirm: () => {
-        setConfirmDialog({ open: false, title: '', message: '', onConfirm: null, confirmText: 'Yes, Continue' });
-        performUnvalidateProject(projectId);
-      }
+      description: `Are you sure you want to unvalidate "${projectTitle}"? This will remove the faculty approval status.`
     });
   };
 
@@ -317,10 +313,6 @@ export default function FacultyCourses() {
   };
 
   const performUnvalidateProject = async (projectId) => {
-    console.log('Attempting to unvalidate project ID:', projectId);
-    console.log('Selected project data:', selectedProject);
-    setError(null);
-    setSuccess(null);
     try {
       const res = await fetch(`${getApiBaseUrl()}/api/portfolios/${projectId}/unvalidate`, {
         method: 'PATCH',
@@ -328,23 +320,25 @@ export default function FacultyCourses() {
       });
       if (!res.ok) {
         const errorText = await res.text();
-        console.error('Unvalidate error response:', errorText);
         throw new Error(errorText || `Failed to unvalidate project (${res.status})`);
       }
-      setSuccess('Project unvalidated!');
+      showNotification('Project unvalidated successfully!', 'success');
       // Refresh project list
       if (selectedCourse) handleSelectCourse(selectedCourse);
     } catch (err) {
-      console.error('Unvalidate error:', err);
-      setError(err.message);
+      showNotification(err.message || 'Failed to unvalidate project', 'error');
     }
   };
 
   const handleProjectClick = (project) => {
-    console.log('Project clicked:', project);
-    console.log('Project validatedByFaculty:', project.validatedByFaculty);
     setSelectedProject(project);
     setShowProjectModal(true);
+  };
+
+  const handleStudentProjectsClick = (student) => {
+    setSelectedEnrolledStudent(student);
+    loadStudentProjects(student.userID);
+    setShowStudentProjectsModal(true);
   };
 
   const handleViewFullPortfolio = async (projectId) => {
@@ -492,7 +486,7 @@ export default function FacultyCourses() {
             {enrolledStudents.map(s => (
               <button
                 key={s.userID}
-                onClick={() => { setSelectedEnrolledStudent(s); loadStudentProjects(s.userID); }}
+                onClick={() => handleStudentProjectsClick(s)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 ${selectedEnrolledStudent?.userID === s.userID ? 'ring-2 ring-[#800000]' : ''}`}
               >
                 <div className="text-left">
@@ -506,30 +500,7 @@ export default function FacultyCourses() {
         )}
       </div>
 
-      {/* Selected Student's Projects for this Course */}
-      {selectedEnrolledStudent && (
-        <div className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold text-gray-800 dark:text-white">{`${selectedEnrolledStudent.fname || ''} ${selectedEnrolledStudent.lname || ''}`.trim() || selectedEnrolledStudent.username}'s Projects</div>
-            <button onClick={() => { setSelectedEnrolledStudent(null); setStudentProjects([]); }} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Close</button>
-          </div>
-          {studentProjectsLoading ? (
-            <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
-          ) : studentProjects.length === 0 ? (
-            <div className="text-sm text-gray-500 dark:text-gray-400">No projects in this course for this student.</div>
-          ) : (
-            <div className="space-y-2">
-              {studentProjects.map(p => (
-                <div key={p.portfolioID} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                  <div className="font-medium text-gray-800 dark:text-gray-100">{p.portfolioTitle}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{p.portfolioDescription}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-          {projectLoading ? (
+                {projectLoading ? (
             <div className="flex justify-center items-center py-8"><Loader2 className="w-8 h-8 text-[#800000] animate-spin" /></div>
           ) : projects.length === 0 ? (
             <div className="text-center text-gray-500">No projects found for this course.</div>
@@ -563,7 +534,7 @@ export default function FacultyCourses() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleUnvalidateProject(project.portfolioID);
+                              handleUnvalidateProject(project.portfolioID, project.portfolioTitle);
                             }}
                             className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs hover:bg-red-200 transition-colors"
                             title="Unvalidate Project"
@@ -574,9 +545,9 @@ export default function FacultyCourses() {
                       ) : (
                         <button
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleValidateProject(project.portfolioID);
-                          }}
+                              e.stopPropagation();
+                              handleValidateProject(project.portfolioID, project.portfolioTitle);
+                            }}
                           className="px-2 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1"
                           title="Validate Project"
                         >
@@ -682,8 +653,7 @@ export default function FacultyCourses() {
                 {selectedProject.validatedByFaculty === true ? (
                   <button
                     onClick={() => {
-                      handleUnvalidateProject(selectedProject.portfolioID);
-                      setShowProjectModal(false);
+                      handleUnvalidateProject(selectedProject.portfolioID, selectedProject.portfolioTitle);
                     }}
                     className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
                   >
@@ -693,8 +663,7 @@ export default function FacultyCourses() {
                 ) : (
                   <button
                     onClick={() => {
-                      handleValidateProject(selectedProject.portfolioID);
-                      setShowProjectModal(false);
+                      handleValidateProject(selectedProject.portfolioID, selectedProject.portfolioTitle);
                     }}
                     className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
                   >
@@ -883,8 +852,7 @@ export default function FacultyCourses() {
                       portfolioData.validatedByFaculty === true ? (
                         <button
                           onClick={() => {
-                            handleUnvalidateProject(portfolioData.portfolioID);
-                            setShowPortfolioModal(false);
+                            handleUnvalidateProject(portfolioData.portfolioID, portfolioData.portfolioTitle);
                           }}
                           className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
                         >
@@ -894,8 +862,7 @@ export default function FacultyCourses() {
                       ) : (
                         <button
                           onClick={() => {
-                            handleValidateProject(portfolioData.portfolioID);
-                            setShowPortfolioModal(false);
+                            handleValidateProject(portfolioData.portfolioID, portfolioData.portfolioTitle);
                           }}
                           className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
                         >
@@ -932,6 +899,179 @@ export default function FacultyCourses() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Student Projects Modal */}
+      {showStudentProjectsModal && selectedEnrolledStudent && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-gray-200 dark:border-gray-700">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#800000] to-[#600000] p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold">Student Projects</h3>
+                  <p className="text-[#D4AF37] font-medium">
+                    {`${selectedEnrolledStudent.fname || ''} ${selectedEnrolledStudent.lname || ''}`.trim() || selectedEnrolledStudent.username}
+                  </p>
+                  <p className="text-white/80 text-sm">{selectedEnrolledStudent.userEmail}</p>
+                </div>
+                <button
+                  onClick={() => setShowStudentProjectsModal(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {studentProjectsLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <Loader2 className="w-8 h-8 text-[#800000] animate-spin" />
+                </div>
+              ) : studentProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-500 dark:text-gray-400 mb-2">No projects found</div>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">
+                    This student hasn't submitted any projects for this course yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {studentProjects.map(project => (
+                    <div
+                      key={project.portfolioID}
+                      className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-[#D4AF37] transition-all duration-200 hover:shadow-lg cursor-pointer"
+                      onClick={() => handleProjectClick(project)}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="font-semibold text-gray-800 dark:text-white text-lg">
+                          {project.portfolioTitle}
+                        </h4>
+                        {project.validatedByFaculty === true && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                            <CheckCircle size={10} /> Validated
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                        {project.portfolioDescription}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ID: {project.portfolioID}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {project.validatedByFaculty === true ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUnvalidateProject(project.portfolioID, project.portfolioTitle);
+                              }}
+                              className="px-3 py-1 bg-red-100 text-red-800 rounded text-xs hover:bg-red-200 transition-colors flex items-center gap-1"
+                              title="Unvalidate Project"
+                            >
+                              <XCircle size={12} /> Unvalidate
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleValidateProject(project.portfolioID, project.portfolioTitle);
+                              }}
+                              className="px-3 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1 font-semibold"
+                              title="Validate Project"
+                            >
+                              <CheckCircle size={12} /> Validate
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Validation Confirmation Dialog */}
+      {validationConfirmation && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-full ${
+                validationConfirmation.action === 'validate' 
+                  ? 'bg-green-100 dark:bg-green-900/20' 
+                  : 'bg-amber-100 dark:bg-amber-900/20'
+              }`}>
+                {validationConfirmation.action === 'validate' ? (
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-[#D4AF37]" />
+                )}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                {validationConfirmation.title}
+              </h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              {validationConfirmation.description}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setValidationConfirmation(null)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (validationConfirmation.action === 'validate') {
+                    await performValidateProject(validationConfirmation.projectId);
+                  } else {
+                    await performUnvalidateProject(validationConfirmation.projectId);
+                  }
+                  setValidationConfirmation(null);
+                }}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  validationConfirmation.action === 'validate' 
+                    ? 'bg-[#800000] hover:bg-[#600000]' 
+                    : 'bg-[#D4AF37] hover:bg-[#B8860B]'
+                }`}
+              >
+                {validationConfirmation.action === 'validate' ? 'Validate Project' : 'Unvalidate Project'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {notification && (
+        <div className={`fixed bottom-6 right-6 z-[9999] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
+          notification.type === 'error'
+            ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
+            : 'border-[#800000]/40 text-[#800000] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
+        }`}>
+          <div className="flex items-start gap-3">
+            <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-[#800000]'}`}></div>
+            <div className="flex-1">
+              <h4 className="font-semibold mb-1">
+                {notification.type === 'error' ? 'Action Required' : 'Success'}
+              </h4>
+              <p className="text-sm leading-relaxed">{notification.message}</p>
+            </div>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
