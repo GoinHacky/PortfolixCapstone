@@ -539,7 +539,7 @@ export default function MyPortfolio() {
       {/* Portfolio Folders */}
       <div className="space-y-6">
         {/* Projects Folder */}
-        <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('projects')}
             className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
@@ -654,7 +654,7 @@ export default function MyPortfolio() {
         </div>
 
         {/* Microcredentials Folder */}
-        <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#800000]/10 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('microcredentials')}
             className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
@@ -784,7 +784,7 @@ export default function MyPortfolio() {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     required
                   />
                 </div>
@@ -834,7 +834,7 @@ export default function MyPortfolio() {
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-3 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-3 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     rows="4"
                     required
                   />
@@ -846,7 +846,7 @@ export default function MyPortfolio() {
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                    className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                   >
                     <option value="project">Project</option>
                     <option value="microcredentials">Microcredentials</option>
@@ -861,7 +861,7 @@ export default function MyPortfolio() {
                       name="githubLink"
                       value={formData.githubLink}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -873,7 +873,7 @@ export default function MyPortfolio() {
                       name="courseCode"
                       value={formData.courseCode}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                      className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                     >
                       <option value="">-- None --</option>
                       {courses.map(course => (
@@ -894,7 +894,7 @@ export default function MyPortfolio() {
                         name="certTitle"
                         value={formData.certTitle}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -904,7 +904,7 @@ export default function MyPortfolio() {
                         name="issueDate"
                         value={formData.issueDate}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 focus:ring-2 focus:ring-[#800000] focus:border-transparent"
+                        className="mt-1 block w-full rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2.5 bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#800000] focus:border-transparent"
                       />
                     </div>
                     <div>

@@ -14,7 +14,10 @@ export default function NotificationPanel() {
   const fetchNotifications = async () => {
     const token = authInfo.token || localStorage.getItem('token');
     const userId = authInfo.userId || localStorage.getItem('userId');
-    if (!token || !userId) return;
+    if (!token || !userId) {
+      setLoading(false);
+      return;
+    }
     if (!authInfo.token || !authInfo.userId) {
       setAuthInfo({ token, userId });
     }
@@ -42,9 +45,15 @@ export default function NotificationPanel() {
         setUnreadCount(data.unreadCount || 0);
       } else {
         console.warn('Failed to fetch notifications:', response.status);
+        // Set empty state on failure
+        setNotifications([]);
+        setUnreadCount(0);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      // Set empty state on error
+      setNotifications([]);
+      setUnreadCount(0);
     } finally {
       setLoading(false);
     }
