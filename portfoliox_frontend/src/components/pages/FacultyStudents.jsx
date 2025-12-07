@@ -34,6 +34,7 @@ export default function FacultyStudents() {
   const [courseEnrollments, setCourseEnrollments] = useState({});
   const [notification, setNotification] = useState(null);
   const [confirmationDialog, setConfirmationDialog] = useState(null);
+  const [witnessConfirmation, setWitnessConfirmation] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -420,7 +421,15 @@ export default function FacultyStudents() {
     }
   };
 
-  const handleUnwitnessMicrocredential = async (portfolioId) => {
+  const handleUnwitnessMicrocredential = (portfolioId, portfolioTitle) => {
+    setWitnessConfirmation({
+      portfolioId,
+      title: 'Remove Witness Confirmation',
+      description: `Are you sure you want to remove your witness from "${portfolioTitle}"? This will affect the verification status of this microcredential.`
+    });
+  };
+
+  const performUnwitnessMicrocredential = async (portfolioId) => {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/portfolios/${portfolioId}/unwitness`, {
         method: 'PATCH',
@@ -437,6 +446,13 @@ export default function FacultyStudents() {
           witnessedByIds: data.witnessedByIds,
           witnessedByNames: data.witnessedByNames
         }));
+        setStudentPortfolios(prev => prev.map(p => 
+          p.portfolioID === portfolioId ? {
+            ...p,
+            witnessedByIds: data.witnessedByIds,
+            witnessedByNames: data.witnessedByNames
+          } : p
+        ));
         await refreshPortfolioData();
         showNotification('Witness removed successfully!', 'success');
       } else {
@@ -669,7 +685,7 @@ export default function FacultyStudents() {
                                           </button>
                                           <button
                                             onClick={() => handleRemoveStudent(student)}
-                                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-1 bg-[#D4AF37] text-white rounded hover:bg-[#B8860B] text-sm font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                                             title="Remove from Course"
                                             disabled={!isStudentEnrolledInFacultyCourse(student.userID)}
                                           >
@@ -807,8 +823,8 @@ export default function FacultyStudents() {
                 <div className="flex gap-2 mt-4">
                   {viewPortfolio.witnessedByIds && viewPortfolio.witnessedByIds.split(',').includes(localStorage.getItem('userId')) ? (
                     <button
-                      onClick={() => handleUnwitnessMicrocredential(viewPortfolio.portfolioID)}
-                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center justify-center gap-2"
+                      onClick={() => handleUnwitnessMicrocredential(viewPortfolio.portfolioID, viewPortfolio.portfolioTitle)}
+                      className="flex-1 px-4 py-2 bg-[#D4AF37] text-white rounded-md hover:bg-[#B8860B] flex items-center justify-center gap-2"
                     >
                       <X className="w-4 h-4" />
                       Remove My Witness
@@ -816,7 +832,7 @@ export default function FacultyStudents() {
                   ) : (
                     <button
                       onClick={() => handleWitnessMicrocredential(viewPortfolio.portfolioID)}
-                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000] flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" />
                       Witness & Verify
@@ -968,6 +984,38 @@ export default function FacultyStudents() {
                 className="px-4 py-2 rounded-lg text-white bg-[#800000] hover:bg-[#5e0000]"
               >
                 {confirmationDialog.action === 'add' ? 'Confirm Add' : 'Confirm Remove'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Witness Confirmation Dialog */}
+      {witnessConfirmation && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[110] px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/20">
+                <AlertTriangle className="w-5 h-5 text-[#D4AF37]" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{witnessConfirmation.title}</h3>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{witnessConfirmation.description}</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setWitnessConfirmation(null)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  await performUnwitnessMicrocredential(witnessConfirmation.portfolioId);
+                  setWitnessConfirmation(null);
+                }}
+                className="px-4 py-2 rounded-lg text-white bg-[#D4AF37] hover:bg-[#B8860B]"
+              >
+                Remove Witness
               </button>
             </div>
           </div>
