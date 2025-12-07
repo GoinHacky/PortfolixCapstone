@@ -631,10 +631,10 @@ export default function FacultyStudents() {
                   `${stats.total} (${stats.projects}/${stats.microcredentials})`
                 );
                 
-                // Status logic (green if active in last 7 days, red otherwise)
+                // Status logic (green if active in last 7 days based on lastLogin, red otherwise)
                 let statusColor = 'bg-red-500'; // Default red for offline
-                if (!stats.loading && !stats.error && stats.lastUpdate) {
-                  const days = (Date.now() - stats.lastUpdate) / (1000 * 60 * 60 * 24);
+                if (!stats.loading && !stats.error && student.lastLogin) {
+                  const days = (Date.now() - new Date(student.lastLogin)) / (1000 * 60 * 60 * 24);
                   if (days <= 7) statusColor = 'bg-green-500'; // Online/active
                   else statusColor = 'bg-red-500'; // Offline/inactive
                 }
