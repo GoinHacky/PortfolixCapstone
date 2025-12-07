@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import FacultySideBar from './FacultySideBar';
 import {
   Users,
@@ -43,7 +43,14 @@ const maroonText = "text-[#800000]";
 const goldText = "text-[#D4AF37]";
 
 export default function FacultyHomePage() {
-  const [activeItem, setActiveItem] = useState('Dashboard');
+  const location = useLocation();
+  const getActiveItemFromPath = (pathname) => {
+    if (pathname.startsWith("/faculty/students")) return "Students";
+    if (pathname.startsWith("/faculty/courses")) return "Courses";
+    if (pathname.startsWith("/faculty/profile")) return "Profile";
+    return "Dashboard";
+  };
+  const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,6 +74,10 @@ export default function FacultyHomePage() {
     fetchUserData();
     fetchDashboardData();
   }, [token, navigate]);
+
+  useEffect(() => {
+    setActiveItem(getActiveItemFromPath(location.pathname));
+  }, [location.pathname]);
 
   const getActivityDate = (item) => {
     if (!item) return null;
@@ -145,6 +156,24 @@ export default function FacultyHomePage() {
     }
   };
 
+  const handleMenuItemSelect = (itemId) => {
+    setActiveItem(itemId);
+    // Navigate to the corresponding URL
+    switch (itemId) {
+      case 'Students':
+        navigate('/faculty/students');
+        break;
+      case 'Courses':
+        navigate('/faculty/courses');
+        break;
+      case 'Profile':
+        navigate('/faculty/profile');
+        break;
+      default:
+        navigate('/faculty');
+    }
+  };
+
   const renderContent = () => {
     switch (activeItem) {
       case 'Dashboard':
@@ -165,7 +194,7 @@ export default function FacultyHomePage() {
       {/* Sidebar */}
       <FacultySideBar 
         activeItem={activeItem} 
-        onItemSelect={setActiveItem} 
+        onItemSelect={handleMenuItemSelect} 
       />
       
       {/* Main Content Area */}
