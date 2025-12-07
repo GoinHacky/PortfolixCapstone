@@ -37,7 +37,7 @@ public class AIService {
     }
 
     /**
-     * Cleans AI-generated content by removing unwanted markdown symbols like **, *, etc.
+     * Cleans AI-generated content by removing unwanted markdown symbols and formatting
      */
     private String cleanAIContent(String content) {
         if (content == null) {
@@ -45,12 +45,22 @@ public class AIService {
         }
         
         return content
+            // Remove AI instruction tags
+            .replaceAll("\\[/?B_INST\\]", "")
+            .replaceAll("\\[/?INST\\]", "")
+            // Remove HTML-like tags
+            .replaceAll("<[^>]*>", "")
             // Remove bold markdown (**text**)
             .replaceAll("\\*\\*(.*?)\\*\\*", "$1")
             // Remove italic markdown (*text*)
             .replaceAll("\\*(.*?)\\*", "$1")
+            // Remove square brackets used for links [text](url) -> keep text only
+            .replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1")
             // Remove any remaining asterisks
             .replaceAll("\\*", "")
+            // Remove multiple newlines and clean up spacing
+            .replaceAll("\\n\\s*\\n", "\n")
+            .replaceAll("\\s+", " ")
             .trim();
     }
 
