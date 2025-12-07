@@ -432,9 +432,12 @@ export default function MyPortfolio() {
                       .replace(/\*\*(.*?)\*\*/g, '$1')
                       .replace(/\*(.*?)\*/g, '$1')
                       .replace(/\*/g, '')
-                      // Remove AI-generated prefixes and common phrases
-                      .replace(/Here['']?s\s+(a\s+)?(refined|polished|more\s+impactful)\s+version\s+of\s+your\s+portfolio\s+description[:\s]*/gi, '')
-                      .replace(/This\s+version\s+(emphasizes|highlights|is)\s+[^.]*\.\s*/gi, '')
+                      // Remove AI-generated prefixes and common phrases - more comprehensive approach
+                      .replace(/Here.*refined.*portfolio.*description[:\s]*/gi, '')
+                      .replace(/Here.*polished.*portfolio.*description[:\s]*/gi, '')
+                      .replace(/This.*version.*emphasizes.*\.\s*/gi, '')
+                      .replace(/This.*version.*highlights.*\.\s*/gi, '')
+                      .replace(/This.*version.*concise.*action.*oriented.*\.\s*/gi, '')
                       .replace(/This\s+version\s+is\s+concise,\s+action-oriented,\s+and\s+highlights\s+your\s+achievements\s+without\s+repetition\.\s*/gi, '')
                       // Remove "Project:" and "Category:" prefixes
                       .replace(/Project:\s*/gi, '')
