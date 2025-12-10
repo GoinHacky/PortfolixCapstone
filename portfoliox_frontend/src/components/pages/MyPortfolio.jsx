@@ -336,6 +336,16 @@ export default function MyPortfolio() {
       const portfolio = portfolios.find(p => p.portfolioID === portfolioId);
       if (!portfolio) return;
 
+      // Validate title and description before enhancing
+      if (!portfolio.portfolioTitle?.trim()) {
+        showNotification({ message: 'Portfolio must have a title before enhancing with AI', type: 'error' });
+        return;
+      }
+      if (!portfolio.portfolioDescription?.trim()) {
+        showNotification({ message: 'Portfolio must have a description before enhancing with AI', type: 'error' });
+        return;
+      }
+
       const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
         method: 'POST',
         headers: {
@@ -958,6 +968,16 @@ export default function MyPortfolio() {
                     <button
                       type="button"
                       onClick={async () => {
+                        // Validate title and description before enhancing
+                        if (!formData.title.trim()) {
+                          showNotification({ message: 'Please enter a title before enhancing with AI', type: 'error' });
+                          return;
+                        }
+                        if (!formData.description.trim()) {
+                          showNotification({ message: 'Please enter a description before enhancing with AI', type: 'error' });
+                          return;
+                        }
+                        
                         setEnhancingFormDescription(true);
                         try {
                           const response = await fetch(`${getApiBaseUrl()}/api/ai/enhance-description`, {
