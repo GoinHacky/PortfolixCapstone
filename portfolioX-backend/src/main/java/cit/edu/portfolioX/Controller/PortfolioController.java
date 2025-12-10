@@ -503,9 +503,9 @@ public class PortfolioController {
 
             String summaryText = null;
             if (enhanced && enhancedContentText != null && !enhancedContentText.isEmpty()) {
-                summaryText = enhancedContentText;
+                summaryText = sanitizeSummaryText(enhancedContentText);
             } else if (user.getBio() != null && !user.getBio().isBlank()) {
-                summaryText = user.getBio().trim();
+                summaryText = sanitizeSummaryText(user.getBio());
             }
 
             if (summaryText != null && !summaryText.isBlank()) {
@@ -963,6 +963,40 @@ public class PortfolioController {
             .add(new Text(label + ": ").setFontColor(gold).setBold())
             .add(new Text(value != null ? value : "-").setFontColor(darkGray).setFontSize(10))
             .setMarginBottom(6);
+    }
+
+    private String sanitizeSummaryText(String input) {
+        if (input == null) {
+            return null;
+        }
+
+        String text = input
+            .replaceAll("(?s)```.*?```", " ")
+            .replaceAll("(?m)^>{1,3}\\s*", "")
+            .replaceAll("(?m)^#{1,6}\\s*", "")
+            .replaceAll("(?m)^[-*+]\\s*", "")
+            .replaceAll("---+", " ")
+            .replaceAll("\\*\\*", "")
+            .replaceAll("__", "")
+            .replaceAll("`", "")
+            .replaceAll("(?i)here'?s a refined[^\\n]*", "")
+            .replaceAll("(?i)improved version[^\\n]*", "")
+            .replaceAll("(?i)professional summary:?", "");
+
+        text = text.replaceAll("\\s+", " ").trim();
+
+        if (text.length() > 450) {
+            int cutoff = text.lastIndexOf('.', 450);
+            if (cutoff < 150) {
+                cutoff = 450;
+            }
+            text = text.substring(0, Math.min(cutoff + 1, text.length())).trim();
+            if (!text.endsWith(".")) {
+                text = text + "...";
+            }
+        }
+
+        return text;
     }
 
     private void addSummarySection(Document document, String summary, DeviceRgb maroon, DeviceRgb darkGray, DeviceRgb gold) {
