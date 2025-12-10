@@ -249,41 +249,46 @@ style.textContent = `
   .grid-pattern {
     background-image: linear-gradient(
         to right,
-        rgba(128, 0, 0, 0.14) 1px,
+        rgba(128, 0, 0, 0.24) 1px,
         transparent 1px
       ),
       linear-gradient(
         to bottom,
-        rgba(212, 175, 55, 0.18) 1px,
+        rgba(212, 175, 55, 0.26) 1px,
         transparent 1px
       );
-    background-size: 48px 48px;
-    mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.9), transparent 75%);
+    background-size: 42px 42px;
   }
 
   .dark .grid-pattern {
     background-image: linear-gradient(
         to right,
-        rgba(212, 175, 55, 0.25) 1px,
+        rgba(212, 175, 55, 0.32) 1px,
         transparent 1px
       ),
       linear-gradient(
         to bottom,
-        rgba(128, 0, 0, 0.22) 1px,
+        rgba(128, 0, 0, 0.28) 1px,
         transparent 1px
       );
   }
 
   .grid-veil {
-    background: radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.35), transparent 55%),
-      radial-gradient(circle at 80% 30%, rgba(128, 0, 0, 0.25), transparent 60%),
-      radial-gradient(circle at 50% 70%, rgba(128, 0, 0, 0.18), transparent 65%);
-    mix-blend-mode: screen;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.8), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(212, 175, 55, 0.18), transparent 60%),
+      radial-gradient(circle at 50% 72%, rgba(128, 0, 0, 0.14), transparent 65%);
+    mix-blend-mode: normal;
+    opacity: 0.55;
   }
 
   .dark .grid-veil {
     mix-blend-mode: lighten;
     opacity: 0.7;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(212, 175, 55, 0.35), transparent 55%),
+      radial-gradient(circle at 78% 32%, rgba(128, 0, 0, 0.3), transparent 60%),
+      radial-gradient(circle at 50% 72%, rgba(91, 33, 182, 0.25), transparent 65%);
   }
 `;
 document.head.appendChild(style);
@@ -337,7 +342,7 @@ export default function LandingPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         
         {/* Enhanced Animated Background - Constellation Effects */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
