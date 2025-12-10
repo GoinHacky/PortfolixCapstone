@@ -245,6 +245,46 @@ style.textContent = `
     transform: translateY(-12px) scale(1.02);
     box-shadow: 0 25px 50px rgba(128, 0, 0, 0.25);
   }
+
+  .grid-pattern {
+    background-image: linear-gradient(
+        to right,
+        rgba(128, 0, 0, 0.14) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(212, 175, 55, 0.18) 1px,
+        transparent 1px
+      );
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.9), transparent 75%);
+  }
+
+  .dark .grid-pattern {
+    background-image: linear-gradient(
+        to right,
+        rgba(212, 175, 55, 0.25) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(128, 0, 0, 0.22) 1px,
+        transparent 1px
+      );
+  }
+
+  .grid-veil {
+    background: radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.35), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(128, 0, 0, 0.25), transparent 60%),
+      radial-gradient(circle at 50% 70%, rgba(128, 0, 0, 0.18), transparent 65%);
+    mix-blend-mode: screen;
+  }
+
+  .dark .grid-veil {
+    mix-blend-mode: lighten;
+    opacity: 0.7;
+  }
 `;
 document.head.appendChild(style);
 
@@ -440,6 +480,8 @@ export default function LandingPage() {
         {/* Enhanced Hero Section */}
         <section className="relative z-10 min-h-screen flex items-center py-12 sm:py-16 lg:py-20">
           <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-0 grid-pattern opacity-60" />
+            <div className="absolute inset-0 grid-veil" />
             <div className="absolute left-1/4 top-16 h-40 w-40 rounded-full bg-[#D4AF37]/20 blur-3xl" />
             <div className="absolute right-1/3 bottom-24 h-56 w-56 rounded-full bg-[#800000]/15 blur-3xl" />
           </div>
