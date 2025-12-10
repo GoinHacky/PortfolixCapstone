@@ -632,7 +632,7 @@ function DashboardContent({ setActiveItem, navigate }) {
                 setActiveItem('My Portfolio');
                 navigate('/dashboard/portfolio');
               }}
-              className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-[#800000] dark:text-[#D4AF37] px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
+              className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-white dark:text-white px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               <FolderKanban className="w-6 h-6 relative z-10" />
