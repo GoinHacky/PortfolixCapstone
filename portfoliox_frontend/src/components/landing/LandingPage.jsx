@@ -27,13 +27,6 @@ import {
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
-const TRUSTED = [
-  "Google",
-  "Microsoft",
-  "IBM",
-  "Ayala Group",
-  "Globe"
-];
 
 const STATS = [
   { number: "10K+", label: "Students", icon: <GraduationCap className="w-6 h-6" /> },
@@ -491,21 +484,6 @@ export default function LandingPage() {
                     Watch Demo
                   </button>
                 </div>
-
-                <div className="pt-6">
-                  <div className="flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-400">
-                    <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
-                    Trusted by top innovators
-                    <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-bold text-gray-400 dark:text-gray-500">
-                    {TRUSTED.map((brand) => (
-                      <span key={brand} className="uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
-                        {brand}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Right Content - Enhanced Dashboard Preview */}
@@ -516,87 +494,49 @@ export default function LandingPage() {
                   <div className="absolute -bottom-3 -left-3 w-2 h-2 bg-red-900 rounded-full animate-constellation-2 animate-star-twinkle shadow-lg shadow-red-900/50" style={{animationDelay: '4s'}}></div>
                   <div className="absolute top-1/2 -right-2 w-1.5 h-1.5 bg-red-700 rounded-full animate-constellation-3 animate-star-twinkle shadow-lg shadow-red-700/50" style={{animationDelay: '6s'}}></div>
                   
-                  {/* Main dashboard showcase with layered UI */}
+                  {/* Main dashboard showcase */}
                   <div className="relative group">
-                    <div className="absolute -inset-2 rounded-3xl blur-2xl opacity-70 transition duration-700 group-hover:opacity-90" style={{ background: 'conic-gradient(from 220deg at 50% 50%, rgba(212,175,55,0.6), rgba(128,0,0,0.45), rgba(255,255,255,0.4), rgba(212,175,55,0.6))' }} />
+                    <div className="absolute -inset-2 rounded-[28px] opacity-50 blur-2xl transition duration-500 group-hover:opacity-70" style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.35), rgba(128,0,0,0.35))' }} />
                     <div
-                      className="relative overflow-hidden rounded-3xl border border-[#D4AF37]/25 bg-white/90 dark:bg-gray-900/80 shadow-[0_25px_60px_-25px_rgba(128,0,0,0.45)] group-hover:shadow-[0_35px_70px_-20px_rgba(128,0,0,0.55)] transition-shadow duration-500"
-                      style={{ transform: `translateY(${scrollY * 0.1}px)` }}
+                      className="relative overflow-hidden rounded-[26px] border border-[#D4AF37]/20 bg-white/90 dark:bg-gray-900/80 shadow-[0_18px_45px_-18px_rgba(128,0,0,0.45)]"
+                      style={{ transform: `translateY(${scrollY * 0.08}px)` }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#800000]/8 via-transparent to-[#D4AF37]/10" />
-                      <div className="absolute -top-24 -right-24 h-52 w-52 rounded-full bg-[#D4AF37]/20 blur-3xl" />
-                      <div className="absolute -bottom-28 -left-16 h-52 w-52 rounded-full bg-[#800000]/15 blur-3xl" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#800000]/6 via-transparent to-[#D4AF37]/12" />
+                      <img
+                        src="https://i.postimg.cc/FsKpy6Pp/image-2025-05-24-221727498.png"
+                        alt="PortfolioX dashboard"
+                        className="relative w-full h-auto object-cover"
+                      />
 
-                      <div className="relative p-6 sm:p-8 space-y-6">
-                        <div className="flex items-start justify-between">
+                      <div className="absolute top-5 left-5 flex flex-col gap-3">
+                        <div className="glass-morphism rounded-2xl border border-white/60 dark:border-gray-800/50 px-4 py-3 shadow-lg">
+                          <p className="text-xs font-semibold uppercase tracking-widest text-[#800000] dark:text-[#D4AF37]">Portfolio health</p>
+                          <div className="mt-1 flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-[#800000] dark:text-[#D4AF37]" />
+                            <p className="text-lg font-black text-gray-900 dark:text-white">98% optimized</p>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Last update · 2m ago</p>
+                        </div>
+                        <div className="glass-morphism inline-flex items-center gap-3 rounded-2xl border border-white/50 dark:border-gray-800/50 px-3 py-2 shadow-lg">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#800000] to-[#D4AF37] text-white">
+                            <Star className="h-4 w-4" />
+                          </div>
                           <div>
-                            <p className="text-xs uppercase tracking-[0.35em] text-[#800000] dark:text-[#D4AF37]">Portfolio Pulse</p>
-                            <h3 className="mt-3 text-2xl font-black text-gray-900 dark:text-white">Weekly Momentum</h3>
-                          </div>
-                          <div className="relative">
-                            <div className="absolute inset-0 blur-xl bg-[#D4AF37]/40" />
-                            <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] text-white animate-pulse">
-                              <Sparkles className="h-6 w-6" />
-                            </div>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">Top 5%</p>
+                            <p className="text-[11px] uppercase tracking-[0.25em] text-gray-500 dark:text-gray-400">Peer ranking</p>
                           </div>
                         </div>
+                      </div>
 
-                        <div className="grid grid-cols-3 gap-4">
-                          {[{
-                            label: 'Profile Views',
-                            value: '1,248',
-                            delta: '+18%'
-                          }, {
-                            label: 'Saved by Recruiters',
-                            value: '326',
-                            delta: '+9%'
-                          }, {
-                            label: 'Faculty Witnesses',
-                            value: '42',
-                            delta: '+3'
-                          }].map((item, index) => (
-                            <div key={item.label} className="rounded-2xl border border-white/50 dark:border-gray-800/60 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
-                              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{item.label}</p>
-                              <p className="mt-2 text-xl font-black text-gray-900 dark:text-white">{item.value}</p>
-                              <p className={`text-xs font-semibold ${index === 2 ? 'text-[#800000] dark:text-[#D4AF37]' : 'text-emerald-600 dark:text-emerald-400'}`}>{item.delta} this week</p>
-                              <div className="mt-3 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700">
-                                <div className="h-full rounded-full bg-gradient-to-r from-[#800000] via-[#D4AF37] to-[#800000]" style={{ width: `${index === 0 ? 85 : index === 1 ? 68 : 52}%` }} />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="rounded-3xl border border-white/60 dark:border-gray-800/60 bg-white/80 dark:bg-gray-900/70 p-5 shadow-inner">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Recent milestones</p>
-                              <p className="text-lg font-bold text-gray-900 dark:text-white">3 achievements verified this week</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                              <CheckCircle className="h-4 w-4" />
-                              Synced • 2m ago
-                            </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/95 via-white/70 to-transparent dark:from-gray-900/95 dark:via-gray-900/70 p-5">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">SHOWCASE SNAPSHOT</p>
+                            <p className="mt-2 text-lg font-bold text-gray-900 dark:text-white">Capstone Portfolio • Faculty verified</p>
                           </div>
-
-                          <div className="mt-5 space-y-4">
-                            {[{
-                              title: 'Capstone Showcase',
-                              detail: 'Witnessed by 2 faculty • +12 recruiter views'
-                            }, {
-                              title: 'AI Research Award',
-                              detail: 'Highlighted across mentor dashboards'
-                            }, {
-                              title: 'Industry Credential',
-                              detail: 'Uploaded with blockchain verification'
-                            }].map((entry, idx) => (
-                              <div key={entry.title} className="flex items-start gap-3">
-                                <div className="mt-1 h-2 w-2 rounded-full bg-[#800000] dark:bg-[#D4AF37]" />
-                                <div>
-                                  <p className="text-sm font-bold text-gray-900 dark:text-white">{entry.title}</p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">{entry.detail}</p>
-                                </div>
-                              </div>
-                            ))}
+                          <div className="glass-morphism flex items-center gap-2 rounded-full border border-white/60 dark:border-gray-800/60 px-4 py-2 shadow">
+                            <CheckCircle className="h-4 w-4 text-emerald-500" />
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Live</span>
                           </div>
                         </div>
                       </div>
