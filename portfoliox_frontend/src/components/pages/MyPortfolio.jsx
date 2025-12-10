@@ -124,6 +124,26 @@ export default function MyPortfolio() {
         : [{ label: 'Awaiting Witness', tone: 'warning', icon: Unlock }]
       : []),
   ];
+  const statCards = [
+    {
+      label: 'Skill Tags',
+      value: skillNames.length || '—',
+    },
+    ...(
+      isMicrocredential
+        ? [
+            {
+              label: 'Faculty Witnesses',
+              value: witnessNames.length || '—',
+            },
+            {
+              label: 'Issued On',
+              value: formattedIssueDate || '—',
+            },
+          ]
+        : []
+    ),
+  ];
 
   const programmingLanguages = [
     'C++', 'Java', 'JavaScript', 'Go', 'Python', 'PHP', 'R', 'Ruby', 'SQL', 'Swift',
@@ -1454,8 +1474,9 @@ export default function MyPortfolio() {
       )}
 
       {viewPortfolio && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 md:p-10">
-          <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/10 dark:bg-slate-900">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 md:p-8">
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/10 dark:bg-slate-900">
+
             <div className="pointer-events-none absolute -top-40 -left-32 h-64 w-64 rounded-full bg-[#800000]/20 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-32 -right-24 h-72 w-72 rounded-full bg-[#D4AF37]/20 blur-3xl" />
 
@@ -1498,29 +1519,21 @@ export default function MyPortfolio() {
                   )}
                 </div>
 
-                <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                  {[
-                    { label: 'Skill Tags', value: skillNames.length || '—' },
-                    {
-                      label: isMicrocredential ? 'Faculty Witnesses' : 'Linked Projects',
-                      value: isMicrocredential ? witnessNames.length || '—' : projectNames.length || '—',
-                    },
-                    {
-                      label: isMicrocredential ? 'Certifications Referenced' : 'Certifications',
-                      value: certificationNames.length || '—',
-                    },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 shadow-inner backdrop-blur"
-                    >
-                      <div className="text-xs font-semibold uppercase tracking-widest text-white/70">
-                        {stat.label}
+                {statCards.length > 0 && (
+                  <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {statCards.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 shadow-inner backdrop-blur"
+                      >
+                        <div className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                          {stat.label}
+                        </div>
+                        <div className="mt-1 text-2xl font-bold">{stat.value}</div>
                       </div>
-                      <div className="mt-1 text-2xl font-bold">{stat.value}</div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </header>
 
               <main className="space-y-10 px-8 py-10 sm:px-12">
