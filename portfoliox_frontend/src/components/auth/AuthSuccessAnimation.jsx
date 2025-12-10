@@ -122,7 +122,7 @@ const AuthSuccessAnimation = ({
         <div className={`space-y-3 mb-6 transform transition-all duration-500 delay-200 ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
           <div className="flex items-center justify-center space-x-2">
             <Shield className="w-4 h-4 text-green-500" />
-            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600}`}>
+            <span className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               {isLogin ? 'Session secured' : 'Account protected'}
             </span>
           </div>
