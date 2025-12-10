@@ -164,7 +164,7 @@ export default function MyPortfolio() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       setPortfolios(portfolios.filter(p => p.portfolioID !== portfolioId));
-      showNotification({ message: 'Portfolio deleted successfully!', type: 'success' });
+      showNotification({ message: 'Portfolio deleted successfully!', type: 'delete' });
     } catch (error) {
       console.error('Error deleting portfolio:', error);
       showNotification({ message: 'Failed to delete portfolio', type: 'error' });
@@ -275,7 +275,7 @@ export default function MyPortfolio() {
       setExistingCertPath(null);
       setCertFilePreview(null);
       fetchPortfolios();
-      showNotification({ message: `Portfolio ${editingPortfolio ? 'updated' : 'created'} successfully!`, type: 'success' });
+      showNotification({ message: `Portfolio ${editingPortfolio ? 'updated' : 'created'} successfully!`, type: editingPortfolio ? 'edit' : 'create' });
     } catch (error) {
       console.error(`Error ${editingPortfolio ? 'updating' : 'creating'} portfolio:`, error);
       showNotification({ message: error.message || `Failed to ${editingPortfolio ? 'update' : 'create'} portfolio`, type: 'error' });
