@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../../contexts/ThemeContext';
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
@@ -11,7 +11,19 @@ import {
   Menu,
   X,
   Eye,
-  Heart
+  Heart,
+  Sparkles,
+  Trophy,
+  Users,
+  Zap,
+  Shield,
+  CheckCircle,
+  TrendingUp,
+  Award,
+  BookOpen,
+  Code,
+  Briefcase,
+  GraduationCap
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
@@ -85,6 +97,42 @@ style.textContent = `
     50% { opacity: 1; transform: scale(1) rotate(180deg); }
   }
   
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  
+  @keyframes slide-in-left {
+    0% { opacity: 0; transform: translateX(-100px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes slide-in-right {
+    0% { opacity: 0; transform: translateX(100px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(50px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes bounce-gentle {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+  
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes wave {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-10px) scaleY(0.8); }
+  }
+  
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -105,6 +153,36 @@ style.textContent = `
   
   .animate-sparkle {
     animation: sparkle 2s ease-in-out infinite;
+  }
+  
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 1s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slide-in-right 1s ease-out;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 1s ease-out;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+  
+  .animate-rotate-slow {
+    animation: rotate-slow 20s linear infinite;
+  }
+  
+  .animate-wave {
+    animation: wave 3s ease-in-out infinite;
   }
   
   .animate-constellation-1 {
@@ -168,8 +246,11 @@ export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(89);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [hoveredFeature, setHoveredFeature] = useState(null);
   const navigate = useNavigate();
   const { darkMode, toggleDarkMode } = useTheme();
+  const heroRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -177,8 +258,14 @@ export default function LandingPage() {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
 
+    // Auto-rotate testimonials
+    const testimonialInterval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % 3);
+    }, 5000);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      clearInterval(testimonialInterval);
     };
   }, []);
 
@@ -445,6 +532,235 @@ export default function LandingPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="relative z-10 py-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16 animate-fade-in-up">
+              <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
+                Why Choose <span className="bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">PortfolioX</span>
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Everything you need to create a stunning academic portfolio that stands out
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <Sparkles className="w-8 h-8" />,
+                  title: "AI-Powered Builder",
+                  description: "Let AI enhance your portfolio descriptions and make them shine",
+                  color: "from-purple-500 to-pink-500"
+                },
+                {
+                  icon: <Shield className="w-8 h-8" />,
+                  title: "Secure & Private",
+                  description: "Your data is protected with enterprise-grade security",
+                  color: "from-green-500 to-emerald-500"
+                },
+                {
+                  icon: <TrendingUp className="w-8 h-8" />,
+                  title: "Career Growth",
+                  description: "Track your progress and showcase your achievements",
+                  color: "from-blue-500 to-cyan-500"
+                },
+                {
+                  icon: <Users className="w-8 h-8" />,
+                  title: "Faculty Validation",
+                  description: "Get your work verified by academic professionals",
+                  color: "from-orange-500 to-red-500"
+                },
+                {
+                  icon: <Award className="w-8 h-8" />,
+                  title: "Microcredentials",
+                  description: "Showcase certificates and achievements with pride",
+                  color: "from-yellow-500 to-amber-500"
+                },
+                {
+                  icon: <Code className="w-8 h-8" />,
+                  title: "Project Showcase",
+                  description: "Display your best work with interactive galleries",
+                  color: "from-indigo-500 to-purple-500"
+                }
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className={`group relative p-8 rounded-2xl bg-white dark:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-200 dark:border-gray-700 hover:border-[#D4AF37] cursor-pointer animate-fade-in-up`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onMouseEnter={() => setHoveredFeature(index)}
+                  onMouseLeave={() => setHoveredFeature(null)}
+                >
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center text-white mb-6 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {feature.description}
+                  </p>
+                  {hoveredFeature === index && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#D4AF37] rounded-full flex items-center justify-center animate-bounce-gentle">
+                      <Sparkles className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="relative z-10 py-20 bg-gradient-to-r from-[#800000] to-[#600000] dark:from-[#D4AF37] dark:to-[#B8860B]">
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+              {[
+                { number: "10K+", label: "Students", icon: <GraduationCap className="w-6 h-6" /> },
+                { number: "50K+", label: "Portfolios", icon: <Briefcase className="w-6 h-6" /> },
+                { number: "95%", label: "Success Rate", icon: <Trophy className="w-6 h-6" /> },
+                { number: "24/7", label: "Support", icon: <Shield className="w-6 h-6" /> }
+              ].map((stat, index) => (
+                <div key={index} className="animate-fade-in-up" style={{ animationDelay: `${index * 150}ms` }}>
+                  <div className="w-12 h-12 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center text-white">
+                    {stat.icon}
+                  </div>
+                  <div className="text-3xl lg:text-4xl font-black text-white mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-white/80 font-medium">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="relative z-10 py-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">
+                What Students <span className="bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">Say</span>
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Join thousands of successful students who launched their careers with PortfolioX
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto">
+              <div className="relative">
+                {[
+                  {
+                    name: "Sarah Chen",
+                    role: "Computer Science Student",
+                    content: "PortfolioX helped me land my dream internship at Google. The AI-powered descriptions made my portfolio stand out!",
+                    avatar: "SC"
+                  },
+                  {
+                    name: "Michael Rodriguez",
+                    role: "Engineering Student",
+                    content: "The faculty validation feature gave my projects credibility. Employers were impressed by the professional presentation.",
+                    avatar: "MR"
+                  },
+                  {
+                    name: "Emily Johnson",
+                    role: "Design Student",
+                    content: "I love how easy it is to showcase my creative work. The microcredentials section is perfect for certificates!",
+                    avatar: "EJ"
+                  }
+                ].map((testimonial, index) => (
+                  <div
+                    key={index}
+                    className={`transition-all duration-700 ${activeTestimonial === index ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full absolute'}`}
+                  >
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center mb-6">
+                        <div className="w-16 h-16 bg-gradient-to-r from-[#800000] to-[#D4AF37] rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                          {testimonial.avatar}
+                        </div>
+                        <div>
+                          <h4 className="text-xl font-bold text-gray-900 dark:text-white">
+                            {testimonial.name}
+                          </h4>
+                          <p className="text-[#D4AF37] font-medium">
+                            {testimonial.role}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed italic">
+                        "{testimonial.content}"
+                      </p>
+                      <div className="flex mt-6">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 text-[#D4AF37] fill-current" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Testimonial Dots */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {[...Array(3)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveTestimonial(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      activeTestimonial === index 
+                        ? 'bg-[#800000] dark:bg-[#D4AF37] w-8' 
+                        : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="relative z-10 py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+          <div className="container mx-auto px-6 text-center">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-6">
+                Ready to <span className="bg-gradient-to-r from-[#800000] to-[#D4AF37] bg-clip-text text-transparent">Showcase</span> Your Excellence?
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+                Join thousands of students who are already building their future with PortfolioX
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button 
+                  onClick={handleStartFree}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-[#800000] via-[#600000] to-[#800000] text-white rounded-2xl hover:shadow-2xl transition-all duration-300 text-lg font-black flex items-center justify-center gap-3 hover:scale-110 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                  <span className="relative z-10">Start Free Today</span>
+                  <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
+                </button>
+                <button 
+                  onClick={handleWatchDemo}
+                  className="group px-8 py-4 glass-morphism text-gray-800 dark:text-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 text-lg font-bold flex items-center justify-center gap-3 border-2 border-[#800000]/30 dark:border-[#D4AF37]/30 hover:border-[#800000] dark:hover:border-[#D4AF37] hover:scale-105"
+                >
+                  <Play className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
+                  Watch Demo
+                </button>
+              </div>
+              
+              <div className="mt-12 flex items-center justify-center space-x-8">
+                <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium">No credit card required</span>
+                </div>
+                <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium">Free forever plan</span>
                 </div>
               </div>
             </div>
