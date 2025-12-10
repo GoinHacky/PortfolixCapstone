@@ -197,7 +197,7 @@ export default function MyCourse() {
     <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
       {/* Enhanced Header */}
       <div className="mb-10">
-        <div className="bg-gradient-to-r from-[#2E0000] via-[#4A0000] to-[#2E0000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#800000] via-[#990000] to-[#800000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
@@ -313,7 +313,7 @@ export default function MyCourse() {
                         {p.skills.slice(0, 3).map((skill, idx) => (
                           <span
                             key={idx}
-                            className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#2E0000] dark:bg-slate-800 dark:text-[#FCE7BA] dark:border dark:border-[#F3D996]/40 px-3 py-1 rounded-full text-xs font-semibold shadow-sm transition-colors"
+                            className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
                           >
                             {skill.skillName || skill}
                           </span>
