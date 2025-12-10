@@ -27,21 +27,6 @@ import {
 } from "lucide-react";
 
 const maroon = "bg-[#800000]";
-const TRUSTED = [
-  "Google",
-  "Microsoft",
-  "IBM",
-  "Ayala Group",
-  "Globe"
-];
-
-const STATS = [
-  { number: "10K+", label: "Students", icon: <GraduationCap className="w-6 h-6" /> },
-  { number: "50K+", label: "Portfolios", icon: <Briefcase className="w-6 h-6" /> },
-  { number: "95%", label: "Success Rate", icon: <Trophy className="w-6 h-6" /> },
-  { number: "24/7", label: "Support", icon: <Shield className="w-6 h-6" /> }
-];
-
 const gold = "text-[#D4AF37]";
 const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
 const goldBgSolid = "bg-[#D4AF37]";
@@ -446,11 +431,7 @@ export default function LandingPage() {
 
         {/* Enhanced Hero Section */}
         <section className="relative z-10 min-h-screen flex items-center py-12 sm:py-16 lg:py-20">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/4 top-16 h-40 w-40 rounded-full bg-[#D4AF37]/20 blur-3xl" />
-            <div className="absolute right-1/3 bottom-24 h-56 w-56 rounded-full bg-[#800000]/15 blur-3xl" />
-          </div>
-          <div className="container mx-auto px-3 sm:px-4 md:px-6 py-12 sm:py-16 lg:py-20 relative">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6 py-12 sm:py-16 lg:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
               {/* Left Content */}
               <div className={`space-y-8 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'} transition-all duration-1000`}>
@@ -490,21 +471,6 @@ export default function LandingPage() {
                     <Play className="w-4 h-4 sm:w-5 sm:h-5 text-[#800000] dark:text-[#D4AF37]" />
                     Watch Demo
                   </button>
-                </div>
-
-                <div className="pt-6">
-                  <div className="flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-400">
-                    <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
-                    Trusted by top innovators
-                    <span className="h-px w-8 bg-gray-300 dark:bg-gray-600" />
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-bold text-gray-400 dark:text-gray-500">
-                    {TRUSTED.map((brand) => (
-                      <span key={brand} className="uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
-                        {brand}
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
 
