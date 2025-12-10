@@ -1488,7 +1488,7 @@ export default function MyPortfolio() {
             </button>
 
             <div className="relative z-20 max-h-[90vh] overflow-y-auto">
-              <header className="bg-gradient-to-br from-[#800000] via-[#991010] to-[#b83a24] px-8 pb-10 pt-12 text-white sm:px-12">
+              <header className="bg-gradient-to-br from-[#b30d18] via-[#d92b33] to-[#ff6a5c] px-8 pb-10 pt-12 text-white sm:px-12">
                 <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">
                   Student Portfolio
                 </span>
@@ -1524,12 +1524,12 @@ export default function MyPortfolio() {
                     {statCards.map((stat) => (
                       <div
                         key={stat.label}
-                        className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 shadow-inner backdrop-blur"
+                        className="rounded-2xl border border-white/25 bg-gradient-to-br from-[#c81b27]/90 via-[#e23c3f]/85 to-[#ff8063]/80 px-5 py-4 shadow-lg shadow-[#7a1111]/25 backdrop-blur"
                       >
-                        <div className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                        <div className="text-xs font-semibold uppercase tracking-widest text-white/85">
                           {stat.label}
                         </div>
-                        <div className="mt-1 text-2xl font-bold">{stat.value}</div>
+                        <div className="mt-1 text-2xl font-bold text-white">{stat.value}</div>
                       </div>
                     ))}
                   </div>
@@ -1540,7 +1540,7 @@ export default function MyPortfolio() {
                 <section className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
                   <div className="space-y-8">
                     <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
-                      <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                      <div className="flex items-center gap-3 text-[#c23028] dark:text-[#F3D996]">
                         <FileText className="h-5 w-5" />
                         <h3 className="text-lg font-semibold tracking-tight">Narrative Overview</h3>
                       </div>
@@ -1561,7 +1561,7 @@ export default function MyPortfolio() {
 
                     {skillNames.length > 0 && (
                       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
-                        <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                        <div className="flex items-center gap-3 text-[#c23028] dark:text-[#F3D996]">
                           <Sparkles className="h-5 w-5" />
                           <h3 className="text-lg font-semibold tracking-tight">Core Skills & Tools</h3>
                         </div>
@@ -1569,7 +1569,7 @@ export default function MyPortfolio() {
                           {skillNames.map((skill) => (
                             <span
                               key={skill}
-                              className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-gradient-to-r from-[#fff8ec] to-[#f4dfac] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#800000] shadow-sm dark:border-[#D4AF37]/30 dark:from-[#5c3d03] dark:to-[#8d5f0f] dark:text-[#FCE7BA]"
+                              className="inline-flex items-center gap-2 rounded-full border border-[#ffd7ae]/40 bg-gradient-to-r from-[#ffe9cf] to-[#ffd3a2] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#b91d21] shadow-sm dark:border-[#F3D996]/30 dark:from-[#5c3d03] dark:to-[#8d5f0f] dark:text-[#FCE7BA]"
                             >
                               <BadgeCheck className="h-3.5 w-3.5" />
                               {skill}
@@ -1583,14 +1583,14 @@ export default function MyPortfolio() {
                       <div className="grid gap-6 md:grid-cols-2">
                         {projectNames.length > 0 && (
                           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
-                            <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                            <div className="flex items-center gap-3 text-[#c23028] dark:text-[#F3D996]">
                               <Folder className="h-5 w-5" />
                               <h3 className="text-lg font-semibold tracking-tight">Supporting Projects</h3>
                             </div>
                             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-200">
                               {projectNames.map((name, idx) => (
                                 <li key={idx} className="flex gap-3">
-                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#800000] dark:bg-[#D4AF37]" />
+                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#c23028] dark:bg-[#F3D996]" />
                                   <span>{name}</span>
                                 </li>
                               ))}
@@ -1600,14 +1600,14 @@ export default function MyPortfolio() {
 
                         {certificationNames.length > 0 && (
                           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
-                            <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                            <div className="flex items-center gap-3 text-[#c23028] dark:text-[#F3D996]">
                               <Award className="h-5 w-5" />
                               <h3 className="text-lg font-semibold tracking-tight">Certifications</h3>
                             </div>
                             <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-200">
                               {certificationNames.map((name, idx) => (
                                 <li key={idx} className="flex gap-3">
-                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#800000] dark:bg-[#D4AF37]" />
+                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#c23028] dark:bg-[#F3D996]" />
                                   <span>{name}</span>
                                 </li>
                               ))}
@@ -1626,7 +1626,7 @@ export default function MyPortfolio() {
                       <div className="mt-5 space-y-4">
                         {quickFacts.map(({ icon: Icon, label, value, href }) => (
                           <div key={label} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200">
-                            <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#800000]/10 text-[#800000] dark:bg-[#D4AF37]/10 dark:text-[#D4AF37]">
+                            <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#c23028]/10 text-[#c23028] dark:bg-[#F3D996]/10 dark:text-[#F3D996]">
                               <Icon className="h-4 w-4" />
                             </div>
                             <div>
@@ -1636,7 +1636,7 @@ export default function MyPortfolio() {
                                   href={href}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-[#800000] underline transition hover:text-[#5a0000] dark:text-[#F3D996]"
+                                  className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-[#c23028] underline transition hover:text-[#8f1216] dark:text-[#F3D996]"
                                 >
                                   <Link2 className="h-4 w-4" />
                                   Visit GitHub
@@ -1668,7 +1668,7 @@ export default function MyPortfolio() {
                                 <span>Tap to expand certificate</span>
                                 <button
                                   onClick={() => setPreviewImage(certificateImageUrl)}
-                                  className="inline-flex items-center gap-2 rounded-full bg-[#800000] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white shadow md:text-xs"
+                                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#b30d18] via-[#d92b33] to-[#ff6a5c] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white shadow md:text-xs"
                                 >
                                   View Full
                                 </button>
@@ -1683,7 +1683,7 @@ export default function MyPortfolio() {
                                     href={`${getApiBaseUrl()}/${certificatePath.replace(/^uploads[\\/]/, 'uploads/')}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#800000] underline hover:text-[#5a0000] dark:text-[#F3D996]"
+                                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#c23028] underline hover:text-[#8f1216] dark:text-[#F3D996]"
                                   >
                                     <FileText className="h-4 w-4" />
                                     Download attachment
@@ -1763,7 +1763,7 @@ export default function MyPortfolio() {
                         href={viewPortfolio.githubLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-[#800000] px-5 py-2 text-sm font-semibold text-[#800000] transition hover:bg-[#800000] hover:text-white dark:border-[#D4AF37] dark:text-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-slate-900"
+                        className="inline-flex items-center gap-2 rounded-full border border-[#c23028] px-5 py-2 text-sm font-semibold text-[#c23028] transition hover:bg-[#c23028] hover:text-white dark:border-[#F3D996] dark:text-[#F3D996] dark:hover:bg-[#F3D996] dark:hover:text-slate-900"
                       >
                         <Link2 className="h-4 w-4" />
                         Open GitHub project
@@ -1771,7 +1771,7 @@ export default function MyPortfolio() {
                     )}
                     <button
                       onClick={() => setViewPortfolio(null)}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#800000] px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-[#5a0000] dark:bg-[#D4AF37] dark:text-slate-900 dark:hover:bg-[#f7d36a]"
+                      className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#b30d18] via-[#d92b33] to-[#ff6a5c] px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110 dark:bg-[#F3D996] dark:text-slate-900 dark:hover:bg-[#f7d36a]"
                     >
                       Close Overview
                     </button>
