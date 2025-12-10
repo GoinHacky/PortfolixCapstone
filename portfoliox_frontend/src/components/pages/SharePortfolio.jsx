@@ -49,11 +49,25 @@ export default function SharePortfolio() {
         throw new Error('Failed to fetch portfolios');
       }
 
-      const data = await response.json();
-      setPortfolios(data);
+      const rawData = await response.json();
+      const normalizedData = rawData.map((portfolio) => {
+        if (!portfolio?.link) return portfolio;
+        const link = portfolio.link;
+        const isActive = typeof link.isActive === 'boolean' ? link.isActive : link.active === true;
+        return {
+          ...portfolio,
+          link: {
+            ...link,
+            isActive,
+            active: isActive,
+          },
+        };
+      });
+
+      setPortfolios(normalizedData);
       
       // Fetch existing links for each portfolio
-      data.forEach(portfolio => {
+      normalizedData.forEach(portfolio => {
         fetchPortfolioLink(portfolio.portfolioID);
       });
     } catch (error) {
@@ -106,7 +120,18 @@ export default function SharePortfolio() {
         ...prev,
         [portfolioId]: link
       }));
-      setPortfolios(prev => prev.map(p => p.portfolioID === portfolioId ? { ...p, link: { ...p.link, isActive: true } } : p));
+      setPortfolios(prev => prev.map(p =>
+        p.portfolioID === portfolioId
+          ? {
+              ...p,
+              link: {
+                ...p.link,
+                isActive: true,
+                active: true,
+              },
+            }
+          : p
+      ));
     } catch (error) {
       console.error('Error:', error);
       showNotification({ message: 'Failed to generate link', type: 'error' });
@@ -167,7 +192,18 @@ export default function SharePortfolio() {
       });
       if (response.ok) {
         // Update just this portfolio's link in state
-        setPortfolios(prev => prev.map(p => p.portfolioID === portfolioId ? { ...p, link: { ...p.link, isActive: !currentStatus } } : p));
+        setPortfolios(prev => prev.map(p =>
+          p.portfolioID === portfolioId
+            ? {
+                ...p,
+                link: {
+                  ...p.link,
+                  isActive: !currentStatus,
+                  active: !currentStatus,
+                },
+              }
+            : p
+        ));
       } else {
         showNotification({ message: 'Failed to update public/private status', type: 'error' });
       }
@@ -243,7 +279,9 @@ export default function SharePortfolio() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredPortfolios.map((portfolio) => (
+        {filteredPortfolios.map((portfolio) => {
+          const isLinkActive = portfolio.link?.isActive ?? portfolio.link?.active ?? false;
+          return (
           <div
             key={portfolio.portfolioID}
             className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-800 hover:border-[#D4AF37] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
@@ -266,14 +304,14 @@ export default function SharePortfolio() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-4 bg-white/70 dark:bg-gray-800/70 rounded-xl border border-gray-100 dark:border-gray-700">
                   <div className="flex-1 truncate mr-2">
-                    {portfolio.link.isActive ? (
+                    {isLinkActive ? (
                       <span className="text-sm text-gray-700 dark:text-gray-200">{links[portfolio.portfolioID]}</span>
                     ) : (
                       <span className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-yellow-700 dark:text-yellow-300 text-sm">This portfolio is <b>private</b>. Unlock to enable sharing.</span>
                     )}
                   </div>
                   <div className="flex space-x-2">
-                    {portfolio.link.isActive && (
+                    {isLinkActive && (
                       <>
                         <button
                           onClick={() => copyToClipboard(links[portfolio.portfolioID])}
@@ -295,12 +333,12 @@ export default function SharePortfolio() {
                       </>
                     )}
                     <button
-                      onClick={() => togglePublicStatus(portfolio.portfolioID, portfolio.link.isActive)}
-                      className={`p-1.5 rounded-full border ml-2 ${portfolio.link.isActive ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-gray-100'} hover:bg-gray-200 transition-colors`}
-                      title={portfolio.link.isActive ? 'Set Private (Lock)' : 'Set Public (Unlock)'}
+                      onClick={() => togglePublicStatus(portfolio.portfolioID, isLinkActive)}
+                      className={`p-1.5 rounded-full border ml-2 ${isLinkActive ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-gray-100'} hover:bg-gray-200 transition-colors`}
+                      title={isLinkActive ? 'Set Private (Lock)' : 'Set Public (Unlock)'}
                       disabled={!!actionLoading[portfolio.portfolioID]}
                     >
-                      {portfolio.link.isActive ? (
+                      {isLinkActive ? (
                         <Unlock className="w-5 h-5 text-green-600" />
                       ) : (
                         <Lock className="w-5 h-5 text-[#D4AF37]" />
@@ -323,7 +361,7 @@ export default function SharePortfolio() {
               </button>
             )}
           </div>
-        ))}
+        )})}
       </div>
 
       {filteredPortfolios.length === 0 && (
