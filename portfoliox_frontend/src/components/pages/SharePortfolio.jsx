@@ -277,7 +277,7 @@ export default function SharePortfolio() {
                       <>
                         <button
                           onClick={() => copyToClipboard(links[portfolio.portfolioID])}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors"
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors"
                           title="Copy link"
                           disabled={!!actionLoading[portfolio.portfolioID]}
                         >
@@ -287,7 +287,7 @@ export default function SharePortfolio() {
                           href={links[portfolio.portfolioID]}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:hover:text-[#D4AF37] transition-colors"
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-[#800000] dark:text-[#D4AF37] dark:hover:text-[#D4AF37] transition-colors"
                           title="Open link"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -342,15 +342,15 @@ export default function SharePortfolio() {
             <div className="bg-white/70 dark:bg-gray-900/70 flex items-center justify-center font-serif rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-lg">
               <div className="w-full max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/90 border border-gray-100 dark:border-gray-700 rounded-xl p-8">
                 <div className="flex items-center mb-2">
-                  <svg className="w-5 h-5 text-[#800000] mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+                  <svg className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
                   <div className="ml-3">
-                    <h1 className="text-2xl font-bold text-[#800000] tracking-tight">{previewPortfolio.portfolioTitle}</h1>
+                    <h1 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37] tracking-tight">{previewPortfolio.portfolioTitle}</h1>
                     <div className="text-sm text-gray-500">{previewPortfolio.category}</div>
                   </div>
                 </div>
                 <hr className="my-4 border-gray-300" />
                 <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-[#800000] mb-1">Description</h2>
+                  <h2 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Description</h2>
                   <div className="text-gray-700 leading-relaxed mb-2 text-left">
                     {previewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
                       <div key={index} className="mb-1">
@@ -384,7 +384,7 @@ export default function SharePortfolio() {
                 </div>
                 {previewPortfolio.skills && previewPortfolio.skills.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-[#800000] mb-2">Skills</h3>
+                    <h3 className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37] mb-2">Skills</h3>
                     <ul className="flex flex-wrap gap-2">
                       {previewPortfolio.skills.map((skill, idx) => (
                         <li key={idx} className="bg-gray-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800">{skill.skillName || skill}</li>
@@ -394,7 +394,7 @@ export default function SharePortfolio() {
                 )}
                 {previewPortfolio.certifications && previewPortfolio.certifications.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-[#800000] mb-2">Certifications</h3>
+                    <h3 className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37] mb-2">Certifications</h3>
                     <ul className="flex flex-wrap gap-2">
                       {previewPortfolio.certifications.map((cert, idx) => (
                         <li key={idx} className="bg-gray-200 px-3 py-1 rounded-full text-xs font-medium text-gray-800">{cert.certTitle || cert}</li>
@@ -404,7 +404,7 @@ export default function SharePortfolio() {
                 )}
                 {previewPortfolio.projects && previewPortfolio.projects.length > 0 && (
                   <div className="mb-6">
-                    <h2 className="text-lg font-semibold text-[#800000] mb-2">Projects</h2>
+                    <h2 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-2">Projects</h2>
                     <ul className="space-y-2">
                       {previewPortfolio.projects.map((proj, idx) => (
                         <li key={idx} className="bg-gray-50 border-l-4 border-[#800000] pl-3 py-2 text-sm text-gray-800">{proj.projectName || proj}</li>

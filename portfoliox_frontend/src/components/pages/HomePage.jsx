@@ -45,7 +45,7 @@ const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
 const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
 const goldBgSolid = "bg-[#D4AF37]";
-const maroonText = "text-[#800000]";
+const maroonText = "text-[#800000] dark:text-[#D4AF37]";
 const goldText = "text-[#D4AF37]";
 
 export default function HomePage() {
@@ -140,6 +140,26 @@ export default function HomePage() {
 
   const handleMenuItemSelect = (itemId) => {
     setActiveItem(itemId);
+    
+    // Update URL to reflect the current tab
+    switch (itemId) {
+      case 'My Portfolio':
+        navigate('/dashboard/portfolio');
+        break;
+      case 'My Course':
+        navigate('/dashboard/courses');
+        break;
+      case 'Share Portfolio':
+        navigate('/dashboard/share');
+        break;
+      case 'Profile':
+        navigate('/dashboard/profile');
+        break;
+      case 'Dashboard':
+      default:
+        navigate('/dashboard');
+        break;
+    }
   };
 
   const renderContent = () => {
@@ -281,7 +301,7 @@ export default function HomePage() {
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3 transition-colors rounded-t-xl"
                     >
-                      <FileText className="w-4 h-4 text-[#800000]" />
+                      <FileText className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
                       <span className="text-gray-900 dark:text-white">Project</span>
                     </button>
                     <button
@@ -504,7 +524,7 @@ function DashboardContent({ setActiveItem, navigate }) {
       label: 'Projects', 
       value: portfolioStats.loading ? '...' : portfolioStats.projects,
       change: portfolioStats.loading ? 'Loading...' : `${portfolioStats.projects > 0 ? '+1' : '0'} this month`, 
-      color: 'text-[#800000] dark:text-[#D4AF37]',
+      color: 'text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]',
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
     },
@@ -513,7 +533,7 @@ function DashboardContent({ setActiveItem, navigate }) {
       label: 'Microcredentials', 
       value: portfolioStats.loading ? '...' : portfolioStats.microcredentials,
       change: portfolioStats.loading ? 'Loading...' : `${portfolioStats.microcredentials > 0 ? '+1' : '0'} this week`, 
-      color: 'text-[#800000] dark:text-[#D4AF37]',
+      color: 'text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]',
       bgColor: 'bg-gradient-to-br from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20',
       trend: 'up'
     },
@@ -612,7 +632,7 @@ function DashboardContent({ setActiveItem, navigate }) {
                 setActiveItem('My Portfolio');
                 navigate('/dashboard/portfolio');
               }}
-              className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-[#800000] px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
+              className="group bg-gradient-to-r from-[#D4AF37] via-[#B8860B] to-[#D4AF37] text-[#800000] dark:text-[#D4AF37] px-8 py-4 rounded-2xl font-black hover:shadow-2xl transition-all duration-300 hover:scale-110 flex items-center space-x-3 relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               <FolderKanban className="w-6 h-6 relative z-10" />
@@ -647,9 +667,9 @@ function DashboardContent({ setActiveItem, navigate }) {
                 </div>
                 <div className="flex items-center space-x-1">
                   {stat.trend === 'up' ? (
-                    <TrendingUp className={`w-4 h-4 ${stat.isSkills ? 'text-[#D4AF37]' : 'text-[#800000]'}`} />
+                    <TrendingUp className={`w-4 h-4 ${stat.isSkills ? 'text-[#D4AF37]' : 'text-[#800000] dark:text-[#D4AF37]'}`} />
                   ) : (
-                    <TrendingDown className="w-4 h-4 text-[#800000]" />
+                    <TrendingDown className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
                   )}
                 </div>
               </div>
@@ -658,18 +678,18 @@ function DashboardContent({ setActiveItem, navigate }) {
                   {stat.value}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">{stat.label}</p>
-                <p className={`text-xs font-medium flex items-center space-x-1 ${stat.isSkills ? 'text-[#D4AF37] dark:text-[#D4AF37]' : 'text-[#800000] dark:text-[#D4AF37]'}`}>
+                <p className={`text-xs font-medium flex items-center space-x-1 ${stat.isSkills ? 'text-[#D4AF37] dark:text-[#D4AF37]' : 'text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]'}`}>
                   <span>{stat.change}</span>
                 </p>
                 {stat.isSkills && dashboardData.skills.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1">
                     {dashboardData.skills.slice(0, 3).map((skill, idx) => (
-                      <span key={idx} className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
+                      <span key={idx} className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
                         {skill}
                       </span>
                     ))}
                     {dashboardData.skills.length > 3 && (
-                      <span className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
+                      <span className="bg-[#D4AF37]/20 dark:bg-[#D4AF37]/30 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] px-2 py-0.5 rounded-md text-xs font-bold">
                         +{dashboardData.skills.length - 3}
                       </span>
                     )}
@@ -710,7 +730,7 @@ function DashboardContent({ setActiveItem, navigate }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors">
+                          <h4 className="font-bold text-gray-900 dark:text-white mb-1 group-hover:text-[#800000] dark:text-[#D4AF37] dark:group-hover:text-[#D4AF37] transition-colors">
                             {item.portfolioTitle}
                           </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
@@ -728,7 +748,7 @@ function DashboardContent({ setActiveItem, navigate }) {
                                 href={item.githubLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-[#800000] dark:text-[#D4AF37] hover:underline font-medium transition-colors"
+                                className="flex items-center gap-1 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:underline font-medium transition-colors"
                               >
                                 <Github className="w-3 h-3" />
                                 View Project
@@ -741,11 +761,11 @@ function DashboardContent({ setActiveItem, navigate }) {
                         <div className="flex items-center space-x-2 ml-4">
                           {item.category?.toLowerCase() === 'project' ? (
                             <div className="p-2 bg-[#800000]/10 dark:bg-[#D4AF37]/10 rounded-xl">
-                              <Code className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
+                              <Code className="w-4 h-4 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
                             </div>
                           ) : (
                             <div className="p-2 bg-[#D4AF37]/10 dark:bg-[#800000]/10 rounded-xl">
-                              <Trophy className="w-4 h-4 text-[#D4AF37] dark:text-[#800000]" />
+                              <Trophy className="w-4 h-4 text-[#D4AF37] dark:text-[#800000] dark:text-[#D4AF37]" />
                             </div>
                           )}
                         </div>
@@ -757,7 +777,7 @@ function DashboardContent({ setActiveItem, navigate }) {
             ) : (
               <div className="text-center py-12">
                 <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                  <Activity className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
+                  <Activity className="w-8 h-8 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 font-medium">No recent activity to show</p>
                 <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Start by adding your first project!</p>
@@ -790,10 +810,10 @@ function DashboardContent({ setActiveItem, navigate }) {
                   <Plus className="w-5 h-5" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Add New Project</h4>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Showcase your work</p>
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] mb-1">Add New Project</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-sm">Showcase your work</p>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </div>
             </button>
             <button 
@@ -804,14 +824,14 @@ function DashboardContent({ setActiveItem, navigate }) {
               className="w-full group relative bg-gradient-to-r from-[#D4AF37]/10 via-[#800000]/10 to-[#D4AF37]/10 dark:from-[#D4AF37]/20 dark:via-[#800000]/20 dark:to-[#D4AF37]/20 hover:from-[#D4AF37]/20 hover:via-[#800000]/20 hover:to-[#D4AF37]/20 p-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl border border-[#D4AF37]/20 dark:border-[#800000]/20"
             >
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-[#D4AF37] text-[#800000] rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded-2xl group-hover:scale-110 transition-transform duration-300">
                   <Award className="w-5 h-5" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Add Microcredential</h4>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Highlight your achievements</p>
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] mb-1">Add Microcredential</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-sm">Highlight your achievements</p>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </div>
             </button>
             <button 
@@ -826,10 +846,10 @@ function DashboardContent({ setActiveItem, navigate }) {
                   <Share2 className="w-5 h-5" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] mb-1">Share Portfolio</h4>
-                  <p className="text-[#800000] dark:text-[#D4AF37] text-sm">Show your work to the world</p>
+                  <h4 className="font-bold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] mb-1">Share Portfolio</h4>
+                  <p className="text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-sm">Show your work to the world</p>
                 </div>
-                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                <ArrowUpRight className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </div>
             </button>
             {/* Skills Overview */}
@@ -843,7 +863,7 @@ function DashboardContent({ setActiveItem, navigate }) {
                   {dashboardData.skills.slice(0, 6).map((skill, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1.5 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] rounded-xl text-xs font-medium border border-[#800000]/20 dark:border-[#D4AF37]/20"
+                      className="px-3 py-1.5 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] rounded-xl text-xs font-medium border border-[#800000]/20 dark:border-[#D4AF37]/20"
                     >
                       {skill}
                     </span>
