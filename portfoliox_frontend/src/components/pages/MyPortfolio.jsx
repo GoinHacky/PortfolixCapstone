@@ -550,7 +550,7 @@ export default function MyPortfolio() {
     <div className="p-8 bg-gradient-to-br from-transparent via-gray-50/40 to-transparent dark:from-transparent dark:via-gray-900/30 dark:to-transparent min-h-screen">
       {/* Enhanced Header */}
       <div className="mb-10">
-        <div className="bg-gradient-to-r from-[#2E0000] via-[#4A0000] to-[#2E0000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#800000] via-[#990000] to-[#800000] rounded-3xl p-8 shadow-2xl border border-[#D4AF37]/20 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4AF37]/10 rounded-full blur-3xl"></div>
@@ -716,7 +716,7 @@ export default function MyPortfolio() {
                   setEnhancingResume(false);
                 }
               }}
-              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#4A0000] dark:text-[#D4AF37] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
+              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
             >
               {enhancingResume ? (
                 <>
@@ -748,14 +748,14 @@ export default function MyPortfolio() {
       <div className="mb-10">
         <div className="relative max-w-2xl mx-auto">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-[#4A0000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
+            <Search className="h-5 w-5 text-[#800000] dark:text-[#D4AF37]" />
           </div>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search portfolios by title, description, or content..."
-            className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-md focus:ring-4 focus:ring-[#4A0000]/25 focus:border-[#4A0000] dark:focus:border-[#D4AF37] bg-white dark:bg-gray-900 dark:text-white transition-all duration-300"
+            className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl shadow-md focus:ring-4 focus:ring-[#800000]/25 focus:border-[#800000] dark:focus:border-[#D4AF37] bg-white dark:bg-gray-900 dark:text-white transition-all duration-300"
           />
           {searchTerm && (
             <button
@@ -782,10 +782,10 @@ export default function MyPortfolio() {
       {/* Portfolio Folders */}
       <div className="space-y-6">
         {/* Projects Folder */}
-        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#4A0000]/15 dark:border-[#D4AF37]/10 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#800000]/15 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('projects')}
-            className="w-full flex items-center gap-3 p-4 hover:bg-[#4A0000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
+            className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
           >
             {expandedFolders.projects ? (
               <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
@@ -794,7 +794,7 @@ export default function MyPortfolio() {
             )}
             <div className="flex-1 flex items-center">
               <span className="font-semibold text-gray-800 dark:text-white">Projects</span>
-              <span className="ml-2 px-2 py-0.5 bg-[#4A0000]/15 dark:bg-[#D4AF37]/20 text-[#4A0000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/15 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.projects.length}
               </span>
             </div>
@@ -810,7 +810,7 @@ export default function MyPortfolio() {
               <div className="mb-4">
                 <button
                   onClick={() => handleAddPortfolio('project')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A0000] to-[#2E0000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
                 >
                   <Plus size={16} />
                   Add New Project
@@ -823,7 +823,7 @@ export default function MyPortfolio() {
                   >
                     <div className="p-6">
                       <div className="flex items-start gap-3 mb-4">
-                        <div className="p-2 bg-gradient-to-br from-[#4A0000] to-[#2E0000] rounded-xl shadow-md">
+                        <div className="p-2 bg-gradient-to-br from-[#800000] to-[#600000] rounded-xl shadow-md">
                           <FileText className="w-5 h-5 text-[#D4AF37]" />
                         </div>
                         <div className="flex-1">
@@ -863,7 +863,7 @@ export default function MyPortfolio() {
                           </button>
                           <button
                             onClick={() => enhancePortfolioDescription(portfolio.portfolioID)}
-                            className="p-2 text-[#4A0000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:bg-[#4A0000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Enhance description with AI"
                             disabled={enhancingDescriptions[portfolio.portfolioID]}
                           >
@@ -912,10 +912,10 @@ export default function MyPortfolio() {
         </div>
 
         {/* Microcredentials Folder */}
-        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#4A0000]/15 dark:border-[#D4AF37]/10 overflow-hidden">
+        <div className="bg-white/90 dark:bg-gray-900/80 text-gray-900 dark:text-white backdrop-blur rounded-2xl shadow-lg border border-[#800000]/15 dark:border-[#D4AF37]/10 overflow-hidden">
           <button
             onClick={() => toggleFolder('microcredentials')}
-            className="w-full flex items-center gap-3 p-4 hover:bg-[#4A0000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
+            className="w-full flex items-center gap-3 p-4 hover:bg-[#800000]/5 dark:hover:bg-[#D4AF37]/10 transition-colors border-b border-gray-100 dark:border-gray-800"
           >
             {expandedFolders.microcredentials ? (
               <FolderOpen className="w-6 h-6 text-[#D4AF37]" />
@@ -924,7 +924,7 @@ export default function MyPortfolio() {
             )}
             <div className="flex-1 flex items-center">
               <span className="font-semibold text-gray-800 dark:text-white">Microcredentials</span>
-              <span className="ml-2 px-2 py-0.5 bg-[#4A0000]/15 dark:bg-[#D4AF37]/20 text-[#4A0000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/15 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.microcredentials.length}
               </span>
             </div>
@@ -940,7 +940,7 @@ export default function MyPortfolio() {
               <div className="mb-4">
                 <button
                   onClick={() => handleAddPortfolio('microcredentials')}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4A0000] to-[#2E0000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#800000] to-[#600000] text-white rounded-xl shadow-sm hover:shadow-md transition-all text-sm"
                 >
                   <Plus size={16} />
                   Add New Microcredential
@@ -953,7 +953,7 @@ export default function MyPortfolio() {
                   >
                     <div className="p-6">
                       <div className="flex items-start gap-3 mb-4">
-                        <div className="p-2 bg-gradient-to-br from-[#4A0000] to-[#2E0000] rounded-xl shadow-md">
+                        <div className="p-2 bg-gradient-to-br from-[#800000] to-[#600000] rounded-xl shadow-md">
                           <FileText className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
@@ -962,7 +962,7 @@ export default function MyPortfolio() {
                         </div>
                       </div>
                       <div className="space-y-3 mb-4">
-                        <p className="text-sm font-semibold text-[#4A0000] dark:text-[#D4AF37] dark:text-[#D4AF37]">{portfolio.certTitle}</p>
+                        <p className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37]">{portfolio.certTitle}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
                         {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 ? (
                           <div className="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-2">
