@@ -108,7 +108,7 @@ export default function MyCourse() {
     return (
       <div className="p-8 flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 mx-auto animate-spin text-[#800000]" />
+          <Loader2 className="h-12 w-12 mx-auto animate-spin text-[#800000] dark:text-[#D4AF37]" />
           <p className="text-gray-600 dark:text-gray-400 font-medium">Loading your courses...</p>
         </div>
       </div>
@@ -221,7 +221,7 @@ export default function MyCourse() {
           {courses.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <BookOpen className="w-10 h-10 text-[#800000] dark:text-[#D4AF37]" />
+                <BookOpen className="w-10 h-10 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
               </div>
               <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">You are not enrolled in any course yet.</p>
               <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">Contact your faculty to enroll in a course</p>
@@ -236,11 +236,11 @@ export default function MyCourse() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="p-3 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <GraduationCap className="w-6 h-6 text-[#800000] dark:text-[#D4AF37]" />
+                      <GraduationCap className="w-6 h-6 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
                     </div>
-                    <span className="text-xs font-semibold text-[#800000] dark:text-[#D4AF37] bg-[#800000]/10 dark:bg-[#D4AF37]/10 px-3 py-1 rounded-full">{course.courseCode}</span>
+                    <span className="text-xs font-semibold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] bg-[#800000]/10 dark:bg-[#D4AF37]/10 px-3 py-1 rounded-full">{course.courseCode}</span>
                   </div>
-                  <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors">{course.courseName}</div>
+                  <div className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:text-[#D4AF37] dark:group-hover:text-[#D4AF37] transition-colors">{course.courseName}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">Click to view projects →</div>
                 </div>
               ))}
@@ -255,7 +255,7 @@ export default function MyCourse() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Selected Course</div>
-                <div className="text-3xl font-black text-[#800000] dark:text-[#D4AF37] mb-1">{selectedCourse.courseCode}</div>
+                <div className="text-3xl font-black text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] mb-1">{selectedCourse.courseCode}</div>
                 <div className="text-lg text-gray-700 dark:text-gray-300 font-semibold">{selectedCourse.courseName}</div>
               </div>
               <div className="flex gap-3">
@@ -282,7 +282,7 @@ export default function MyCourse() {
                 <p className="text-gray-600 dark:text-gray-400 text-sm">Showcase your work and achievements</p>
               </div>
               {projectsLoading && (
-                <div className="flex items-center gap-2 text-[#800000]">
+                <div className="flex items-center gap-2 text-[#800000] dark:text-[#D4AF37]">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
@@ -291,7 +291,7 @@ export default function MyCourse() {
             {courseProjects.length === 0 && !projectsLoading ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                  <FolderGit2 className="w-10 h-10 text-[#800000] dark:text-[#D4AF37]" />
+                  <FolderGit2 className="w-10 h-10 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 font-medium mb-2">No projects yet for this course</p>
                 <p className="text-gray-500 dark:text-gray-500 text-sm">Click "Create Project" to showcase your first project</p>
@@ -302,16 +302,16 @@ export default function MyCourse() {
                   <div key={p.portfolioID} className="group bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-600 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 hover:border-[#800000] dark:hover:border-[#D4AF37]">
                     <div className="mb-4">
                       <div className="inline-block p-2 bg-gradient-to-r from-[#800000]/10 to-[#D4AF37]/10 dark:from-[#800000]/20 dark:to-[#D4AF37]/20 rounded-lg mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <FolderGit2 className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
+                        <FolderGit2 className="w-5 h-5 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
                       </div>
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:group-hover:text-[#D4AF37] transition-colors line-clamp-2">{p.portfolioTitle}</h3>
+                      <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-[#800000] dark:text-[#D4AF37] dark:group-hover:text-[#D4AF37] transition-colors line-clamp-2">{p.portfolioTitle}</h3>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 break-words whitespace-pre-line">{p.portfolioDescription}</p>
                     
                     {p.skills && p.skills.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {p.skills.slice(0, 3).map((skill, idx) => (
-                          <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{skill.skillName || skill}</span>
+                          <span key={idx} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{skill.skillName || skill}</span>
                         ))}
                         {p.skills.length > 3 && (
                           <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold">+{p.skills.length - 3}</span>
@@ -324,7 +324,7 @@ export default function MyCourse() {
                         href={p.githubLink} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="inline-flex items-center gap-2 text-sm font-medium text-[#800000] dark:text-[#D4AF37] hover:underline transition-colors"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:underline transition-colors"
                       >
                         <Github className="w-4 h-4" />
                         View on GitHub
@@ -370,7 +370,7 @@ export default function MyCourse() {
                   <button 
                     type="button" 
                     onClick={enhanceWithAI} 
-                    className="text-xs font-medium text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1 transition-colors" 
+                    className="text-xs font-medium text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:underline flex items-center gap-1 transition-colors" 
                     disabled={aiLoading}
                   >
                     {aiLoading ? (
@@ -438,7 +438,7 @@ export default function MyCourse() {
                     <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Selected ({skills.length}):</p>
                     <div className="flex flex-wrap gap-2">
                       {skills.map(skill => (
-                        <span key={skill} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                        <span key={skill} className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
                           {skill}
                         </span>
                       ))}

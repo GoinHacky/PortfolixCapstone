@@ -616,7 +616,7 @@ export default function MyPortfolio() {
                   setEnhancingResume(false);
                 }
               }}
-              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
+              className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-bold whitespace-nowrap"
             >
               {enhancingResume ? (
                 <>
@@ -648,7 +648,7 @@ export default function MyPortfolio() {
       <div className="mb-10">
         <div className="relative max-w-2xl mx-auto">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-[#800000] dark:text-[#D4AF37]" />
+            <Search className="h-5 w-5 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]" />
           </div>
           <input
             type="text"
@@ -694,7 +694,7 @@ export default function MyPortfolio() {
             )}
             <div className="flex-1 flex items-center">
               <span className="font-semibold text-gray-800 dark:text-white">Projects</span>
-              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.projects.length}
               </span>
             </div>
@@ -763,7 +763,7 @@ export default function MyPortfolio() {
                           </button>
                           <button
                             onClick={() => enhancePortfolioDescription(portfolio.portfolioID)}
-                            className="p-2 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Enhance description with AI"
                             disabled={enhancingDescriptions[portfolio.portfolioID]}
                           >
@@ -824,7 +824,7 @@ export default function MyPortfolio() {
             )}
             <div className="flex-1 flex items-center">
               <span className="font-semibold text-gray-800 dark:text-white">Microcredentials</span>
-              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-[#800000]/10 dark:bg-[#D4AF37]/20 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] text-xs rounded-full">
                 {groupedPortfolios.microcredentials.length}
               </span>
             </div>
@@ -862,7 +862,7 @@ export default function MyPortfolio() {
                         </div>
                       </div>
                       <div className="space-y-3 mb-4">
-                        <p className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37]">{portfolio.certTitle}</p>
+                        <p className="text-sm font-semibold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]">{portfolio.certTitle}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-500">Issued: {portfolio.issueDate}</p>
                         {portfolio.witnessedByNames && portfolio.witnessedByNames.length > 0 ? (
                           <div className="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-2">
@@ -898,7 +898,7 @@ export default function MyPortfolio() {
                           </button>
                           <button
                             onClick={() => enhancePortfolioDescription(portfolio.portfolioID)}
-                            className="p-2 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:bg-[#800000]/10 dark:hover:bg-[#D4AF37]/20 rounded-lg transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Enhance description with AI"
                             disabled={enhancingDescriptions[portfolio.portfolioID]}
                           >
@@ -1010,7 +1010,7 @@ export default function MyPortfolio() {
                           setEnhancingFormDescription(false);
                         }
                       }}
-                      className="flex items-center gap-2 text-sm text-[#800000] dark:text-[#D4AF37] hover:text-[#600000] dark:hover:text-[#B8860B] disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 text-sm text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] hover:text-[#600000] dark:hover:text-[#B8860B] disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={enhancingFormDescription}
                     >
                       {enhancingFormDescription ? (
@@ -1156,7 +1156,7 @@ export default function MyPortfolio() {
                         ) : (
                           <>
                             <span className="text-gray-400 dark:text-gray-500 mb-2">
-                              Drag & drop an image here, or <span className="text-[#800000] dark:text-[#D4AF37] underline">click to select</span>
+                              Drag & drop an image here, or <span className="text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37] underline">click to select</span>
                             </span>
                             <span className="text-xs text-gray-400 dark:text-gray-500">JPG or PNG, max 5MB</span>
                           </>
@@ -1247,7 +1247,7 @@ export default function MyPortfolio() {
                           className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                             formData.skills.includes(lang)
                               ? 'bg-[#800000] text-white shadow-md transform scale-105'
-                              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-[#D4AF37] hover:text-[#800000] hover:border-[#D4AF37] hover:shadow-md hover:scale-105'
+                              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-[#D4AF37] hover:text-[#800000] dark:text-[#D4AF37] hover:border-[#D4AF37] hover:shadow-md hover:scale-105'
                           }`}
                         >
                           {lang}
@@ -1282,7 +1282,7 @@ export default function MyPortfolio() {
                         />
                         <button
                           type="button"
-                          className="px-3 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs"
+                          className="px-3 py-1 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded text-xs"
                           onClick={() => {
                             if (
                               otherLanguage &&
@@ -1326,12 +1326,12 @@ export default function MyPortfolio() {
                         {formData.skills.map((lang, idx) => (
                           <span
                             key={idx}
-                                className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] rounded-full text-sm font-semibold shadow-sm"
+                                className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#800000] dark:text-[#D4AF37] rounded-full text-sm font-semibold shadow-sm"
                           >
                             {lang}
                             <button
                               type="button"
-                              className="ml-2 text-[#800000] hover:text-red-600 font-bold text-lg leading-none"
+                              className="ml-2 text-[#800000] dark:text-[#D4AF37] hover:text-red-600 font-bold text-lg leading-none"
                               onClick={() =>
                                 setFormData(prev => ({
                                   ...prev,
@@ -1383,10 +1383,10 @@ export default function MyPortfolio() {
               <X size={24} />
             </button>
             <div className="max-h-[70vh] overflow-y-auto pr-2 hide-scrollbar">
-              <h2 className="text-2xl font-bold text-[#800000] mb-2">{viewPortfolio.portfolioTitle}</h2>
+              <h2 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37] mb-2">{viewPortfolio.portfolioTitle}</h2>
               <div className="text-sm text-gray-500 mb-4 capitalize">{viewPortfolio.category}</div>
               <div className="mb-4">
-                <h3 className="font-semibold text-[#800000] mb-1">Description</h3>
+                <h3 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Description</h3>
                 <div className="text-gray-700 dark:text-gray-200 text-left">
                   {viewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
                     <div key={index} className="mb-1">

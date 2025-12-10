@@ -377,7 +377,7 @@ export default function FacultyCourses() {
     <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">My Courses</h1>
       <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow p-6 max-w-xl">
-        <h2 className="text-lg font-semibold mb-2 text-[#800000]">Create New Course</h2>
+        <h2 className="text-lg font-semibold mb-2 text-[#800000] dark:text-[#D4AF37]">Create New Course</h2>
         <form onSubmit={handleCreateCourse} className="flex flex-col gap-3">
           <div className="flex gap-2">
             <input
@@ -407,7 +407,7 @@ export default function FacultyCourses() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full flex justify-center items-center py-12">
-            <Loader2 className="w-8 h-8 text-[#800000] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#800000] dark:text-[#D4AF37] animate-spin" />
           </div>
         ) : courses.length === 0 ? (
           <div className="col-span-full text-center text-gray-500">No courses found. Create one above.</div>
@@ -416,7 +416,7 @@ export default function FacultyCourses() {
             <div key={course.id} className={`bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6 cursor-pointer hover:shadow-lg transition-all ${selectedCourse && selectedCourse.id === course.id ? 'ring-2 ring-[#800000]' : ''}`}
               onClick={() => handleSelectCourse(course)}
             >
-              <div className="font-bold text-lg text-[#800000]">{course.courseCode}</div>
+              <div className="font-bold text-lg text-[#800000] dark:text-[#D4AF37]">{course.courseCode}</div>
               <div className="text-gray-700 dark:text-gray-300 mb-2">{course.courseName}</div>
               <div className="text-xs text-gray-500">Created by you</div>
             </div>
@@ -426,8 +426,8 @@ export default function FacultyCourses() {
       {selectedCourse && (
         <div className="mt-10 bg-white dark:bg-gray-800 rounded-xl shadow p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#800000]">Projects for {selectedCourse.courseCode} - {selectedCourse.courseName}</h2>
-            <button onClick={() => setSelectedCourse(null)} className="text-gray-500 hover:text-[#800000]">Close</button>
+            <h2 className="text-xl font-bold text-[#800000] dark:text-[#D4AF37]">Projects for {selectedCourse.courseCode} - {selectedCourse.courseName}</h2>
+            <button onClick={() => setSelectedCourse(null)} className="text-gray-500 hover:text-[#800000] dark:text-[#D4AF37]">Close</button>
           </div>
       {/* Enroll Students to Course */}
       <div className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
@@ -523,7 +523,7 @@ export default function FacultyCourses() {
                     <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
                       ID: {s.userID}
                     </span>
-                    <div className="p-1.5 rounded-full bg-[#800000]/10 text-[#800000] hover:bg-[#800000]/20 transition-colors">
+                    <div className="p-1.5 rounded-full bg-[#800000]/10 text-[#800000] dark:text-[#D4AF37] hover:bg-[#800000]/20 transition-colors">
                       <FolderOpen className="w-4 h-4" />
                     </div>
                   </div>
@@ -535,7 +535,7 @@ export default function FacultyCourses() {
       </div>
 
                 {projectLoading ? (
-            <div className="flex justify-center items-center py-8"><Loader2 className="w-8 h-8 text-[#800000] animate-spin" /></div>
+            <div className="flex justify-center items-center py-8"><Loader2 className="w-8 h-8 text-[#800000] dark:text-[#D4AF37] animate-spin" /></div>
           ) : projects.length === 0 ? (
             <div className="text-center text-gray-500">No projects found for this course.</div>
           ) : (
@@ -547,9 +547,9 @@ export default function FacultyCourses() {
                   onClick={() => handleProjectClick(project)}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <FileText className="w-8 h-8 text-[#800000]" />
+                    <FileText className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-lg hover:text-[#800000] transition-colors">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-lg hover:text-[#800000] dark:text-[#D4AF37] transition-colors">
                         {project.portfolioTitle}
                       </h3>
                     </div>
@@ -582,7 +582,7 @@ export default function FacultyCourses() {
                               e.stopPropagation();
                               handleValidateProject(project.portfolioID, project.portfolioTitle);
                             }}
-                          className="px-2 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1"
+                          className="px-2 py-1 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1"
                           title="Validate Project"
                         >
                           <CheckCircle size={12} /> Validate
@@ -604,12 +604,12 @@ export default function FacultyCourses() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-8 h-8 text-[#800000]" />
-                  <h3 className="text-2xl font-bold text-[#800000]">Project Details</h3>
+                  <FileText className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
+                  <h3 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">Project Details</h3>
                 </div>
                 <button
                   onClick={() => setShowProjectModal(false)}
-                  className="text-gray-500 hover:text-[#800000] text-3xl font-bold"
+                  className="text-gray-500 hover:text-[#800000] dark:text-[#D4AF37] text-3xl font-bold"
                 >
                   ×
                 </button>
@@ -699,7 +699,7 @@ export default function FacultyCourses() {
                     onClick={() => {
                       handleValidateProject(selectedProject.portfolioID, selectedProject.portfolioTitle);
                     }}
-                    className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
+                    className="px-6 py-3 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
                   >
                     <CheckCircle size={18} />
                     Validate Project
@@ -718,12 +718,12 @@ export default function FacultyCourses() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-8 h-8 text-[#800000]" />
-                  <h3 className="text-2xl font-bold text-[#800000]">Portfolio Details</h3>
+                  <FileText className="w-8 h-8 text-[#800000] dark:text-[#D4AF37]" />
+                  <h3 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37]">Portfolio Details</h3>
                 </div>
                 <button
                   onClick={() => setShowPortfolioModal(false)}
-                  className="text-gray-500 hover:text-[#800000] text-3xl font-bold"
+                  className="text-gray-500 hover:text-[#800000] dark:text-[#D4AF37] text-3xl font-bold"
                 >
                   ×
                 </button>
@@ -732,7 +732,7 @@ export default function FacultyCourses() {
               <div className="space-y-6">
                 {/* Portfolio Header */}
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-                  <h2 className="text-3xl font-bold text-[#800000] mb-2">{portfolioData.portfolioTitle}</h2>
+                  <h2 className="text-3xl font-bold text-[#800000] dark:text-[#D4AF37] mb-2">{portfolioData.portfolioTitle}</h2>
                   <div className="text-lg text-gray-700 dark:text-gray-300 mb-4 text-left">
                     {portfolioData.portfolioDescription?.split('\n').map((line, index) => (
                       <div key={index} className="mb-1">
@@ -764,7 +764,7 @@ export default function FacultyCourses() {
                   {/* Skills Section */}
                   {portfolioData.skills && portfolioData.skills.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <h4 className="text-lg font-semibold text-[#800000] mb-3">Skills</h4>
+                      <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">Skills</h4>
                       <div className="flex flex-wrap gap-2">
                         {portfolioData.skills.map((skill, index) => (
                           <span key={index} className="px-3 py-1 bg-[#800000] text-white rounded-full text-sm">
@@ -778,7 +778,7 @@ export default function FacultyCourses() {
                   {/* Projects Section */}
                   {portfolioData.projects && portfolioData.projects.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <h4 className="text-lg font-semibold text-[#800000] mb-3">Projects</h4>
+                      <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">Projects</h4>
                       <div className="space-y-3">
                         {portfolioData.projects.map((project, index) => (
                           <div key={index} className="border-l-4 border-[#800000] pl-3">
@@ -786,7 +786,7 @@ export default function FacultyCourses() {
                             <p className="text-sm text-gray-600 dark:text-gray-400">{project.projectDescription}</p>
                             {project.projectLink && (
                               <a href={project.projectLink} target="_blank" rel="noopener noreferrer" 
-                                 className="text-[#800000] hover:underline text-sm">
+                                 className="text-[#800000] dark:text-[#D4AF37] hover:underline text-sm">
                                 View Project →
                               </a>
                             )}
@@ -799,7 +799,7 @@ export default function FacultyCourses() {
                   {/* Certifications Section */}
                   {portfolioData.certifications && portfolioData.certifications.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <h4 className="text-lg font-semibold text-[#800000] mb-3">Certifications</h4>
+                      <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">Certifications</h4>
                       <div className="space-y-3">
                         {portfolioData.certifications.map((cert, index) => (
                           <div key={index} className="border-l-4 border-[#D4AF37] pl-3">
@@ -815,12 +815,12 @@ export default function FacultyCourses() {
                   {/* Links Section */}
                   {portfolioData.links && portfolioData.links.length > 0 && (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <h4 className="text-lg font-semibold text-[#800000] mb-3">Links</h4>
+                      <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">Links</h4>
                       <div className="space-y-2">
                         {portfolioData.links.map((link, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <a href={link.url} target="_blank" rel="noopener noreferrer" 
-                               className="text-[#800000] hover:underline flex items-center gap-1">
+                               className="text-[#800000] dark:text-[#D4AF37] hover:underline flex items-center gap-1">
                               {link.linkType} →
                             </a>
                           </div>
@@ -833,11 +833,11 @@ export default function FacultyCourses() {
                 {/* Supporting Documents */}
                 {portfolioData.supportingDocuments && portfolioData.supportingDocuments.length > 0 && (
                   <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <h4 className="text-lg font-semibold text-[#800000] mb-3">Supporting Documents</h4>
+                    <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">Supporting Documents</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {portfolioData.supportingDocuments.map((doc, index) => (
                         <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                          <FileText className="w-5 h-5 text-[#800000]" />
+                          <FileText className="w-5 h-5 text-[#800000] dark:text-[#D4AF37]" />
                           <div className="flex-1">
                             <p className="font-medium text-gray-900 dark:text-white">{doc.documentName}</p>
                             <p className="text-sm text-gray-600 dark:text-gray-400">{doc.documentType}</p>
@@ -878,7 +878,7 @@ export default function FacultyCourses() {
 
                 {/* Validation/Witness Controls */}
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="text-lg font-semibold text-[#800000] mb-3">
+                  <h4 className="text-lg font-semibold text-[#800000] dark:text-[#D4AF37] mb-3">
                     {portfolioData.category === 'microcredentials' ? 'Witness & Verify Microcredential' : 'Validation Controls'}
                   </h4>
                   <div className="flex gap-3">
@@ -898,7 +898,7 @@ export default function FacultyCourses() {
                           onClick={() => {
                             handleValidateProject(portfolioData.portfolioID, portfolioData.portfolioTitle);
                           }}
-                          className="px-6 py-3 bg-[#D4AF37] text-[#800000] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
+                          className="px-6 py-3 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded-lg hover:bg-[#B8860B] flex items-center gap-2 font-semibold"
                         >
                           <CheckCircle size={18} />
                           Validate Project
@@ -964,7 +964,7 @@ export default function FacultyCourses() {
             <div className="p-6 overflow-y-auto max-h-[60vh]">
               {studentProjectsLoading ? (
                 <div className="flex justify-center items-center py-12">
-                  <Loader2 className="w-8 h-8 text-[#800000] animate-spin" />
+                  <Loader2 className="w-8 h-8 text-[#800000] dark:text-[#D4AF37] animate-spin" />
                 </div>
               ) : studentProjects.length === 0 ? (
                 <div className="text-center py-12">
@@ -1016,7 +1016,7 @@ export default function FacultyCourses() {
                                 e.stopPropagation();
                                 handleValidateProject(project.portfolioID, project.portfolioTitle);
                               }}
-                              className="px-3 py-1 bg-[#D4AF37] text-[#800000] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1 font-semibold"
+                              className="px-3 py-1 bg-[#D4AF37] text-[#800000] dark:text-[#D4AF37] rounded text-xs hover:bg-[#B8860B] transition-colors flex items-center gap-1 font-semibold"
                               title="Validate Project"
                             >
                               <CheckCircle size={12} /> Validate
@@ -1092,7 +1092,7 @@ export default function FacultyCourses() {
         <div className={`fixed bottom-6 right-6 z-[9999] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
           notification.type === 'error'
             ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
-            : 'border-[#800000]/40 text-[#800000] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
+            : 'border-[#800000]/40 text-[#800000] dark:text-[#D4AF37] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
         }`}>
           <div className="flex items-start gap-3">
             <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-[#800000]'}`}></div>
