@@ -4,6 +4,8 @@ import { Eye, EyeOff, Mail, Lock, User, Sparkles, ArrowRight, CheckCircle, Moon,
 import { useTheme } from "../../contexts/ThemeContext";
 import PortfolioLogo from '../../assets/images/Portfolio.svg';
 import api, { getApiBaseUrl } from "../../api/apiConfig";
+import AuthLoadingAnimation from "./AuthLoadingAnimation";
+import AuthSuccessAnimation from "./AuthSuccessAnimation";
 
 const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
@@ -30,6 +32,8 @@ export default function AuthPage({ mode = "login" }) {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [successData, setSuccessData] = useState({});
 
   React.useEffect(() => {
     setIsLogin(mode === "login");
@@ -101,10 +105,21 @@ export default function AuthPage({ mode = "login" }) {
           /* ignore */
         }
 
-        // Redirect based on role
-        if (data.role === "ADMIN") navigate("/admin/dashboard");
-        else if (data.role === "FACULTY") navigate("/faculty/dashboard");
-        else navigate("/dashboard");
+        // Show success animation before redirect
+        setSuccessData({
+          isLogin: true,
+          userName: data.fname || data.username,
+          userRole: data.role
+        });
+        setShowSuccessAnimation(true);
+        setLoading(false);
+
+        // Redirect after animation
+        setTimeout(() => {
+          if (data.role === "ADMIN") navigate("/admin/dashboard");
+          else if (data.role === "FACULTY") navigate("/faculty/dashboard");
+          else navigate("/dashboard");
+        }, 2500);
       } else {
         // ✅ SIGNUP with axios
         const res = await api.post("/api/auth/signup", {
@@ -119,13 +134,22 @@ export default function AuthPage({ mode = "login" }) {
         const data = res.data;
         setMessage({ type: "success", text: data.message });
 
+        // Show success animation
+        setSuccessData({
+          isLogin: false,
+          userName: formData.firstName,
+          userRole: formData.role
+        });
+        setShowSuccessAnimation(true);
+        setLoading(false);
+
         if (formData.role === "FACULTY") {
           setMessage({
             type: "success",
             text: "Faculty account created. Awaiting admin approval.",
           });
         } else {
-          setTimeout(() => setIsLogin(true), 2000);
+          setTimeout(() => setIsLogin(true), 3000);
         }
       }
     } catch (err) {
@@ -139,6 +163,11 @@ export default function AuthPage({ mode = "login" }) {
     }
   };
 
+
+  const handleSuccessAnimationComplete = () => {
+    setShowSuccessAnimation(false);
+    // Navigation is handled by setTimeout in handleSubmit
+  };
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
@@ -459,6 +488,25 @@ export default function AuthPage({ mode = "login" }) {
           </div>
         </div>
       </div>
+
+      {/* Loading Animation */}
+      {loading && (
+        <AuthLoadingAnimation 
+          isLogin={isLogin} 
+          darkMode={darkMode} 
+        />
+      )}
+
+      {/* Success Animation */}
+      {showSuccessAnimation && (
+        <AuthSuccessAnimation
+          isLogin={successData.isLogin}
+          userName={successData.userName}
+          userRole={successData.userRole}
+          darkMode={darkMode}
+          onAnimationComplete={handleSuccessAnimationComplete}
+        />
+      )}
     </div>
   );
 }

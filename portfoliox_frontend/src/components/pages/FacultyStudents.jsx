@@ -8,7 +8,7 @@ const maroon = "bg-[#800000]";
 const gold = "text-[#D4AF37]";
 const goldBg = "bg-gradient-to-r from-[#D4AF37] to-[#B8860B]";
 const goldBgSolid = "bg-[#D4AF37]";
-const maroonText = "text-[#800000]";
+const maroonText = "text-[#800000] dark:text-[#D4AF37]";
 const goldText = "text-[#D4AF37]";
 
 export default function FacultyStudents() {
@@ -760,13 +760,13 @@ export default function FacultyStudents() {
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold text-[#800000] mb-2">{viewPortfolio.portfolioTitle}</h2>
+            <h2 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37] mb-2">{viewPortfolio.portfolioTitle}</h2>
             <div className="mb-4">
               <span className="font-semibold text-[#D4AF37] uppercase tracking-wide text-xs">Category:</span>
               <span className="ml-2 text-sm text-gray-500 capitalize">{viewPortfolio.category}</span>
             </div>
             <div className="mb-4">
-              <span className="font-semibold text-[#800000] uppercase tracking-wide text-xs">Description:</span>
+              <span className="font-semibold text-[#800000] dark:text-[#D4AF37] uppercase tracking-wide text-xs">Description:</span>
               <div className="mt-1 text-gray-700 dark:text-gray-200 break-words text-left">
                 {viewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
                   <div key={index} className="mb-1">
@@ -1065,7 +1065,7 @@ export default function FacultyStudents() {
         <div className={`fixed bottom-6 right-6 z-[9999] max-w-sm w-full shadow-2xl rounded-2xl px-5 py-4 border bg-white/95 backdrop-blur dark:bg-gray-800/95 ${
           notification.type === 'error'
             ? 'border-red-200 text-red-700 dark:border-red-500/40 dark:text-red-300'
-            : 'border-[#800000]/40 text-[#800000] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
+            : 'border-[#800000]/40 text-[#800000] dark:text-[#D4AF37] dark:border-[#D4AF37]/40 dark:text-[#D4AF37]'
         }`}>
           <div className="flex items-start gap-3">
             <div className={`mt-1 w-2 h-12 rounded-full ${notification.type === 'error' ? 'bg-red-500' : 'bg-[#800000]'}`}></div>
@@ -1159,7 +1159,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
+                className={`px-4 py-2 text-lg font-semibold border-b-4 transition-all ${activeTab === tab ? 'border-[#800000] text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]' : 'border-transparent text-gray-700 dark:text-gray-300'}`}
               >
                 {tab}
               </button>
@@ -1179,7 +1179,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                     className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 flex flex-col gap-2 shadow-sm hover:shadow-lg hover:border-[#800000] transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <FileText className="w-6 h-6 text-[#800000]" />
+                      <FileText className="w-6 h-6 text-[#800000] dark:text-[#D4AF37]" />
                       <div className="flex-1">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">{project.portfolioTitle}</h2>
                         <div className="text-sm text-gray-500 dark:text-gray-400">Completed: {project.issueDate ? new Date(project.issueDate).toLocaleDateString() : '—'} • Course: {project.courseCode || '—'}</div>
@@ -1244,7 +1244,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                 recentActivity.map((item, idx) => (
                   <div key={item.portfolioID || idx} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-1 shadow-sm">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-[#800000]" />
+                      <FileText className="w-4 h-4 text-[#800000] dark:text-[#D4AF37]" />
                       <span className="font-semibold text-gray-900 dark:text-white">{item.portfolioTitle}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{formatActivityDate(item)}</span>
                     </div>
@@ -1277,7 +1277,7 @@ function StudentProfileModal({ student, portfolios, groupedPortfolios, onClose, 
                 }
                 return (
                   <div className="max-w-xl mx-auto">
-                    <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
+                    <div className="mb-6 text-lg font-semibold text-[#800000] dark:text-[#D4AF37] dark:text-[#D4AF37]">Programming Language Skills Distribution</div>
                     <ResponsiveContainer width="100%" height={50 * chartData.length}>
                       <BarChart
                         layout="vertical"
