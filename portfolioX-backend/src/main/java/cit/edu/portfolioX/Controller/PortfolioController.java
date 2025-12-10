@@ -7,10 +7,15 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +46,11 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
@@ -55,11 +61,13 @@ import cit.edu.portfolioX.Entity.LinkEntity;
 import cit.edu.portfolioX.Entity.PortfolioEntity;
 import cit.edu.portfolioX.Entity.SkillEntity;
 import cit.edu.portfolioX.Entity.UserEntity;
+import cit.edu.portfolioX.Entity.ProfileSettingEntity;
 import cit.edu.portfolioX.Security.JwtUtil;
 import cit.edu.portfolioX.Repository.SkillRepository;
 import cit.edu.portfolioX.Service.CourseService;
 import cit.edu.portfolioX.Service.NotificationService;
 import cit.edu.portfolioX.Service.PortfolioService;
+import cit.edu.portfolioX.Service.ProfileSettingService;
 import cit.edu.portfolioX.Service.UserService;
 
 @RestController
@@ -85,6 +93,9 @@ public class PortfolioController {
 
     @Autowired
     private SkillRepository skillRepository;
+
+    @Autowired
+    private ProfileSettingService profileSettingService;
 
     @Value("${server.url:http://localhost:8080}")
     private String serverUrl;
@@ -440,66 +451,45 @@ public class PortfolioController {
             PdfDocument pdf = new PdfDocument(writer);
             pdf.setDefaultPageSize(PageSize.A4);
             Document document = new Document(pdf);
-            document.setMargins(0, 0, 36, 36); // No top margin for header
+            document.setMargins(40, 36, 40, 36);
 
-            // Professional Color Scheme (Maroon & Gold)
             DeviceRgb maroonColor = new DeviceRgb(128, 0, 0);       // Maroon #800000
             DeviceRgb goldColor = new DeviceRgb(212, 175, 55);      // Gold #D4AF37
             DeviceRgb darkGrayColor = new DeviceRgb(52, 52, 52);    // Dark Gray #343434
             DeviceRgb lightGrayColor = new DeviceRgb(127, 127, 127); // Light Gray
-            DeviceRgb whiteColor = new DeviceRgb(255, 255, 255);    // White
 
-            // ===== HEADER SECTION =====
-            // Maroon background banner
-            Div headerBanner = new Div()
-                .setBackgroundColor(maroonColor)
-                .setHeight(80)
-                .setWidth(UnitValue.createPercentValue(100))
-                .setMarginBottom(0);
-            document.add(headerBanner);
+            List<PortfolioEntity> portfolios = service.findByUserId(userId);
+            List<PortfolioEntity> projectPortfolios = portfolios.stream()
+                .filter(p -> "project".equalsIgnoreCase(p.getCategory()))
+                .sorted((a, b) -> {
+                    if (a.getLastUpdated() == null || b.getLastUpdated() == null) {
+                        return 0;
+                    }
+                    return b.getLastUpdated().compareTo(a.getLastUpdated());
+                })
+                .collect(Collectors.toList());
 
-            // Name box with gold border (overlapping the banner)
-            Div nameBox = new Div()
-                .setBackgroundColor(whiteColor)
-                .setBorder(new SolidBorder(goldColor, 3))
-                .setPadding(15)
-                .setWidth(UnitValue.createPercentValue(70))
-                .setMarginTop(-40)
-                .setMarginLeft(70) // Approximate 15% of A4 width
-                .setMarginBottom(10);
+            List<PortfolioEntity> credentialPortfolios = portfolios.stream()
+                .filter(p -> "microcredentials".equalsIgnoreCase(p.getCategory()))
+                .sorted((a, b) -> {
+                    if (a.getIssueDate() == null || b.getIssueDate() == null) {
+                        return 0;
+                    }
+                    return b.getIssueDate().compareTo(a.getIssueDate());
+                })
+                .collect(Collectors.toList());
 
-            nameBox.add(new Paragraph((user.getFname() + " " + user.getLname()).toUpperCase())
-                .setFontSize(32)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setFontColor(darkGrayColor)
-                .setBold()
-                .setMarginBottom(5));
+            Set<String> uniqueSkills = new LinkedHashSet<>();
+            portfolios.stream()
+                .filter(p -> p.getSkills() != null)
+                .forEach(p -> p.getSkills().forEach(skill -> {
+                    if (skill.getSkillName() != null && !skill.getSkillName().isBlank()) {
+                        uniqueSkills.add(skill.getSkillName().trim());
+                    }
+                }));
 
-            nameBox.add(new Paragraph("STUDENT")
-                .setFontSize(14)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setFontColor(lightGrayColor));
+            Map<String, String> userSettings = buildSettingsMap(userId);
 
-            document.add(nameBox);
-
-            // Contact Information (Address | Phone | Email)
-            Paragraph contactInfo = new Paragraph()
-                .setTextAlignment(TextAlignment.CENTER)
-                .setFontSize(10)
-                .setFontColor(darkGrayColor)
-                .setMarginBottom(20)
-                .setMarginLeft(36)
-                .setMarginRight(36);
-
-            contactInfo.add(new Text("[Address]").setFontColor(lightGrayColor));
-            contactInfo.add(new Text("     "));
-            contactInfo.add(new Text("[Phone]").setFontColor(lightGrayColor));
-            contactInfo.add(new Text("     "));
-            contactInfo.add(new Text(user.getUserEmail()).setFontColor(lightGrayColor));
-
-            document.add(contactInfo);
-
-            // Determine if we have valid enhanced content
             String enhancedContentText = null;
             if (requestBody != null && requestBody.containsKey("enhancedContent")) {
                 Object raw = requestBody.get("enhancedContent");
@@ -509,103 +499,32 @@ public class PortfolioController {
             }
             logger.info("Enhanced flag: {}, enhanced content length: {}", enhanced, enhancedContentText == null ? 0 : enhancedContentText.length());
 
+            addResumeHeader(document, user, portfolios, uniqueSkills, userSettings, maroonColor, goldColor, darkGrayColor, lightGrayColor);
+
+            String summaryText = null;
             if (enhanced && enhancedContentText != null && !enhancedContentText.isEmpty()) {
-                // ===== AI-ENHANCED CONTENT SECTION =====
-                addSectionHeader(document, "OBJECTIVE", maroonColor, goldColor, 36);
-                
-                document.add(new Paragraph(enhancedContentText)
-                    .setFontSize(11)
-                    .setFontColor(darkGrayColor)
-                    .setMarginLeft(36)
-                    .setMarginRight(36)
-                    .setMarginBottom(20));
-            } else {
-                // Standard resume generation logic
-                List<PortfolioEntity> portfolios = service.findByUserId(userId);
-
-                // ===== EXPERIENCE SECTION (Projects) =====
-                addSectionHeader(document, "EXPERIENCE", maroonColor, goldColor, 36);
-
-
-                portfolios.stream()
-                    .filter(p -> "project".equalsIgnoreCase(p.getCategory()))
-                    .forEach(project -> {
-                        Div projectDiv = new Div()
-                            .setMarginLeft(36)
-                            .setMarginRight(36)
-                            .setMarginBottom(15);
-
-                        // Project Title (Bold, Dark Gray)
-                        projectDiv.add(new Paragraph(project.getPortfolioTitle())
-                            .setFontSize(13)
-                            .setFontColor(darkGrayColor)
-                            .setBold()
-                            .setMarginBottom(3));
-
-                        // Project Description
-                        projectDiv.add(new Paragraph(project.getPortfolioDescription())
-                            .setFontSize(11)
-                            .setFontColor(lightGrayColor)
-                            .setMarginBottom(5));
-
-                        // GitHub Link
-                        if (project.getGithubLink() != null) {
-                            projectDiv.add(new Paragraph("Repository: " + project.getGithubLink())
-                                .setFontSize(10)
-                                .setFontColor(new DeviceRgb(51, 102, 187))
-                                .setItalic());
-                        }
-
-                        document.add(projectDiv);
-                    });
-
-                // ===== EDUCATION SECTION (Certifications) =====
-                addSectionHeader(document, "EDUCATION", maroonColor, goldColor, 36);
-
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
-
-                portfolios.stream()
-                    .filter(p -> "microcredentials".equalsIgnoreCase(p.getCategory()))
-                    .forEach(cert -> {
-                        Div certDiv = new Div()
-                            .setMarginLeft(36)
-                            .setMarginRight(36)
-                            .setMarginBottom(15);
-
-                        // Certificate Title (Bold, Dark Gray)
-                        certDiv.add(new Paragraph(cert.getCertTitle())
-                            .setFontSize(13)
-                            .setFontColor(darkGrayColor)
-                            .setBold()
-                            .setMarginBottom(3));
-
-                        // Certificate Description
-                        certDiv.add(new Paragraph(cert.getPortfolioDescription())
-                            .setFontSize(11)
-                            .setFontColor(lightGrayColor)
-                            .setMarginBottom(5));
-
-                        // Issue Date
-                        if (cert.getIssueDate() != null) {
-                            certDiv.add(new Paragraph("Issued: " + cert.getIssueDate().format(dateFormatter))
-                                .setFontSize(10)
-                                .setFontColor(lightGrayColor)
-                                .setItalic());
-                        }
-
-                        document.add(certDiv);
-                    });
+                summaryText = enhancedContentText;
+            } else if (user.getBio() != null && !user.getBio().isBlank()) {
+                summaryText = user.getBio().trim();
             }
 
-            // ===== REFERENCES SECTION =====
-            addSectionHeader(document, "REFERENCES", maroonColor, goldColor, 36);
-            
-            document.add(new Paragraph("[Available upon request.]")
-                .setFontSize(11)
-                .setFontColor(lightGrayColor)
-                .setMarginLeft(36)
-                .setMarginRight(36)
-                .setMarginBottom(20));
+            if (summaryText != null && !summaryText.isBlank()) {
+                addSummarySection(document, summaryText, maroonColor, darkGrayColor, goldColor);
+            }
+
+            if (!projectPortfolios.isEmpty()) {
+                addProjectsSection(document, projectPortfolios, maroonColor, goldColor, darkGrayColor, lightGrayColor);
+            }
+
+            if (!credentialPortfolios.isEmpty()) {
+                addEducationSection(document, credentialPortfolios, maroonColor, goldColor, darkGrayColor, lightGrayColor);
+            }
+
+            if (!uniqueSkills.isEmpty()) {
+                addSkillsSection(document, uniqueSkills, maroonColor, goldColor, darkGrayColor);
+            }
+
+            addReferencesSection(document, maroonColor, goldColor, lightGrayColor);
 
             document.close();
 
@@ -927,7 +846,7 @@ public class PortfolioController {
     private List<String> extractSkillNames(String skillsJson) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(skillsJson);
-        List<String> skillNames = new java.util.ArrayList<>();
+        List<String> skillNames = new ArrayList<>();
 
         if (node.isArray()) {
             for (JsonNode item : node) {
@@ -944,46 +863,222 @@ public class PortfolioController {
         return skillNames;
     }
 
-    // Helper method to create professional section headers
-    private void addSectionHeader(Document document, String title, DeviceRgb maroonColor, DeviceRgb goldColor, float marginLeft) {
-        // Create a table for the section header with maroon box and gold lines
-        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{20, 60, 20}))
+    private Map<String, String> buildSettingsMap(Long userId) {
+        Map<String, String> settings = new HashMap<>();
+        try {
+            List<ProfileSettingEntity> profileSettings = profileSettingService.findByUserId(userId);
+            if (profileSettings != null) {
+                for (ProfileSettingEntity setting : profileSettings) {
+                    if (setting.getSettingKey() != null && setting.getSettingValue() != null) {
+                        settings.put(setting.getSettingKey(), setting.getSettingValue());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to load profile settings for resume: {}", e.getMessage());
+        }
+        return settings;
+    }
+
+    private void addResumeHeader(Document document, UserEntity user, List<PortfolioEntity> portfolios, Set<String> skills,
+                                 Map<String, String> settings, DeviceRgb maroon, DeviceRgb gold, DeviceRgb darkGray, DeviceRgb lightGray) {
+        String fullName = (user.getFname() + " " + user.getLname()).trim();
+        if (fullName.isBlank()) {
+            fullName = user.getUsername();
+        }
+
+        String title = settings.getOrDefault("headline", "Full Stack Developer & UI/UX Designer");
+
+        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{65, 35}))
             .setWidth(UnitValue.createPercentValue(100))
-            .setMarginLeft(marginLeft)
-            .setMarginRight(marginLeft)
-            .setMarginBottom(15)
-            .setMarginTop(10);
+            .setMarginBottom(20);
 
-        // Left gold line
-        Cell leftLine = new Cell()
-            .add(new Paragraph(""))
-            .setBorder(Border.NO_BORDER)
-            .setBorderBottom(new SolidBorder(goldColor, 2))
-            .setPaddingBottom(10);
+        // Left column: Name, title, bio
+        Cell left = new Cell().setBorder(Border.NO_BORDER).setPaddingRight(20);
+        left.add(new Paragraph(fullName.toUpperCase())
+            .setFontSize(26)
+            .setFontColor(darkGray)
+            .setBold()
+            .setMarginBottom(4));
+        left.add(new Paragraph(title)
+            .setFontSize(12)
+            .setFontColor(lightGray)
+            .setMarginBottom(12));
 
-        // Center maroon box with white text
-        Cell centerBox = new Cell()
-            .add(new Paragraph(title)
-                .setFontSize(12)
-                .setFontColor(new DeviceRgb(255, 255, 255))
+        if (user.getBio() != null && !user.getBio().isBlank()) {
+            left.add(new Paragraph(user.getBio().trim())
+                .setFontSize(11)
+                .setFontColor(darkGray)
+                .setMarginBottom(12));
+        }
+
+        // Stats chips (projects, credentials)
+        int projectCount = (int) portfolios.stream().filter(p -> "project".equalsIgnoreCase(p.getCategory())).count();
+        int credentialCount = (int) portfolios.stream().filter(p -> "microcredentials".equalsIgnoreCase(p.getCategory())).count();
+
+        Table statsTable = new Table(UnitValue.createPercentArray(new float[]{1, 1}))
+            .setWidth(UnitValue.createPercentValue(100));
+        statsTable.addCell(createStatChip(projectCount + " Projects", maroon, gold));
+        statsTable.addCell(createStatChip(credentialCount + " Credentials", maroon, gold));
+        left.add(statsTable.setMarginBottom(12));
+
+        if (!skills.isEmpty()) {
+            Paragraph skillList = new Paragraph("Top skills: " + skills.stream().limit(5).collect(Collectors.joining(", ")))
+                .setFontSize(10)
+                .setFontColor(lightGray)
+                .setMarginBottom(0);
+            left.add(skillList);
+        }
+
+        headerTable.addCell(left);
+
+        // Right column: contact and meta
+        Cell right = new Cell().setBorder(Border.NO_BORDER).setBackgroundColor(new DeviceRgb(248, 248, 248)).setPadding(12);
+        right.add(createContactRow("Phone", settings.getOrDefault("phone", "+63 900 000 0000"), gold, darkGray));
+        right.add(createContactRow("Email", user.getUserEmail(), gold, darkGray));
+        right.add(createContactRow("Location", settings.getOrDefault("address", "Cebu City, PH"), gold, darkGray));
+        if (settings.containsKey("website")) {
+            right.add(createContactRow("Portfolio", settings.get("website"), gold, darkGray));
+        }
+
+        headerTable.addCell(right);
+        document.add(headerTable);
+    }
+
+    private Cell createStatChip(String text, DeviceRgb maroon, DeviceRgb gold) {
+        return new Cell()
+            .add(new Paragraph(text)
+                .setFontSize(10)
+                .setFontColor(maroon)
                 .setBold()
                 .setTextAlignment(TextAlignment.CENTER))
-            .setBackgroundColor(maroonColor)
+            .setBackgroundColor(new DeviceRgb(252, 245, 235))
+            .setBorder(new SolidBorder(gold, 1))
+            .setPadding(8)
+            .setMargin(4);
+    }
+
+    private Paragraph createContactRow(String label, String value, DeviceRgb gold, DeviceRgb darkGray) {
+        return new Paragraph()
+            .add(new Text(label + ": ").setFontColor(gold).setBold())
+            .add(new Text(value != null ? value : "-").setFontColor(darkGray).setFontSize(10))
+            .setMarginBottom(6);
+    }
+
+    private void addSummarySection(Document document, String summary, DeviceRgb maroon, DeviceRgb darkGray, DeviceRgb gold) {
+        addSectionHeader(document, "PROFESSIONAL SUMMARY", maroon, gold);
+        document.add(new Paragraph(summary)
+            .setFontSize(11)
+            .setFontColor(darkGray)
+            .setMarginBottom(12));
+    }
+
+    private void addProjectsSection(Document document, List<PortfolioEntity> projects, DeviceRgb maroon, DeviceRgb gold,
+                                    DeviceRgb darkGray, DeviceRgb lightGray) {
+        addSectionHeader(document, "PROJECT EXPERIENCE", maroon, gold);
+
+        for (PortfolioEntity project : projects) {
+            Div wrapper = new Div().setMarginBottom(12);
+            String titleLine = project.getPortfolioTitle();
+            if (project.getCourseCode() != null && !project.getCourseCode().isBlank()) {
+                titleLine += " • " + project.getCourseCode();
+            }
+            wrapper.add(new Paragraph(titleLine)
+                .setFontSize(12)
+                .setFontColor(darkGray)
+                .setBold());
+            wrapper.add(new Paragraph("Cebu City, PH")
+                .setFontSize(10)
+                .setFontColor(lightGray)
+                .setMarginBottom(4));
+
+            com.itextpdf.layout.element.List bulletList = new com.itextpdf.layout.element.List()
+                .setSymbolIndent(12)
+                .setListSymbol("• ")
+                .setFontSize(10)
+                .setFontColor(darkGray);
+            bulletList.add(new ListItem(project.getPortfolioDescription() != null ? project.getPortfolioDescription() : ""));
+            if (project.getGithubLink() != null && !project.getGithubLink().isBlank()) {
+                bulletList.add(new ListItem("Repository: " + project.getGithubLink()));
+            }
+            wrapper.add(bulletList);
+
+            document.add(wrapper);
+        }
+    }
+
+    private void addEducationSection(Document document, List<PortfolioEntity> credentials, DeviceRgb maroon, DeviceRgb gold,
+                                     DeviceRgb darkGray, DeviceRgb lightGray) {
+        addSectionHeader(document, "EDUCATION & CERTIFICATIONS", maroon, gold);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+
+        for (PortfolioEntity credential : credentials) {
+            Div wrapper = new Div().setMarginBottom(10);
+            wrapper.add(new Paragraph(credential.getCertTitle() != null ? credential.getCertTitle() : "Certification")
+                .setFontSize(12)
+                .setFontColor(darkGray)
+                .setBold());
+
+            String meta = "Cebu City, PH";
+            if (credential.getIssueDate() != null) {
+                meta += " • Issued " + credential.getIssueDate().format(formatter);
+            }
+            wrapper.add(new Paragraph(meta)
+                .setFontSize(10)
+                .setFontColor(lightGray)
+                .setMarginBottom(4));
+
+            if (credential.getPortfolioDescription() != null) {
+                wrapper.add(new Paragraph(credential.getPortfolioDescription())
+                    .setFontSize(10)
+                    .setFontColor(darkGray));
+            }
+
+            document.add(wrapper);
+        }
+    }
+
+    private void addSkillsSection(Document document, Set<String> skills, DeviceRgb maroon, DeviceRgb gold, DeviceRgb darkGray) {
+        addSectionHeader(document, "TECHNICAL SKILLS", maroon, gold);
+        Paragraph skillParagraph = new Paragraph(String.join(" • ", skills))
+            .setFontSize(10)
+            .setFontColor(darkGray);
+        document.add(skillParagraph.setMarginBottom(12));
+    }
+
+    private void addReferencesSection(Document document, DeviceRgb maroon, DeviceRgb gold, DeviceRgb lightGray) {
+        addSectionHeader(document, "REFERENCES", maroon, gold);
+        document.add(new Paragraph("Available upon request")
+            .setFontSize(10)
+            .setFontColor(lightGray));
+    }
+
+    private void addSectionHeader(Document document, String title, DeviceRgb maroon, DeviceRgb gold) {
+        Table header = new Table(UnitValue.createPercentArray(new float[]{1}))
+            .setWidth(UnitValue.createPercentValue(100))
+            .setMarginBottom(8)
+            .setMarginTop(12);
+
+        Cell cell = new Cell()
             .setBorder(Border.NO_BORDER)
-            .setPadding(10);
+            .setBackgroundColor(maroon)
+            .setPadding(8);
+        cell.add(new Paragraph(title)
+            .setFontSize(11)
+            .setFontColor(new DeviceRgb(255, 255, 255))
+            .setBold());
+        header.addCell(cell);
 
-        // Right gold line
-        Cell rightLine = new Cell()
-            .add(new Paragraph(""))
+        Table accent = new Table(UnitValue.createPercentArray(new float[]{1}))
+            .setWidth(UnitValue.createPercentValue(100));
+        accent.addCell(new Cell()
             .setBorder(Border.NO_BORDER)
-            .setBorderBottom(new SolidBorder(goldColor, 2))
-            .setPaddingBottom(10);
+            .setBorderBottom(new SolidBorder(gold, 2))
+            .setPadding(0)
+            .setMarginBottom(8));
 
-        headerTable.addCell(leftLine);
-        headerTable.addCell(centerBox);
-        headerTable.addCell(rightLine);
-
-        document.add(headerTable);
+        document.add(header);
+        document.add(accent);
     }
 }
 
