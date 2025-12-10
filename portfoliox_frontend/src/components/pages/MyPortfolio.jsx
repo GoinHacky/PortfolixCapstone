@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock, Loader2, Sparkles, Brain } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, Folder, FolderOpen, ChevronDown, ChevronRight, FileText, Search, X, Wand2, Unlock, Lock, Loader2, Sparkles, Brain, CalendarDays, Link2, Award, BadgeCheck, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { ConfirmDialog } from '../Notification';
@@ -44,6 +44,86 @@ export default function MyPortfolio() {
 
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+
+  const activePortfolio = viewPortfolio;
+  const descriptionLines = activePortfolio?.portfolioDescription
+    ? activePortfolio.portfolioDescription
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : [];
+  const skillNames = activePortfolio?.skills
+    ? activePortfolio.skills
+        .map((skill) => (typeof skill === 'string' ? skill : skill?.skillName))
+        .filter(Boolean)
+    : [];
+  const certificationNames = activePortfolio?.certifications
+    ? activePortfolio.certifications
+        .map((cert) => (typeof cert === 'string' ? cert : cert?.certTitle))
+        .filter(Boolean)
+    : [];
+  const projectNames = activePortfolio?.projects
+    ? activePortfolio.projects
+        .map((proj) => (typeof proj === 'string' ? proj : proj?.projectName))
+        .filter(Boolean)
+    : [];
+  const isMicrocredential = activePortfolio?.category?.toLowerCase() === 'microcredentials';
+  const categoryLabel = activePortfolio?.category
+    ? activePortfolio.category
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    : null;
+  const formattedIssueDate = activePortfolio?.issueDate
+    ? new Date(activePortfolio.issueDate).toLocaleDateString()
+    : null;
+  const rawUpdatedAt = activePortfolio?.lastUpdated || activePortfolio?.updatedAt || activePortfolio?.createdAt;
+  const formattedLastUpdated = rawUpdatedAt ? new Date(rawUpdatedAt).toLocaleDateString() : null;
+  const certificatePath = activePortfolio?.certFile || '';
+  const hasCertificateImage = certificatePath
+    ? ['.jpg', '.jpeg', '.png', '.webp'].some((ext) => certificatePath.toLowerCase().endsWith(ext))
+    : false;
+  const certificateImageUrl = hasCertificateImage
+    ? `${getApiBaseUrl()}/${certificatePath.replace(/^uploads[\\/]/, 'uploads/')}`
+    : null;
+  const witnessNames = activePortfolio?.witnessedByNames
+    ? activePortfolio.witnessedByNames.split(',').map((name) => name.trim()).filter(Boolean)
+    : [];
+  const quickFacts = [
+    {
+      icon: FolderOpen,
+      label: 'Category',
+      value: categoryLabel || 'Not set',
+    },
+    {
+      icon: CalendarDays,
+      label: isMicrocredential ? 'Issued On' : 'Last Updated',
+      value: (isMicrocredential ? formattedIssueDate : formattedLastUpdated) || '—',
+    },
+    {
+      icon: Award,
+      label: 'Course',
+      value: activePortfolio?.courseCode || '—',
+    },
+    {
+      icon: Link2,
+      label: 'GitHub',
+      value: activePortfolio?.githubLink ? 'Open repository' : 'Not provided',
+      href: activePortfolio?.githubLink,
+    },
+  ];
+  const statusChips = [
+    ...(categoryLabel
+      ? [{ label: categoryLabel, tone: 'default' }]
+      : []),
+    ...(activePortfolio?.validatedByFaculty
+      ? [{ label: 'Faculty Validated', tone: 'success', icon: BadgeCheck }]
+      : []),
+    ...(isMicrocredential
+      ? witnessNames.length > 0
+        ? [{ label: `Witnessed by ${witnessNames.length}`, tone: 'success', icon: Lock }]
+        : [{ label: 'Awaiting Witness', tone: 'warning', icon: Unlock }]
+      : []),
+  ];
 
   const programmingLanguages = [
     'C++', 'Java', 'JavaScript', 'Go', 'Python', 'PHP', 'R', 'Ruby', 'SQL', 'Swift',
@@ -1374,125 +1454,317 @@ export default function MyPortfolio() {
       )}
 
       {viewPortfolio && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg w-full max-w-lg shadow-lg relative">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 md:p-10">
+          <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/10 dark:bg-slate-900">
+            <div className="pointer-events-none absolute -top-40 -left-32 h-64 w-64 rounded-full bg-[#800000]/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-32 -right-24 h-72 w-72 rounded-full bg-[#D4AF37]/20 blur-3xl" />
+
             <button
               onClick={() => setViewPortfolio(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 z-10"
+              className="absolute right-6 top-6 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/70 text-slate-600 transition hover:scale-105 hover:bg-white dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-200"
             >
-              <X size={24} />
+              <X className="h-5 w-5" />
             </button>
-            <div className="max-h-[70vh] overflow-y-auto pr-2 hide-scrollbar">
-              <h2 className="text-2xl font-bold text-[#800000] dark:text-[#D4AF37] mb-2">{viewPortfolio.portfolioTitle}</h2>
-              <div className="text-sm text-gray-500 mb-4 capitalize">{viewPortfolio.category}</div>
-              <div className="mb-4">
-                <h3 className="font-semibold text-[#800000] dark:text-[#D4AF37] mb-1">Description</h3>
-                <div className="text-gray-700 dark:text-gray-200 text-left">
-                  {viewPortfolio.portfolioDescription?.split('\n').map((line, index) => (
-                    <div key={index} className="mb-1">
-                      {line.trim() && (
-                        <div className="flex items-start">
-                          <span className="text-[#D4AF37] mr-2 mt-1">•</span>
-                          <span>{line.trim()}</span>
-                        </div>
-                      )}
+
+            <div className="relative z-20 max-h-[90vh] overflow-y-auto">
+              <header className="bg-gradient-to-br from-[#800000] via-[#991010] to-[#b83a24] px-8 pb-10 pt-12 text-white sm:px-12">
+                <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">
+                  Student Portfolio
+                </span>
+                <h2 className="mt-6 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+                  {viewPortfolio.portfolioTitle}
+                </h2>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {statusChips.length > 0 ? (
+                    statusChips.map(({ label, tone, icon: Icon }, index) => {
+                      const toneStyles = {
+                        default: 'border-white/30 bg-white/10 text-white',
+                        success: 'border-emerald-300/60 bg-emerald-500/15 text-emerald-100',
+                        warning: 'border-amber-200/60 bg-amber-400/20 text-amber-100',
+                      };
+                      const style = toneStyles[tone] || toneStyles.default;
+                      return (
+                        <span
+                          key={`${label}-${index}`}
+                          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${style}`}
+                        >
+                          {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
+                          {label}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <span className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">Portfolio</span>
+                  )}
+                </div>
+
+                <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                  {[
+                    { label: 'Skill Tags', value: skillNames.length || '—' },
+                    {
+                      label: isMicrocredential ? 'Faculty Witnesses' : 'Linked Projects',
+                      value: isMicrocredential ? witnessNames.length || '—' : projectNames.length || '—',
+                    },
+                    {
+                      label: isMicrocredential ? 'Certifications Referenced' : 'Certifications',
+                      value: certificationNames.length || '—',
+                    },
+                  ].map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 shadow-inner backdrop-blur"
+                    >
+                      <div className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                        {stat.label}
+                      </div>
+                      <div className="mt-1 text-2xl font-bold">{stat.value}</div>
                     </div>
                   ))}
                 </div>
-              </div>
-              {viewPortfolio.githubLink && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">GitHub:</span>{' '}
-                  <a href={viewPortfolio.githubLink} className="text-blue-700 hover:underline break-all text-sm" target="_blank" rel="noopener noreferrer">{viewPortfolio.githubLink}</a>
-                </div>
-              )}
-              {viewPortfolio.certTitle && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">Certificate:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.certTitle}</span>
-                </div>
-              )}
-              {viewPortfolio.issueDate && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">Issue Date:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.issueDate}</span>
-                </div>
-              )}
-              {viewPortfolio.certFile &&
-                (viewPortfolio.certFile.endsWith('.jpg') || viewPortfolio.certFile.endsWith('.jpeg') || viewPortfolio.certFile.endsWith('.png')) && (
-                  <div className="mb-4">
-                    <span className="font-semibold text-[#D4AF37]">Certificate Image:</span>
-                    <div className="mt-2">
-                      <img
-                        src={`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`}
-                        alt="Certificate"
-                        className="max-w-full max-h-64 rounded border border-gray-200 dark:border-gray-700 shadow cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => setPreviewImage(`${getApiBaseUrl()}/${viewPortfolio.certFile.replace(/^uploads\//, 'uploads/')}`)}
-                      />
+              </header>
+
+              <main className="space-y-10 px-8 py-10 sm:px-12">
+                <section className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+                  <div className="space-y-8">
+                    <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                      <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                        <FileText className="h-5 w-5" />
+                        <h3 className="text-lg font-semibold tracking-tight">Narrative Overview</h3>
+                      </div>
+                      <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                        {viewPortfolio.summary || viewPortfolio.highlight || 'This portfolio entry showcases the student’s work and achievements in a polished, mentor-friendly format.'}
+                      </p>
+                      {descriptionLines.length > 0 && (
+                        <ul className="mt-5 space-y-3">
+                          {descriptionLines.map((line, idx) => (
+                            <li key={idx} className="flex gap-3 text-sm text-slate-700 dark:text-slate-200">
+                              <span className="mt-1 inline-flex h-2 w-2 flex-shrink-0 rounded-full bg-[#D4AF37]" />
+                              <span className="leading-relaxed">{line}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                  </div>
-              )}
-              {viewPortfolio.skills && viewPortfolio.skills.length > 0 && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">Skills:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.skills.map(skill => skill.skillName || skill).join(', ')}</span>
-                </div>
-              )}
-              {viewPortfolio.certifications && viewPortfolio.certifications.length > 0 && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">Certifications:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.certifications.map(cert => cert.certTitle || cert).join(', ')}</span>
-                </div>
-              )}
-              {viewPortfolio.projects && viewPortfolio.projects.length > 0 && (
-                <div className="mb-2">
-                  <span className="font-semibold text-[#D4AF37]">Projects:</span>{' '}
-                  <span className="text-gray-800 text-sm">{viewPortfolio.projects.map(proj => proj.projectName || proj).join(', ')}</span>
-                </div>
-              )}
-              {viewPortfolio.validatedByFaculty && (
-                <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Lock className="w-4 h-4 text-green-700 dark:text-green-400" />
-                    <span className="font-semibold text-green-700 dark:text-green-400">Validated by Faculty</span>
-                  </div>
-                  <span className="text-gray-800 dark:text-gray-300 text-sm">{viewPortfolio.validatedByName}</span>
-                </div>
-              )}
-              {viewPortfolio.category === 'microcredentials' && (
-                viewPortfolio.witnessedByNames && viewPortfolio.witnessedByNames.length > 0 ? (
-                  <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Lock className="w-4 h-4 text-green-700 dark:text-green-400" />
-                      <span className="font-semibold text-green-700 dark:text-green-400">Verified & Witnessed by Faculty</span>
-                    </div>
-                    <div className="text-gray-800 dark:text-gray-300 text-sm">
-                      {viewPortfolio.witnessedByNames.split(',').map((name, idx) => (
-                        <div key={idx} className="flex items-center gap-2 py-1">
-                          <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                          <span>{name.trim()}</span>
+
+                    {skillNames.length > 0 && (
+                      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                        <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                          <Sparkles className="h-5 w-5" />
+                          <h3 className="text-lg font-semibold tracking-tight">Core Skills & Tools</h3>
                         </div>
-                      ))}
-                    </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {skillNames.map((skill) => (
+                            <span
+                              key={skill}
+                              className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-gradient-to-r from-[#fff8ec] to-[#f4dfac] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#800000] shadow-sm dark:border-[#D4AF37]/30 dark:from-[#5c3d03] dark:to-[#8d5f0f] dark:text-[#FCE7BA]"
+                            >
+                              <BadgeCheck className="h-3.5 w-3.5" />
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {(projectNames.length > 0 || certificationNames.length > 0) && (
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {projectNames.length > 0 && (
+                          <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                            <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                              <Folder className="h-5 w-5" />
+                              <h3 className="text-lg font-semibold tracking-tight">Supporting Projects</h3>
+                            </div>
+                            <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-200">
+                              {projectNames.map((name, idx) => (
+                                <li key={idx} className="flex gap-3">
+                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#800000] dark:bg-[#D4AF37]" />
+                                  <span>{name}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {certificationNames.length > 0 && (
+                          <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                            <div className="flex items-center gap-3 text-[#800000] dark:text-[#D4AF37]">
+                              <Award className="h-5 w-5" />
+                              <h3 className="text-lg font-semibold tracking-tight">Certifications</h3>
+                            </div>
+                            <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-200">
+                              {certificationNames.map((name, idx) => (
+                                <li key={idx} className="flex gap-3">
+                                  <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#800000] dark:bg-[#D4AF37]" />
+                                  <span>{name}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <Unlock className="w-4 h-4 text-yellow-700 dark:text-yellow-400" />
-                      <span className="font-semibold text-yellow-700 dark:text-yellow-400">Pending Faculty Witness</span>
+
+                  <aside className="space-y-6">
+                    <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                      <h3 className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                        <CalendarDays className="h-4 w-4" /> Quick Facts
+                      </h3>
+                      <div className="mt-5 space-y-4">
+                        {quickFacts.map(({ icon: Icon, label, value, href }) => (
+                          <div key={label} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200">
+                            <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[#800000]/10 text-[#800000] dark:bg-[#D4AF37]/10 dark:text-[#D4AF37]">
+                              <Icon className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</div>
+                              {href && value !== 'Not provided' ? (
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-[#800000] underline transition hover:text-[#5a0000] dark:text-[#F3D996]"
+                                >
+                                  <Link2 className="h-4 w-4" />
+                                  Visit GitHub
+                                </a>
+                              ) : (
+                                <div className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-100">{value}</div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-xs text-yellow-600 dark:text-yellow-300 mt-1">This microcredential is awaiting verification from faculty members.</p>
+
+                    {(certificateImageUrl || certificatePath) && (
+                      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/60">
+                        <h3 className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                          <ImageIcon className="h-4 w-4" /> Evidence & Attachments
+                        </h3>
+                        <div className="mt-4 space-y-4">
+                          {hasCertificateImage && certificateImageUrl ? (
+                            <figure className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                              <img
+                                src={certificateImageUrl}
+                                alt="Certificate"
+                                className="h-48 w-full object-cover"
+                                onClick={() => setPreviewImage(certificateImageUrl)}
+                              />
+                              <figcaption className="flex items-center justify-between px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                                <span>Tap to expand certificate</span>
+                                <button
+                                  onClick={() => setPreviewImage(certificateImageUrl)}
+                                  className="inline-flex items-center gap-2 rounded-full bg-[#800000] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white shadow md:text-xs"
+                                >
+                                  View Full
+                                </button>
+                              </figcaption>
+                            </figure>
+                          ) : (
+                            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                              No certificate image uploaded.
+                              {certificatePath && (
+                                <div className="mt-2">
+                                  <a
+                                    href={`${getApiBaseUrl()}/${certificatePath.replace(/^uploads[\\/]/, 'uploads/')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#800000] underline hover:text-[#5a0000] dark:text-[#F3D996]"
+                                  >
+                                    <FileText className="h-4 w-4" />
+                                    Download attachment
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {viewPortfolio.certTitle && (
+                            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Certificate Title</div>
+                              <div className="mt-1 font-medium text-slate-800 dark:text-slate-100">{viewPortfolio.certTitle}</div>
+                            </div>
+                          )}
+                          {formattedIssueDate && (
+                            <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Issued On</div>
+                              <div className="mt-1 font-medium text-slate-800 dark:text-slate-100">{formattedIssueDate}</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {(activePortfolio?.validatedByFaculty || witnessNames.length > 0 || isMicrocredential) && (
+                      <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/50 p-6 shadow-lg shadow-emerald-900/10 dark:border-emerald-700/60 dark:bg-emerald-900/30">
+                        <h3 className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
+                          <Lock className="h-4 w-4" /> Verification Status
+                        </h3>
+                        <div className="mt-4 space-y-3 text-sm text-emerald-800 dark:text-emerald-100">
+                          {activePortfolio?.validatedByFaculty ? (
+                            <div className="flex items-start gap-3">
+                              <BadgeCheck className="mt-0.5 h-4 w-4" />
+                              <span>
+                                Validated by {activePortfolio.validatedByName || 'faculty member'}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-start gap-3 text-amber-700 dark:text-amber-200">
+                              <Unlock className="mt-0.5 h-4 w-4" />
+                              <span>Pending faculty validation</span>
+                            </div>
+                          )}
+                          {isMicrocredential && (
+                            witnessNames.length > 0 ? (
+                              <div className="rounded-xl border border-emerald-300/40 bg-white/60 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-700/60 dark:bg-emerald-900/60 dark:text-emerald-100">
+                                <div className="text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-200">Witnessed By</div>
+                                <ul className="mt-2 space-y-1">
+                                  {witnessNames.map((name, idx) => (
+                                    <li key={idx} className="flex items-center gap-2">
+                                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                      <span>{name}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ) : (
+                              <div className="rounded-xl border border-amber-200/60 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-600/60 dark:bg-amber-900/40 dark:text-amber-100">
+                                Microcredential awaiting faculty witnesses to confirm authenticity.
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </aside>
+                </section>
+
+                <div className="flex flex-col gap-4 border-t border-slate-200 pt-6 dark:border-slate-700 md:flex-row md:items-center md:justify-between">
+                  <div className="text-sm text-slate-500 dark:text-slate-300">
+                    Last updated {formattedLastUpdated || 'recently'}
                   </div>
-                )
-              )}
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => setViewPortfolio(null)}
-                  className="px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#600000]"
-                >
-                  Close
-                </button>
-              </div>
+                  <div className="flex flex-wrap gap-3">
+                    {viewPortfolio.githubLink && (
+                      <a
+                        href={viewPortfolio.githubLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-[#800000] px-5 py-2 text-sm font-semibold text-[#800000] transition hover:bg-[#800000] hover:text-white dark:border-[#D4AF37] dark:text-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-slate-900"
+                      >
+                        <Link2 className="h-4 w-4" />
+                        Open GitHub project
+                      </a>
+                    )}
+                    <button
+                      onClick={() => setViewPortfolio(null)}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#800000] px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-[#5a0000] dark:bg-[#D4AF37] dark:text-slate-900 dark:hover:bg-[#f7d36a]"
+                    >
+                      Close Overview
+                    </button>
+                  </div>
+                </div>
+              </main>
             </div>
           </div>
         </div>
