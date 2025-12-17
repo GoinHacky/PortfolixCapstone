@@ -1,5 +1,5 @@
-# PortfolioX: Student Portfolio Tracker
-**A Digital Approach to Student Portfolio Monitoring**
+# PortfolioX: A Digital Approach to Student Portfolio Monitoring
+
 
 ## 📌 Overview
 PortfolioX is a web-based student portfolio management system developed for the **College of Computer Studies (CCS) at Cebu Institute of Technology – University**. The platform centralizes the creation, management, validation, and sharing of student academic portfolios, enabling students to showcase verified projects and micro-credentials while allowing faculty to efficiently monitor and validate academic progress.
